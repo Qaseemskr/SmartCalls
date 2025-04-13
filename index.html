@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduSpace Solutions for Jigawa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+        }
+
+        .section-bg {
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            padding: 3rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        section {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background: linear-gradient(to right, #004080, #0066cc);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            font-size: 1rem;
+            background-color: #004080;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #003060;
+        }
+
+        input,
+        textarea {
+            width: calc(100% - 1.5rem);
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #userInfo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #004080;
+            padding: 1rem;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .userDetails {
+            display: flex;
+            align-items: center;
+        }
+
+        #userInfo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            border: 2px solid #fff;
+        }
+
+        #userName {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        #scoreTracker {
+            font-size: 0.9rem;
+            background-color: #e0f0ff;
+            color: #004080;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        #home {
+            background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center;
+            background-size: cover;
+            padding: 2rem;
+            color: #fff;
+            min-height: auto;
+            /* Adjust min-height for content */
+        }
+
+        .home-content {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .home-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .subject-item {
+            background-color: #ffffffdd;
+            color: #002b5c;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .subject-item h3 {
+            margin-top: 0;
+            color: #004080;
+        }
+
+        /* Subject Page Styles */
+        #subjectPage {
+            display: none;
+            margin-top: 2rem;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        #subjectContent {
+            margin-top: 1rem;
+        }
+
+        /* Quiz Page Styles */
+        #quizPage {
+            display: none;
+            margin-top: 2rem;
+            background: #f8f8f8;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        #quizFormRadio label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        #quizResult {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Map Styles */
+        #mapContainer {
+            display: none;
+            width: 100%;
+            height: 500px;
+            margin: 2rem auto;
+            border: 2px solid #004080;
+            border-radius: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <section id="welcome" class="section-bg"
+        style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); color: white;">
+        <div style="text-align: center;">
+            <h1 style="color: #ffffff; font-size: 2.8rem;"><b>Welcome to EduSpace Solutions</b></h1>
+            <p style="font-style: italic; font-size: 1.5rem; color: #f0f8ff;">Empowering young minds of Jigawa through knowledge and
+                innovation.</p>
+            <button onclick="showLogin()">Login</button>
+            <button onclick="showSignUp()">Sign Up</button>
+        </div>
+    </section>
+
+    <section id="signup" class="section-bg"
+        style="display:none; background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b');">
+        <header>
+            <h2>Sign Up</h2>
+        </header>
+        <input type="text" placeholder="Full Name" id="fullName" />
+        <input type="text" placeholder="Phone or Email" />
+        <input type="password" placeholder="Create Password" />
+        <input type="password" placeholder="Confirm Password" />
+        <input type="file" id="uploadPhoto" accept="image/*" />
+        <button onclick="goToLanguageSelection()">Register</button>
+    </section>
+
+    <section id="login" class="section-bg"
+        style="display:none;  background-image: url('https://images.unsplash.com/photo-1584433144859-eef0e62d9a6b');">
+        <header>
+            <h2>Login</h2>
+        </header>
+        <input type="text" placeholder="Phone or Email" />
+        <input type="password" placeholder="Password" />
+        <button onclick="goToLanguageSelection()">Login</button>
+    </section>
+
+    <section id="language" style="display:none;
+        background: linear-gradient(to bottom, #e0f0ff, #ffffff); padding: 4rem 1rem; text-align: center;">
+        <header style="background: none; color: #003366; box-shadow: none;
+        margin-bottom: 1rem;">
+            <h2 style="font-size: 2rem;
+        margin-bottom: 1rem;">Select Your Preferred Language</h2>
+        </header>
+        <button onclick="goToHome('English')" style="margin: 0.5rem;
+        font-size: 1.1rem;">English</button>
+        <button onclick="goToHome('Hausa')" style="margin: 0.5rem; font-size: 1.1rem;">Hausa</button>
+    </section>
+
+    <section id="home" style="display:none;">
+        <header>
+            <h1>EduSpace Solutions for Jigawa</h1>
+            <div id="userInfo">
+                <div class="userDetails">
+                    <img id="profilePic"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1200px-User_font_awesome.svg.png"
+                        alt="User Photo">
+                    <div>
+                        <div id="userName"></div>
+                    </div>
+                </div>
+                <div id="scoreTracker">Score: 0</div>
+            </div>
+        </header>
+
+        <div class="home-content">
+            <p>
+                <i>
+                    Education is not just about books and exams, it is the key that unlocks the door to opportunity, growth,
+                    and a better
+                    future. In a world that's
+                    constantly evolving, the greatest tool we can equip ourselves with is knowledge. Today, let's explore how
+                    education can
+                    shape not just individual lives, but entire communities.
+                </i>
+            </p>
+            <p class="subject-intro">Please select a subject below to learn more and take a quiz.</p>
+
+            <div class="subject-item">
+                <h3>Space Technology</h3>
+                <button onclick="openSubjectPage('Space Technology')">Learn & Take Quiz</button>
+            </div>
+
+
+            <div class="subject-item">
+                <h3>Climate Education</h3>
+                <button onclick="openSubjectPage('Climate Education')">Learn & Take Quiz</button>
+            </div>
+
+            <div class="subject-item">
+                <h3>Islamic Studies</h3>
+                <button onclick="openSubjectPage('Islamic Studies')">Learn & Take Quiz</button>
+            </div>
+
+            <div class="subject-item">
+                <h3>Agriculture</h3>
+                <button onclick="openSubjectPage('Agriculture')">Learn & Take Quiz</button>
+            </div>
+
+            <div class="subject-item">
+                <h3>Science</h3>
+                <button onclick="openSubjectPage('Science')">Learn & Take Quiz</button>
+            </div>
+
+            <div class="subject-item">
+                <h3>Current Affairs</h3>
+                <button onclick="openSubjectPage('Current Affairs')">Learn & Take Quiz</button>
+            </div>
+
+            <div class="subject-item">
+                <h3>Online Classrooms</h3>
+                <button onclick="openSubjectPage('Online Classrooms')">Learn & Take Quiz</button>
+            </div>
+            <button onclick="openMap()">Navigate to Schools</button>
+        </div>
+    </section>
+
+    <section id="subjectPage">
+        <button onclick="goBackToHome()">Back to Home</button>
+        <h2 id="subjectTitle"></h2>
+        <div id="subjectContent" style="margin-top: 1rem; background: #fff; padding: 1rem; border-radius: 10px;"></div>
+        <button id="takeQuizBtn" style="margin-top:1rem; display:none;" onclick="openQuizPage()">Take Quiz</button>
+    </section>
+
+    <section id="quizPage">
+        <button onclick="goBackToSubject()">Back to Subject</button>
+        <h3>Current Affairs Quiz</h3>
+        <form id="quizFormRadio">
+            <p>Q1. What is the slogan of Jigawa State?</p>
+            <label><input type="radio" name="q1" value="A" /> Center of commerce</label>
+            <label><input type="radio" name="q1" value="B" /> The new world</label>
+            <label><input type="radio" name="q1" value="C" /> The heart of Nigeria</label>
+            <label><input type="radio" name="q1" value="D" /> A beautiful world</label>
+
+            <p>Q2. What is the current population of Nigeria?</p>
+            <label><input type="radio" name="q2" value="A" /> More than 5 Millions</label>
+            <label><input type="radio" name="q2" value="B" /> Atleast 15 Millions</label>
+            <label><input type="radio" name="q2" value="C" /> 2.5 Millions</label>
+            <label><input type="radio" name="q2" value="D" /> 3 Million Peoples</label>
+
+            <p>Q3. How many local governments are there in Jigawa state?</p>
+            <label><input type="radio" name="q3" value="A" /> 22</label>
+            <label><input type="radio" name="q3" value="B" /> 26</label>
+            <label><input type="radio" name="q3" value="C" /> 15</label>
+            <label><input type="radio" name="q3" value="D" /> 27</label>
+
+            <p>Q4. Jigawa State capital is?</p>
+            <label><input type="radio" name="q4" value="A" /> Kiyawa</label>
+            <label><input type="radio" name="q4" value="B" /> Dutse</label>
+            <label><input type="radio" name="q4" value="C" /> Ringim</label>
+            <label><input type="radio" name="q4" value="D" /> Hadejia</label>
+
+            <br><br>
+            <button type="button" onclick="submitQuiz()">Submit Answers</button>
+            <p id="quizResult" style="margin-top:1rem; font-weight:bold;"></p>
+        </form>
+    </section>
+
+    <section id="mapContainer">
+        <button onclick="goBackToHome()">Back to Home</button>
+        <div id="map" style="width: 100%; height: 100%;"></div>
+    </section>
+
+    <script>
+        let uploadedPhotoData = null;
+        let userName = '';
+        let currentSubject = '';
+        let map;
+        let schoolMarkers = [];
+
+        // School data for Jigawa State
+        const schools = [
+            { name: "Federal University Dutse", latitude: 11.0881, longitude: 9.3242, type: "University" },
+            { name: "Sule Lamido University", latitude: 12.4878, longitude: 9.6166, type: "University" },
+            { name: "Rabaza College of Education", latitude: 12.1500, longitude: 10.2167, type: "College" },
+            { name: "Jigawa State College of Education", latitude: 11.8500, longitude: 9.2833, type: "College" },
+            { name: "Hadejia Institute of Agriculture", latitude: 12.6833, longitude: 10.0500, type: "Institute" },
+            { name: "Kazaure Institute of Technology", latitude: 12.7833, longitude: 8.2833, type: "Institute" },
+            { name: "Dutse Capital School", latitude: 11.0931, longitude: 9.3297, type: "Secondary School" },
+            { name: "Government Science and Technical College Kazaure", latitude: 12.7885, longitude: 8.2858, type: "Technical College" },
+            { name: "Government Girls Secondary School, Dutse", latitude: 11.0803, longitude: 9.3206, type: "Secondary School" },
+            { name: "Federal Government College, Dutse", latitude: 11.1015, longitude: 9.3162, type: "Secondary School" },
+        ];
+
+        function showLogin() {
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('signup').style.display = 'none';
+        }
+
+        function showSignUp() {
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('signup').style.display = 'block';
+            document.getElementById('login').style.display = 'none';
+        }
+
+        function goToLanguageSelection() {
+            const fileInput = document.getElementById('uploadPhoto');
+            const nameInput = document.getElementById('fullName');
+            userName = nameInput ? nameInput.value : '';
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadedPhotoData = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+
+            document.getElementById('signup').style.display = 'none';
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('language').style.display = 'block';
+            document.getElementById('welcome').style.display = 'none';
+        }
+
+        function goToHome(language) {
+            document.getElementById('language').style.display = 'none';
+            document.getElementById('home').style.display = 'block';
+            document.getElementById('welcome').style.display = 'none';
+
+            if (uploadedPhotoData) {
+                setUserPhoto(uploadedPhotoData);
+            }
+            if (userName) {
+                document.getElementById('userName').innerText = userName;
+            }
+
+            updateUserScoreDisplay();
+        }
+
+        function setUserPhoto(url) {
+            document.getElementById("profilePic").src = url;
+        }
+
+        function openSubjectPage(subjectKey) {
+            currentSubject = subjectKey;
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('subjectPage').style.display = 'block';
+
+            let title = '',
+                content = '';
+
+            if (subjectKey === 'Current Affairs') {
+                title = 'Current Affairs - Jigawa State';
+                content = `
+          <p><b><center>Welcome to Current affairs page for Jigawa State The New World</center></b><br>.</p>
+          <p><strong>About Jigawa State</strong><br>
+
+<i>Jigawa State, created on August 27, 1991, is located in northwestern Nigeria with Dutse as its capital. It shares borders with Kano, Katsina, Bauchi, Yobe, and the Republic of Niger. The state has 27 Local Government Areas and is known for its flat savannah landscape and semi-arid climate.
+
+Agriculture is the backbone of its economy, with crops like millet, rice, and groundnuts, alongside livestock farming. The major ethnic groups are Hausa and Fulani, and Islam is the predominant religion. Hausa and Fulfulde are widely spoken, with English as the official language.
+
+Jigawa is home to the Federal University Dutse and other educational institutions. Notable attractions include the Birnin Kudu Rock Paintings and the Hadejia-Nguru Wetlands. The state continues to grow through investments in education, infrastructure, and rural development</i>.</p>
+          <ul>
+            <li><b>Creation Date:</b>       August 27, 1991</li>
+            <li><b>State Creator:</b>       General Ibrahim Babangida</li>
+            <li><b>Geopolitical Zone:</b>       North-West</li>
+            <li><b>State Capital:</b>       Dutse</li>
+            <li><b>State Slogan:</b>        The New World</li>
+            <li><b>Population:</b>      5,528,163</li>
+            <li><b>Land Area:</b>       23,154 sq. km</li>
+            <li><b>Local Governments:</b>       27</li>
+            <li><b>Governor:</b>        Umar Namadi</li>
+          </ul>
+        `;
+                document.getElementById('takeQuizBtn').style.display = 'inline-block';
+            } else if (subjectKey === 'Space Technology') {
+                title = 'Space Technology';
+                content = `<p>Content for Space Technology will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            } else if (subjectKey === 'Climate Education') {
+                title = 'Climate Education';
+                content = `<p>Content for Climate Education will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            } else if (subjectKey === 'Islamic Studies') {
+                title = 'Islamic Studies';
+                content = `<p>Content for Islamic Studies will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            } else if (subjectKey === 'Agriculture') {
+                title = 'Agriculture';
+                content = `<p>Content for Agriculture will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            } else if (subjectKey === 'Science') {
+                title = 'Science';
+                content = `<p>Content for Science will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            } else if (subjectKey === 'Online Classrooms') {
+                title = 'Online Classrooms';
+                content = `<p>Content for Online Classrooms will be added here later.</p>`;
+                document.getElementById('takeQuizBtn').style.display = 'none';
+            }
+
+            document.getElementById('subjectTitle').innerHTML = title;
+            document.getElementById('subjectContent').innerHTML = content;
+        }
+
+        function openQuizPage() {
+            document.getElementById('subjectPage').style.display = 'none';
+            document.getElementById('quizPage').style.display = 'block';
+        }
+
+        function goBackToSubject() {
+            document.getElementById('quizPage').style.display = 'none';
+            document.getElementById('subjectPage').style.display = 'block';
+        }
+
+        function goBackToHome() {
+            document.getElementById('subjectPage').style.display = 'none';
+            document.getElementById('home').style.display = 'block';
+        }
+
+        function submitQuiz() {
+            const answers = {
+                q1: "B",
+                q2: "A",
+                q3: "D",
+                q4: "B"
+            };
+
+            let score = 0;
+            for (let q in answers) {
+                const selected = document.querySelector(`input[name="${q}"]:checked`);
+                if (selected && selected.value === answers[q]) {
+                    score += 20;
+                }
+            }
+
+            let previousScore = parseInt(localStorage.getItem("userScore") || "0");
+            let newScore = previousScore + score;
+
+            localStorage.setItem("userScore", newScore);
+            document.getElementById("quizResult").innerText = "Your score: " + score + " out of 80";
+        }
+
+        function updateUserScoreDisplay() {
+            const score = localStorage.getItem("userScore") || 0;
+            document.getElementById("scoreTracker").innerText = "Score: " + score;
+        }
+
+        function openMap() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('mapContainer').style.display = 'block';
+
+            if (!map) {
+                // Initialize the map
+                map = L.map('map').setView([12.5000, 9.5000], 8); // Centered on Jigawa State, zoom level 8
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // Add markers for schools
+                addSchoolMarkers();
+            } else {
+                // Clear existing markers
+                schoolMarkers.forEach(marker => map.removeLayer(marker));
+                schoolMarkers = [];
+
+                // Add markers again
+                addSchoolMarkers();
+            }
+        }
+
+        function addSchoolMarkers() {
+            schools.forEach(school => {
+                const marker = L.marker([school.latitude, school.longitude])
+                    .bindPopup(`<b>${school.name}</b><br>Type: ${school.type}`)
+                    .addTo(map);
+                schoolMarkers.push(marker);
+            });
+        }
+    </script>
+</body>
+
+</html>

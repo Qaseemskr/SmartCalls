@@ -1,364 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
+    <title>NaijaCall - Galaxy Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduSpace Solutions for Jigawa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+        /* Basic Reset */
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f7f6;
+            box-sizing: border-box;
         }
 
-        .section-bg {
+        /* Body Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a1e; /* Dark solid background for body */
+            height: 100vh;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden; /* Prevent body scroll, container handles it */
+        }
+
+        /* Utility Class for Hiding Elements */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Main Container Styling */
+        .container {
+            background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1950&q=80') no-repeat center center;
             background-size: cover;
-            background-position: center;
-            min-height: 100vh;
-            padding: 3rem 1rem;
+            background-color: rgba(10, 10, 30, 0.9); /* Adjust opacity for background image visibility */
+            padding: 20px;
+            border-radius: 25px; to
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
+            width: 100%;
+            height: 100%;
+            max-width: 600px;
+            max-height: 900px;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container::-webkit-scrollbar { display: none; }
+        .container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Headings & Text */
+        h1, h2, h3 { color: #ffeaa7; text-shadow: 0 0 10px rgba(255,255,255,0.4); }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        h2 { font-size: 2rem; margin-bottom: 15px; }
+        h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; }
+        .hausa-tagline {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #fab1a0;
+            margin: 15px 0 5px 0;
+        }
+
+        /* Input Fields & Select */
+        input, select {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px;
+            font-size: 1.1rem; background-color: rgba(255, 255, 255, 0.15);
+            color: #fff; outline: none; transition: all 0.2s ease;
+        }
+        input::placeholder { color: #ccc; }
+        input:focus, select:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        select option { background-color: rgba(10, 10, 30, 0.95); color: #fff; }
+
+        /* General Button */
+        .btn {
+            width: 100%; padding: 16px; background: linear-gradient(to right, #ffeaa7, #fab1a0);
+            color: #2d3436; font-weight: bold; border: none; border-radius: 40px;
+            font-size: 1.2rem; cursor: pointer; margin-top: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(255, 255, 255, 0.4); }
+
+        /* --- Home Page Specific Styles --- */
+        #homePage { justify-content: space-between; }
+        .home-header { padding: 10px; }
+        .wallet-balance { font-size: 1.2rem; font-weight: bold; color: #f6e58d; margin-top: 15px; }
+        
+        .main-call-button-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+            margin: 10px 0;
         }
-
-        section {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        header {
-            background: linear-gradient(to right, #004080, #0066cc);
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px 10px 0 0;
-            margin-bottom: 2rem;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-
-        button {
-            padding: 0.75rem 1.5rem;
-            margin: 0.5rem;
-            font-size: 1rem;
-            background-color: #004080;
-            color: white;
-            border: none;
-            border-radius: 8px;
+        .make-call-circle {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: linear-gradient(135deg, #8E2DE2, #4A00E0); /* New vibrant purple gradient */
+            color: white; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(142, 45, 226, 0.5);
+            transition: all 0.3s ease;
+        }
+        .make-call-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(142, 45, 226, 0.7);
+        }
+        .make-call-circle i { font-size: 4rem; margin-bottom: 5px; }
+        .make-call-circle .button-label { font-size: 1.1rem; font-weight: bold; }
+
+        /* Call History */
+        .section-title {
+            font-size: 1.3rem; color: #f6e58d; border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px; margin: 20px 0 10px 0;
+        }
+        .history-item {
+            background-color: rgba(255,255,255,0.1); padding: 12px 15px;
+            border-radius: 8px; margin-top: 8px; display: flex;
+            justify-content: space-between; align-items: center;
+            font-size: 0.95rem; transition: background-color 0.2s ease;
+        }
+        .history-item:hover { background-color: rgba(255,255,255,0.2); }
+        .call-again-btn {
+            background: rgba(255, 255, 255, 0.15); color: #ffeaa7;
+            border: 1px solid #ffeaa7; border-radius: 20px;
+            padding: 6px 12px; font-size: 0.8rem; font-weight: bold;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .call-again-btn:hover { background: #ffeaa7; color: #2d3436; }
+
+        /* --- Hexagonal Bottom Navigation --- */
+        .bottom-nav {
+            display: flex; justify-content: space-around;
+            align-items: center; padding: 15px 0; margin-top: 20px;
+        }
+        .hex-btn {
+            position: relative; width: 70px; height: 80px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: all 0.2s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .hex-btn:hover { transform: scale(1.1); }
+        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; }
+        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #fff; }
+
+        /* Individual Hex Button Colors */
+        .hex-btn.recharge { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .hex-btn.recharge i { color: #fff; }
+        .hex-btn.contacts { background: linear-gradient(135deg, #373B44, #4286f4); }
+        .hex-btn.contacts i { color: #fff; }
+        .hex-btn.referral { background: linear-gradient(135deg, #f7971e, #ffd200); }
+        .hex-btn.referral i { color: #fff; }
+        .hex-btn.profile { background: linear-gradient(135deg, #FF416C, #FF4B2B); }
+        .hex-btn.profile i { color: #fff; }
+
+
+        /* --- Full Screen Overlays (DialPad, Contacts, Profile etc) --- */
+        .fullscreen-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 30, 0.98); border-radius: 25px; padding: 20px;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateY(100%); opacity: 0; z-index: 100; visibility: hidden;
+        }
+        .fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
+        .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .overlay-title { font-size: 1.8rem; color: #ffeaa7; }
+        .close-overlay-btn { font-size: 1.8rem; color: #fff; cursor: pointer; }
+        .overlay-content { flex-grow: 1; overflow-y: auto; }
+        .overlay-content::-webkit-scrollbar { display: none; }
+        .overlay-content { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- Dial Pad Specific Styles --- */
+        #dialPadPage .overlay-content { display: flex; flex-direction: column; justify-content: space-between; }
+        #dialPadDisplay {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid #ffeaa7;
+            color: #fff; font-size: 2.5rem; text-align: center; padding-bottom: 10px; letter-spacing: 2px;
+        }
+        .phone-input-group { display: flex; gap: 5px; margin: 15px 0; }
+        #dialPadCountryCode { flex: 1; }
+        .dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
+        .dial-btn {
+            width: 75px; height: 75px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.8rem; cursor: pointer; margin: auto;
+            display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease;
+        }
+        .dial-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .dialpad-actions { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
+        .dialpad-call-btn {
+            width: 80px; height: 80px; border-radius: 50%; background: #2ecc71;
+            color: white; font-size: 2.5rem; border: none; cursor: pointer;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
         }
 
-        button:hover {
-            background-color: #003060;
+        /* --- Other Pages Styles (Contacts, Profile, etc.) --- */
+        .contact-item {
+            display: flex; align-items: center; background-color: rgba(255,255,255,0.1);
+            padding: 12px; border-radius: 10px; margin-bottom: 10px;
         }
+        .contact-avatar {
+            width: 45px; height: 45px; border-radius: 50%; background-color: #fab1a0;
+            color: #2d3436; display: flex; justify-content: center; align-items: center;
+            font-weight: bold; margin-right: 15px;
+        }
+        .contact-info { flex-grow: 1; text-align: left; }
+        .contact-name { font-weight: bold; color: #ffeaa7; }
+        .profile-info p {
+            background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;
+            margin-bottom: 10px; text-align: left; font-size: 1.1rem;
+        }
+        .profile-info strong { color: #ffeaa7; }
 
-        input,
-        textarea {
-            width: calc(100% - 1.5rem);
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        /* Call Screen Overlay */
+        .call-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 30, 0.95); border-radius: 25px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; transition: all 0.3s ease-in-out;
+            transform: scale(0.9); opacity: 0; z-index: 200; visibility: hidden;
         }
+        .call-screen.active { transform: scale(1); opacity: 1; visibility: visible; }
+        .call-avatar { width: 120px; height: 120px; border-radius: 50%; background-color: #fab1a0; display: flex; justify-content: center; align-items: center; font-size: 3rem; color: #2d3436; margin-bottom: 20px; }
+        .call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #ffeaa7; }
+        .call-status { font-size: 1.2rem; color: #ccc; margin-bottom: 15px; }
+        .call-timer { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 30px; }
+        .call-controls { display: flex; gap: 20px; margin-bottom: 30px; }
+        .call-control-btn {
+            background-color: rgba(255, 255, 255, 0.15); color: #fff;
+            width: 60px; height: 60px; border-radius: 50%; border: none;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .call-control-btn:hover { background-color: rgba(255, 255, 255, 0.25); }
+        .call-control-btn.active { background-color: #ffeaa7; color: #2d3436; } /* For active mute/speaker */
 
-        #userInfo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #004080;
-            padding: 1rem;
-            border-radius: 10px;
-            color: white;
-            margin-bottom: 1.5rem;
-        }
+        .end-call-btn { background-color: #e74c3c; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; border: none; cursor: pointer; }
 
-        .userDetails {
-            display: flex;
-            align-items: center;
+        /* Custom Alert Dialog */
+        #customAlertDialog {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease;
         }
-
-        #userInfo img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 1rem;
-            border: 2px solid #fff;
+        #customAlertDialog.active { opacity: 1; visibility: visible; }
+        .custom-alert-content {
+            background: rgba(30, 30, 50, 0.95); padding: 30px; border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); color: #fff; text-align: center;
+            width: 80%; max-width: 400px;
         }
-
-        #userName {
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        #scoreTracker {
-            font-size: 0.9rem;
-            background-color: #e0f0ff;
-            color: #004080;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        #home {
-            background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center;
-            background-size: cover;
-            padding: 2rem;
-            color: #fff;
-            min-height: auto;
-            /* Adjust min-height for content */
-        }
-
-        .home-content {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .home-content p {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-
-        .subject-item {
-            background-color: #ffffffdd;
-            color: #002b5c;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-            text-align: center;
-        }
-
-        .subject-item h3 {
-            margin-top: 0;
-            color: #004080;
-        }
-
-        /* Subject Page Styles */
-        #subjectPage {
-            display: none;
-            margin-top: 2rem;
-            background: #fff;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-
-        #subjectContent {
-            margin-top: 1rem;
-        }
-
-        /* Quiz Page Styles */
-        #quizPage {
-            display: none;
-            margin-top: 2rem;
-            background: #f8f8f8;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-
-        #quizFormRadio label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        #quizResult {
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-
-        /* Map Styles */
-        #mapContainer {
-            display: none;
-            width: 100%;
-            height: 500px;
-            margin: 2rem auto;
-            border: 2px solid #004080;
-            border-radius: 10px;
-        }
+        #customAlertMessage { margin-bottom: 20px; font-size: 1.1rem; }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 
 <body>
-    <section id="welcome" class="section-bg"
-        style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); color: white;">
-        <div style="text-align: center;">
-            <h1 style="color: #ffffff; font-size: 2.8rem;"><b>Welcome to EduSpace Solutions</b></h1>
-            <p style="font-style: italic; font-size: 1.5rem; color: #f0f8ff;">Empowering young minds of Jigawa through knowledge and
-                innovation.</p>
-            <button onclick="showLogin()">Login</button>
-            <button onclick="showSignUp()">Sign Up</button>
+
+    <div class="container" id="welcomePage">
+        <h1>Welcome to NaijaCall</h1>
+        <p>Connect with the world — simple, fast, and clear.</p>
+        <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
+    </div>
+
+    <div class="container hidden" id="authPage">
+        <h2 id="formTitle">Login to NaijaCall</h2>
+        <input id="authIdentifierLogin" placeholder="Email or Phone Number" type="text" />
+        <input class="hidden" id="firstName" placeholder="First Name" type="text" />
+        <div class="hidden" id="phoneRegSection">
+            <select id="authCountryCode"></select>
+            <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
         </div>
-    </section>
+        <input id="authPassword" placeholder="Password" type="password" />
+        <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">Login</button>
+        <p>Don't have an account? <a onclick="toggleForm()">Register</a></p>
+        <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
+    </div>
 
-    <section id="signup" class="section-bg"
-        style="display:none; background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b');">
-        <header>
-            <h2>Sign Up</h2>
-        </header>
-        <input type="text" placeholder="Full Name" id="fullName" />
-        <input type="text" placeholder="Phone or Email" />
-        <input type="password" placeholder="Create Password" />
-        <input type="password" placeholder="Confirm Password" />
-        <input type="file" id="uploadPhoto" accept="image/*" />
-        <button onclick="goToLanguageSelection()">Register</button>
-    </section>
+    <div class="container hidden" id="homePage">
+        <div class="home-header">
+            <h2>Welcome Back! <br>
+   <span id="welcomeUserName"><i>User</span>!</i></h2>
+            <div class="wallet-balance">Wallet Balance: ₦1,200.00</div>
+        </div>
 
-    <section id="login" class="section-bg"
-        style="display:none;  background-image: url('https://images.unsplash.com/photo-1584433144859-eef0e62d9a6b');">
-        <header>
-            <h2>Login</h2>
-        </header>
-        <input type="text" placeholder="Phone or Email" />
-        <input type="password" placeholder="Password" />
-        <button onclick="goToLanguageSelection()">Login</button>
-    </section>
+        <div class="main-call-button-container">
+            <h3 class="hausa-tagline">Yi kira cikin sauƙi da aminci</h3><br>
+            <div class="make-call-circle" onclick="openOverlay('dialPadPage')">
+                <i class="fas fa-phone"></i>
+                <span class="button-label">Make a Call</span>
+            </div>
+        </div>
 
-    <section id="language" style="display:none;
-        background: linear-gradient(to bottom, #e0f0ff, #ffffff); padding: 4rem 1rem; text-align: center;">
-        <header style="background: none; color: #003366; box-shadow: none;
-        margin-bottom: 1rem;">
-            <h2 style="font-size: 2rem;
-        margin-bottom: 1rem;">Select Your Preferred Language</h2>
-        </header>
-        <button onclick="goToHome('English')" style="margin: 0.5rem;
-        font-size: 1.1rem;">English</button>
-        <button onclick="goToHome('Hausa')" style="margin: 0.5rem; font-size: 1.1rem;">Hausa</button>
-    </section>
+        <div class="call-history-container">
+            <div class="section-title">🕓 Recent Calls</div>
+            <div id="recentCallsList"></div>
+        </div>
 
-    <section id="home" style="display:none;">
-        <header>
-            <h1>EduSpace Solutions for Jigawa</h1>
-            <div id="userInfo">
-                <div class="userDetails">
-                    <img id="profilePic"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1200px-User_font_awesome.svg.png"
-                        alt="User Photo">
-                    <div>
-                        <div id="userName"></div>
-                    </div>
+        <div class="bottom-nav">
+            <div class="hex-btn recharge" onclick="openOverlay('rechargePage')">
+                <i class="fas fa-wallet"></i><span>Recharge</span>
+            </div>
+            <div class="hex-btn contacts" onclick="openOverlay('contactsPage')">
+                <i class="fas fa-address-book"></i><span>Contacts</span>
+            </div>
+            <div class="hex-btn referral" onclick="openOverlay('referralPage')">
+                <i class="fas fa-gift"></i><span>Referral</span>
+            </div>
+            <div class="hex-btn profile" onclick="openOverlay('profilePage')">
+                <i class="fas fa-user"></i><span>Profile</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="fullscreen-overlay" id="dialPadPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">New Call</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('dialPadPage')"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="dialpad-display-container">
+                <input type="text" id="dialPadDisplay" placeholder="Enter number" readonly>
+                <div class="phone-input-group">
+                     <select id="dialPadCountryCode"></select>
                 </div>
-                <div id="scoreTracker">Score: 0</div>
             </div>
-        </header>
-
-        <div class="home-content">
-            <p>
-                <i>
-                    Education is not just about books and exams, it is the key that unlocks the door to opportunity, growth,
-                    and a better
-                    future. In a world that's
-                    constantly evolving, the greatest tool we can equip ourselves with is knowledge. Today, let's explore how
-                    education can
-                    shape not just individual lives, but entire communities.
-                </i>
-            </p>
-            <p class="subject-intro">Please select a subject below to learn more and take a quiz.</p>
-
-            <div class="subject-item">
-                <h3>Space Technology</h3>
-                <button onclick="openSubjectPage('Space Technology')">Learn & Take Quiz</button>
+            <div class="dialpad-grid">
+                <button class="dial-btn" onclick="dialInput('1')">1</button>
+                <button class="dial-btn" onclick="dialInput('2')">2</button>
+                <button class="dial-btn" onclick="dialInput('3')">3</button>
+                <button class="dial-btn" onclick="dialInput('4')">4</button>
+                <button class="dial-btn" onclick="dialInput('5')">5</button>
+                <button class="dial-btn" onclick="dialInput('6')">6</button>
+                <button class="dial-btn" onclick="dialInput('7')">7</button>
+                <button class="dial-btn" onclick="dialInput('8')">8</button>
+                <button class="dial-btn" onclick="dialInput('9')">9</button>
+                <button class="dial-btn" onclick="dialInput('*')">*</button>
+                <button class="dial-btn" onclick="dialInput('0')">0</button>
+                <button class="dial-btn" onclick="dialInput('backspace')"><i class="fas fa-backspace"></i></button>
             </div>
-
-
-            <div class="subject-item">
-                <h3>Climate Education</h3>
-                <button onclick="openSubjectPage('Climate Education')">Learn & Take Quiz</button>
+            <div class="dialpad-actions">
+                <button class="dialpad-call-btn" onclick="startCallFromDialpad()"><i class="fas fa-phone"></i></button>
             </div>
-
-            <div class="subject-item">
-                <h3>Islamic Studies</h3>
-                <button onclick="openSubjectPage('Islamic Studies')">Learn & Take Quiz</button>
-            </div>
-
-            <div class="subject-item">
-                <h3>Agriculture</h3>
-                <button onclick="openSubjectPage('Agriculture')">Learn & Take Quiz</button>
-            </div>
-
-            <div class="subject-item">
-                <h3>Science</h3>
-                <button onclick="openSubjectPage('Science')">Learn & Take Quiz</button>
-            </div>
-
-            <div class="subject-item">
-                <h3>Current Affairs</h3>
-                <button onclick="openSubjectPage('Current Affairs')">Learn & Take Quiz</button>
-            </div>
-
-            <div class="subject-item">
-                <h3>Online Classrooms</h3>
-                <button onclick="openSubjectPage('Online Classrooms')">Learn & Take Quiz</button>
-            </div>
-            <button onclick="openMap()">Navigate to Schools</button>
         </div>
-    </section>
+    </div>
+    
+    <div class="fullscreen-overlay" id="contactsPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Contacts</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('contactsPage')"></i>
+        </div>
+        <div class="overlay-content">
+            <button class="btn" style="margin-bottom: 20px;" onclick="openAddContactPage()"><i class="fas fa-plus"></i> Add New Contact</button>
+            <div id="contactsList"></div>
+        </div>
+    </div>
 
-    <section id="subjectPage">
-        <button onclick="goBackToHome()">Back to Home</button>
-        <h2 id="subjectTitle"></h2>
-        <div id="subjectContent" style="margin-top: 1rem; background: #fff; padding: 1rem; border-radius: 10px;"></div>
-        <button id="takeQuizBtn" style="margin-top:1rem; display:none;" onclick="openQuizPage()">Take Quiz</button>
-    </section>
+    <div class="fullscreen-overlay" id="addContactPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Add New Contact</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeAddContactPage()"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="newContactName" placeholder="Contact Name" type="text" />
+            <input id="newContactPhone" placeholder="Phone Number" type="tel" />
+            <input id="newContactEmail" placeholder="Email (Optional)" type="email" />
+            <button class="btn" onclick="saveNewContact()">Save Contact</button>
+        </div>
+    </div>
 
-    <section id="quizPage">
-        <button onclick="goBackToSubject()">Back to Subject</button>
-        <h3>Current Affairs Quiz</h3>
-        <form id="quizFormRadio">
-            <p>Q1. What is the slogan of Jigawa State?</p>
-            <label><input type="radio" name="q1" value="A" /> Center of commerce</label>
-            <label><input type="radio" name="q1" value="B" /> The new world</label>
-            <label><input type="radio" name="q1" value="C" /> The heart of Nigeria</label>
-            <label><input type="radio" name="q1" value="D" /> A beautiful world</label>
+    <div class="fullscreen-overlay" id="profilePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">My Profile</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('profilePage')"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="profile-info">
+                <p><strong>Name:</strong> <span id="profileName">Alkassim Suleiman</span></p>
+                <p><strong>Email:</strong> <span id="profileEmail">alkassim.suleiman@example.com</span></p>
+                <p><strong>Phone:</strong> <span id="profilePhone">N/A</span></p>
+                <p><strong>Member Since:</strong> <span id="profileMemberSince">N/A</span></p>
+            </div>
+            <button class="btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+    
+    <div class="fullscreen-overlay" id="rechargePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Recharge</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('rechargePage')"></i>
+        </div>
+        <div class="overlay-content"><h2>Feature Coming Soon!</h2></div>
+    </div>
 
-            <p>Q2. What is the current population of Nigeria?</p>
-            <label><input type="radio" name="q2" value="A" /> More than 5 Millions</label>
-            <label><input type="radio" name="q2" value="B" /> Atleast 15 Millions</label>
-            <label><input type="radio" name="q2" value="C" /> 2.5 Millions</label>
-            <label><input type="radio" name="q2" value="D" /> 3 Million Peoples</label>
+    <div class="fullscreen-overlay" id="referralPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Referral Program</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('referralPage')"></i>
+        </div>
+        <div class="overlay-content"><h2>Invite friends and earn credit! (Coming Soon)</h2></div>
+    </div>
 
-            <p>Q3. How many local governments are there in Jigawa state?</p>
-            <label><input type="radio" name="q3" value="A" /> 22</label>
-            <label><input type="radio" name="q3" value="B" /> 26</label>
-            <label><input type="radio" name="q3" value="C" /> 15</label>
-            <label><input type="radio" name="q3" value="D" /> 27</label>
+    <div class="call-screen" id="callScreen">
+        <div class="call-avatar"><i class="fas fa-user"></i></div>
+        <div class="call-name" id="callingContactName"></div>
+        <div class="call-status" id="callStatus">Dialing...</div>
+        <div class="call-timer" id="callTimer">00:00</div>
+        <div class="call-controls">
+            <button class="call-control-btn" id="muteBtn" onclick="toggleMute()"><i class="fas fa-microphone"></i></button>
+            <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()"><i class="fas fa-volume-up"></i></button>
+            <button class="call-control-btn" onclick="dialInput('keypad')"><i class="fas fa-th-large"></i></button>
+        </div>
+        <button class="end-call-btn" onclick="endCallSimulation()">End Call</button>
+    </div>
 
-            <p>Q4. Jigawa State capital is?</p>
-            <label><input type="radio" name="q4" value="A" /> Kiyawa</label>
-            <label><input type="radio" name="q4" value="B" /> Dutse</label>
-            <label><input type="radio" name="q4" value="C" /> Ringim</label>
-            <label><input type="radio" name="q4" value="D" /> Hadejia</label>
+    <div id="customAlertDialog">
+        <div class="custom-alert-content">
+            <p id="customAlertMessage"></p>
+            <button class="btn" onclick="hideCustomAlert()">OK</button>
+        </div>
+    </div>
 
-            <br><br>
-            <button type="button" onclick="submitQuiz()">Submit Answers</button>
-            <p id="quizResult" style="margin-top:1rem; font-weight:bold;"></p>
-        </form>
-    </section>
+<script>
+    // --- Global State & Config ---
+    let isRegistering = false;
+    let loggedInUser = {
+        firstName: 'Alkassim',
+        email: 'alkassim.suleiman@example.com',
+        phoneNumber: '+2348001234567', // Added more profile info
+        memberSince: 'July 2023'      // Added more profile info
+    };
+    const countryCodes = [
+        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+        { name: 'USA', code: '+1', flag: '🇺🇸' },
+        { name: 'UK', code: '+44', flag: '🇬🇧' }
+    ];
+    let callTimerInterval;
+    let callDuration = 0;
+    let contacts = [ // Initial contacts data
+        { name: 'John Doe', phone: '+1234567890', email: 'john.doe@example.com' },
+        { name: 'Jane Smith', phone: '+2347012345678', email: 'jane.smith@example.com' }
+    ];
 
-    <section id="mapContainer">
-        <button onclick="goBackToHome()">Back to Home</button>
-        <div id="map" style="width: 100%; height: 100%;"></div>
-    </section>
+    // --- Initial Setup ---
+    document.addEventListener('DOMContentLoaded', () => {
+        populateCountryCodes();
+        populateStaticData(); // This now mainly populates recent calls
+        renderContacts(); // Render initial contacts
+        toggleAuthFormView();
+    });
 
-    <script src="script.js"></script>
+    function populateCountryCodes() {
+        const selects = document.querySelectorAll('#authCountryCode, #dialPadCountryCode');
+        selects.forEach(select => {
+            select.innerHTML = '<option disabled selected>Select Country</option>';
+            countryCodes.forEach(c => {
+                select.innerHTML += `<option value="${c.code}">${c.flag} ${c.name} (${c.code})</option>`;
+            });
+        });
+    }
+    
+    function populateStaticData() {
+        document.getElementById('recentCallsList').innerHTML = `
+            <div class="history-item">
+                <div class="call-info"><div>+233 548 123 456</div><div class="call-time">2 mins ago</div></div>
+                <button class="call-again-btn" onclick="simulateCallBack('+233548123456')">Call Again</button>
+            </div>
+            <div class="history-item">
+                <div class="call-info"><div>+234 803 987 654</div><div class="call-time">Today</div></div>
+                <button class="call-again-btn" onclick="simulateCallBack('+234803987654')">Call Again</button>
+            </div>`;
+    }
+
+    function renderContacts() {
+        const contactsListDiv = document.getElementById('contactsList');
+        contactsListDiv.innerHTML = ''; // Clear existing list
+        if (contacts.length === 0) {
+            contactsListDiv.innerHTML = '<p>No contacts yet. Add a new one!</p>';
+            return;
+        }
+        contacts.forEach(contact => {
+            const contactItem = document.createElement('div');
+            contactItem.className = 'contact-item';
+            contactItem.innerHTML = `
+                <div class="contact-avatar">${contact.name.charAt(0).toUpperCase()}${contact.name.split(' ')[1] ? contact.name.split(' ')[1].charAt(0).toUpperCase() : ''}</div>
+                <div class="contact-info">
+                    <div class="contact-name">${contact.name}</div>
+                    <div class="contact-phone">${contact.phone}</div>
+                </div>
+                <button class="call-again-btn" onclick="startCallSimulation('${contact.phone}', '${contact.name}')">Call</button>
+            `;
+            contactsListDiv.appendChild(contactItem);
+        });
+    }
+
+    // --- Page & Overlay Navigation ---
+    function showPage(pageId) {
+        document.querySelectorAll('.container').forEach(p => p.classList.add('hidden'));
+        document.getElementById(pageId).classList.remove('hidden');
+    }
+
+    function openOverlay(overlayId) { document.getElementById(overlayId).classList.add('active'); }
+    function closeOverlay(overlayId) { document.getElementById(overlayId).classList.remove('active'); }
+    function goToAuth() { showPage('authPage'); }
+    function goToHome() {
+        showPage('homePage');
+        document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
+        document.getElementById('profileName').textContent = loggedInUser.firstName;
+        document.getElementById('profileEmail').textContent = loggedInUser.email;
+        document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber; // Populate new profile info
+        document.getElementById('profileMemberSince').textContent = loggedInUser.memberSince; // Populate new profile info
+    }
+    function logout() {
+        showCustomAlert("Logging out...");
+        setTimeout(() => {
+            showPage('welcomePage');
+            isRegistering = false;
+            toggleAuthFormView();
+        }, 1500);
+    }
+
+    // --- Authentication ---
+    function toggleForm() {
+        isRegistering = !isRegistering;
+        toggleAuthFormView();
+    }
+    function toggleAuthFormView() {
+        document.getElementById('authMessage').textContent = '';
+        document.getElementById('formTitle').innerText = isRegistering ? "Register" : "Login";
+        document.getElementById('authSubmitBtn').innerText = isRegistering ? "Register" : "Login";
+        document.getElementById("firstName").classList.toggle("hidden", !isRegistering);
+        document.getElementById("phoneRegSection").classList.toggle("hidden", !isRegistering);
+        document.getElementById("authIdentifierLogin").classList.toggle("hidden", isRegistering);
+    }
+    function handleAuthSubmit() {
+        // Basic validation
+        if (isRegistering) {
+            const firstName = document.getElementById("firstName").value;
+            const phoneNumber = document.getElementById("authPhoneNumber").value;
+            const countryCode = document.getElementById("authCountryCode").value;
+            if (!firstName || !phoneNumber || countryCode === "Select Country") {
+                document.getElementById('authMessage').textContent = "Please fill all registration fields.";
+                return;
+            }
+            loggedInUser.firstName = firstName;
+            loggedInUser.phoneNumber = countryCode + phoneNumber;
+            loggedInUser.email = 'registered@example.com'; // Placeholder for registration
+            loggedInUser.memberSince = new Date().toLocaleDateString();
+
+        } else {
+            const identifier = document.getElementById("authIdentifierLogin").value;
+            if (!identifier || !document.getElementById("authPassword").value) {
+                document.getElementById('authMessage').textContent = "Please enter login credentials.";
+                return;
+            }
+            // In a real app, you'd verify credentials here
+            // For this demo, just simulate login
+            loggedInUser.firstName = "Demo"; // Can be changed based on identifier
+            loggedInUser.email = identifier.includes('@') ? identifier : 'demo@example.com';
+            loggedInUser.phoneNumber = identifier.includes('+') ? identifier : '+2348012345678';
+            loggedInUser.memberSince = 'July 2023';
+        }
+        showCustomAlert(isRegistering ? "Registration successful!" : "Login successful!");
+        setTimeout(() => {
+            hideCustomAlert();
+            goToHome();
+        }, 1000);
+    }
+
+    // --- Dial Pad & Calling ---
+    function dialInput(char) {
+        const display = document.getElementById('dialPadDisplay');
+        if (char === 'backspace') {
+            display.value = display.value.slice(0, -1);
+        } else if (char === 'keypad') {
+            // Placeholder for opening keypad during a call
+            showCustomAlert("Keypad functionality during call not implemented yet.");
+        }
+        else {
+            display.value += char;
+        }
+    }
+    function startCallFromDialpad() {
+        const number = document.getElementById('dialPadDisplay').value;
+        if (!number) return showCustomAlert("Please enter a number.");
+        const selectedCountryCode = document.getElementById('dialPadCountryCode').value;
+        if (selectedCountryCode === "Select Country") {
+            showCustomAlert("Please select a country code.");
+            return;
+        }
+        const fullNumber = selectedCountryCode + number;
+        closeOverlay('dialPadPage');
+        setTimeout(() => startCallSimulation(fullNumber, fullNumber), 300); // Pass number as name initially
+    }
+
+    function startCallSimulation(number, name = 'Unknown Number') {
+        document.getElementById("callingContactName").textContent = name;
+        document.getElementById("callStatus").textContent = "Dialing...";
+        document.getElementById("callTimer").textContent = "00:00";
+        document.getElementById("callScreen").classList.add("active");
+        callDuration = 0;
+
+        // Simulate ringing and then connecting
+        setTimeout(() => {
+            document.getElementById("callStatus").textContent = "Ringing...";
+        }, 2000); // Ringing after 2 seconds
+
+        setTimeout(() => {
+            document.getElementById("callStatus").textContent = "Connected";
+            callTimerInterval = setInterval(() => {
+                callDuration++;
+                const minutes = String(Math.floor(callDuration / 60)).padStart(2, '0');
+                const seconds = String(callDuration % 60).padStart(2, '0');
+                document.getElementById("callTimer").textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }, 5000); // Connected after 5 seconds
+    }
+
+    function endCallSimulation() {
+        clearInterval(callTimerInterval);
+        document.getElementById("callScreen").classList.remove("active");
+        document.getElementById("muteBtn").classList.remove("active");
+        document.getElementById("speakerBtn").classList.remove("active");
+        showCustomAlert("Call Ended.");
+    }
+    function simulateCallBack(number) {
+        openOverlay('dialPadPage');
+        document.getElementById('dialPadDisplay').value = number;
+        // Optionally pre-select country code if number starts with one of the known codes
+        const matchingCountry = countryCodes.find(c => number.startsWith(c.code));
+        if (matchingCountry) {
+            document.getElementById('dialPadCountryCode').value = matchingCountry.code;
+            document.getElementById('dialPadDisplay').value = number.substring(matchingCountry.code.length);
+        }
+    }
+
+    function toggleMute() {
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.classList.toggle('active');
+        muteBtn.querySelector('i').className = muteBtn.classList.contains('active') ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+        showCustomAlert(muteBtn.classList.contains('active') ? "Muted" : "Unmuted");
+    }
+
+    function toggleSpeaker() {
+        const speakerBtn = document.getElementById('speakerBtn');
+        speakerBtn.classList.toggle('active');
+        speakerBtn.querySelector('i').className = speakerBtn.classList.contains('active') ? 'fas fa-volume-off' : 'fas fa-volume-up';
+        showCustomAlert(speakerBtn.classList.contains('active') ? "Speaker Off" : "Speaker On");
+    }
+
+    // --- Contacts Management ---
+    function openAddContactPage() {
+        document.getElementById('newContactName').value = '';
+        document.getElementById('newContactPhone').value = '';
+        document.getElementById('newContactEmail').value = '';
+        openOverlay('addContactPage');
+    }
+
+    function closeAddContactPage() {
+        closeOverlay('addContactPage');
+    }
+
+    function saveNewContact() {
+        const name = document.getElementById('newContactName').value.trim();
+        const phone = document.getElementById('newContactPhone').value.trim();
+        const email = document.getElementById('newContactEmail').value.trim();
+
+        if (!name || !phone) {
+            showCustomAlert("Contact Name and Phone Number are required.");
+            return;
+        }
+
+        const newContact = { name, phone, email };
+        contacts.push(newContact);
+        renderContacts(); // Re-render the contacts list with the new contact
+        closeAddContactPage();
+        showCustomAlert("Contact added successfully!");
+    }
+
+    // --- Custom Alert ---
+    function showCustomAlert(message) {
+        document.getElementById("customAlertMessage").textContent = message;
+        document.getElementById("customAlertDialog").classList.add("active");
+    }
+    function hideCustomAlert() {
+        document.getElementById("customAlertDialog").classList.remove("active");
+    }
+</script>
 </body>
-
 </html>

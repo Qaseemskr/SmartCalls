@@ -176,7 +176,7 @@
         }
         .fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
         .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .overlay-title { font-size: 1.8rem; color: #ffeaa7; }
+        .overlay-title { font-size: 1.8rem; color: #ffeaa }
         .close-overlay-btn { font-size: 1.8rem; color: #fff; cursor: pointer; }
         .overlay-content { flex-grow: 1; overflow-y: auto; }
         .overlay-content::-webkit-scrollbar { display: none; }
@@ -274,7 +274,7 @@
     <div class="container hidden" id="authPage">
         <h2 id="formTitle">Login to NaijaCall</h2>
         <input id="authIdentifierLogin" placeholder="Email or Phone Number" type="text" />
-        <input class="hidden" id="firstName" placeholder="First Name" type="text" />
+        <input class="hidden" id="firstName" placeholder="Full Name" type="text" />
         <div class="hidden" id="phoneRegSection">
             <select id="authCountryCode"></select>
             <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
@@ -287,13 +287,14 @@
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
-            <h2>Welcome Back! <br>
-   <span id="welcomeUserName"><i>User</span>!</i></h2>
-            <div class="wallet-balance">Wallet Balance: ₦1,200.00</div>
+            <h2>Welcome Back! <br>
+   <span id="welcomeUserName"><strong>User</strong></span></h2>
+            <div class="wallet-balance">Your Wallet Balance: <strong>₦1,200.00</strong><br>
+                <span style="font-size: 12px;"><i>(Approx. 53 Minutes 45 Sec.)</i></span></div>
         </div>
 
         <div class="main-call-button-container">
-            <h3 class="hausa-tagline">Yi kira cikin sauƙi da aminci</h3><br>
+            <h3 class="hausa-tagline">Yi kira cikin sauƙi da aminci!</h3><br><br>
             <div class="make-call-circle" onclick="openOverlay('dialPadPage')">
                 <i class="fas fa-phone"></i>
                 <span class="button-label">Make a Call</span>
@@ -439,16 +440,85 @@
         memberSince: 'July 2023'      // Added more profile info
     };
     const countryCodes = [
-        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
-        { name: 'USA', code: '+1', flag: '🇺🇸' },
-        { name: 'UK', code: '+44', flag: '🇬🇧' }
+{ name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+            { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+             { name: 'Algeria', code: '+213', flag: '🇩🇿' },
+            { name: 'Angola', code: '+244', flag: '🇦🇴' },
+            { name: 'Benin', code: '+229', flag: '🇧🇯' },
+            { name: 'Botswana', code: '+267', flag: '🇧🇼' },
+            { name: 'Burkina Faso', code: '+226', flag: '🇧🇫' },
+            { name: 'Burundi', code: '+257', flag: '🇧🇮' },
+            { name: 'Cabo Verde', code: '+238', flag: '🇨🇻' },
+            { name: 'Cameroon', code: '+237', flag: '🇨🇲' },
+            { name: 'Central African Republic', code: '+236', flag: '🇨🇫' },
+            { name: 'Chad', code: '+235', flag: '🇹🇩' },
+            { name: 'Comoros', code: '+269', flag: '🇰🇲' },
+            { name: 'Congo, Dem. Rep.', code: '+243', flag: '🇨🇩' },
+            { name: 'Congo, Rep.', code: '+242', flag: '🇨🇬' },
+            { name: 'Côte d\'Ivoire', code: '+225', flag: '🇨🇮' },
+            { name: 'Djibouti', code: '+253', flag: '🇩🇯' },
+            { name: 'Egypt', code: '+20', flag: '🇪🇬' },
+            { name: 'Equatorial Guinea', code: '+240', flag: '🇬🇶' },
+            { name: 'Eritrea', code: '+291', flag: '🇪🇷' },
+            { name: 'Eswatini', code: '+268', flag: '🇸🇿' },
+            { name: 'Ethiopia', code: '+251', flag: '🇪🇹' },
+            { name: 'Gabon', code: '+241', flag: '🇬🇦' },
+            { name: 'Gambia', code: '+220', flag: '🇬🇲' },
+            { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+            { name: 'Guinea', code: '+224', flag: '🇬🇳' },
+            { name: 'Guinea-Bissau', code: '+245', flag: '🇬🇼' },
+            { name: 'Kenya', code: '+254', flag: '🇰🇪' },
+            { name: 'Lesotho', code: '+266', flag: '🇱🇸' },
+            { name: 'Liberia', code: '+231', flag: '🇱🇷' },
+            { name: 'Libya', code: '+218', flag: '🇱🇾' },
+            { name: 'Madagascar', code: '+261', flag: '🇲🇬' },
+            { name: 'Malawi', code: '+265', flag: '🇲🇼' },
+            { name: 'Mali', code: '+223', flag: '🇲🇱' },
+            { name: 'Mauritania', code: '+222', flag: '🇲🇷' },
+            { name: 'Mauritius', code: '+230', flag: '🇲🇺' },
+            { name: 'Morocco', code: '+212', flag: '🇲🇦' },
+            { name: 'Mozambique', code: '+258', flag: '🇲🇿' },
+            { name: 'Namibia', code: '+264', flag: '🇳🇦' },
+            { name: 'Niger', code: '+227', flag: '🇳🇪' },
+            { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+            { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
+            { name: 'São Tomé and Príncipe', code: '+239', flag: '🇸🇹' },
+            { name: 'Senegal', code: '+221', flag: '�🇳' },
+            { name: 'Seychelles', code: '+248', flag: '🇸🇨' },
+            { name: 'Sierra Leone', code: '+232', flag: '🇸🇱' },
+            { name: 'Somalia', code: '+252', flag: '🇸🇴' },
+            { name: 'South Africa', code: '+27', flag: '🇿🇦' },
+            { name: 'South Sudan', code: '+211', flag: '🇸🇸' },
+            { name: 'Sudan', code: '+249', flag: '🇸🇩' },
+            { name: 'Tanzania', code: '+255', flag: '🇹🇿' },
+            { name: 'Togo', code: '+228', flag: '🇹🇬' },
+            { name: 'Tunisia', code: '+216', flag: '🇹🇳' },
+            { name: 'Uganda', code: '+256', flag: '🇺🇬' },
+            { name: 'Zambia', code: '+260', flag: '🇿🇲' },
+            { name: 'Zimbabwe', code: '+263', flag: '🇿🇼' },
+            // Non-African countries from previous list, kept for completeness
+            { name: 'USA', code: '+1', flag: '🇺🇸' },
+            { name: 'UK', code: '+44', flag: '🇬🇧' },
+            { name: 'Canada', code: '+1', flag: '🇨🇦' },
+            { name: 'Australia', code: '+61', flag: '🇦🇺' },
+            { name: 'Germany', code: '+49', flag: '🇩🇪' },
+            { name: 'France', code: '+33', flag: '🇫🇷' },
+            { name: 'Japan', code: '+81', flag: '🇯🇵' },
+            { name: 'China', code: '+86', flag: '🇨🇳' },
+            { name: 'India', code: '+91', flag: '🇮🇳' },
+            { name: 'Brazil', code: '+55', flag: '🇧🇷' },
+            { name: 'Mexico', code: '+52', flag: '🇲🇽' },
+            { name: 'Spain', code: '+34', flag: '🇪🇸' },
+            { name: 'Italy', code: '+39', flag: '🇮🇹' },
+            { name: 'Netherlands', code: '+31', flag: '🇳🇱' },
+            { name: 'Sweden', code: '+46', flag: '🇸🇪' }
+
     ];
     let callTimerInterval;
     let callDuration = 0;
     let contacts = [ // Initial contacts data
-        { name: 'John Doe', phone: '+1234567890', email: 'john.doe@example.com' },
-        { name: 'Jane Smith', phone: '+2347012345678', email: 'jane.smith@example.com' }
+        { name: 'Ibrahim Adamu', phone: '+233535964511', email: 'ferendee@gmail.com' },
+        { name: 'Alkassim Suleiman', phone: '+2348035147421', email: 'alkassimsulaiman6@gmail.com' }
     ];
 
     // --- Initial Setup ---
@@ -472,12 +542,12 @@
     function populateStaticData() {
         document.getElementById('recentCallsList').innerHTML = `
             <div class="history-item">
-                <div class="call-info"><div>+233 548 123 456</div><div class="call-time">2 mins ago</div></div>
-                <button class="call-again-btn" onclick="simulateCallBack('+233548123456')">Call Again</button>
+                <div class="call-info"><div>Ibrahim Adamu<br> +233 5359 64511</div><div class="call-time">Just now</div></div>
+                <button class="call-again-btn" onclick="simulateCallBack('+233535964511')">Call Again</button>
             </div>
             <div class="history-item">
-                <div class="call-info"><div>+234 803 987 654</div><div class="call-time">Today</div></div>
-                <button class="call-again-btn" onclick="simulateCallBack('+234803987654')">Call Again</button>
+                <div class="call-info"><div>Alkassim Suleiman<br>+234 803 514 7421</div><div class="call-time">Today</div></div>
+                <button class="call-again-btn" onclick="simulateCallBack('+2348035147421')">Call Again</button>
             </div>`;
     }
 

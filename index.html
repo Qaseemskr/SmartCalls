@@ -37,7 +37,7 @@
             background-size: cover;
             background-color: rgba(10, 10, 30, 0.9); /* Adjust opacity for background image visibility */
             padding: 20px;
-            border-radius: 25px; to
+            border-radius: 25px;
             box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
             width: 100%;
             height: 100%;
@@ -176,7 +176,7 @@
         }
         .fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
         .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .overlay-title { font-size: 1.8rem; color: #ffeaa }
+        .overlay-title { font-size: 1.8rem; color: #ffeaa7; }
         .close-overlay-btn { font-size: 1.8rem; color: #fff; cursor: pointer; }
         .overlay-content { flex-grow: 1; overflow-y: auto; }
         .overlay-content::-webkit-scrollbar { display: none; }
@@ -203,6 +203,21 @@
             color: white; font-size: 2.5rem; border: none; cursor: pointer;
             box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
         }
+        .dialpad-bottom-actions {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .dialpad-bottom-actions .btn {
+            width: 48%; /* Adjust width for two buttons */
+            margin-top: 0;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 25px;
+        }
+
 
         /* --- Other Pages Styles (Contacts, Profile, etc.) --- */
         .contact-item {
@@ -248,18 +263,54 @@
         .end-call-btn { background-color: #e74c3c; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; border: none; cursor: pointer; }
 
         /* Custom Alert Dialog */
-        #customAlertDialog {
+        #customAlertDialog, #customConfirmDialog {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
             z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease;
         }
-        #customAlertDialog.active { opacity: 1; visibility: visible; }
-        .custom-alert-content {
+        #customAlertDialog.active, #customConfirmDialog.active { opacity: 1; visibility: visible; }
+        .custom-alert-content, .custom-confirm-content {
             background: rgba(30, 30, 50, 0.95); padding: 30px; border-radius: 15px;
             box-shadow: 0 0 30px rgba(0,0,0,0.5); color: #fff; text-align: center;
             width: 80%; max-width: 400px;
         }
-        #customAlertMessage { margin-bottom: 20px; font-size: 1.1rem; }
+        #customAlertMessage, #customConfirmMessage { margin-bottom: 20px; font-size: 1.1rem; }
+        .custom-confirm-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .custom-confirm-buttons .btn {
+            width: 48%;
+            margin-top: 0;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 25px;
+        }
+        .custom-confirm-buttons .btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .custom-confirm-buttons .btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Search input for contacts */
+        .search-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .search-input-container input {
+            padding-right: 40px; /* Make space for the icon */
+        }
+        .search-input-container .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            pointer-events: none; /* Allow clicks to pass through to the input */
+        }
     </style>
 </head>
 
@@ -280,6 +331,13 @@
             <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
         </div>
         <input id="authPassword" placeholder="Password" type="password" />
+        
+        <!-- OTP Section -->
+        <div id="otpSection" class="hidden">
+            <input id="otpInput" placeholder="Enter OTP" type="text" maxlength="4" />
+            <p id="otpMessage" style="color: #ccc; margin-top: 10px;"></p>
+        </div>
+
         <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">Login</button>
         <p>Don't have an account? <a onclick="toggleForm()">Register</a></p>
         <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
@@ -287,7 +345,7 @@
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
-            <h2>Welcome Back! <br>
+            <h2>Welcome Back!   <br>
    <span id="welcomeUserName"><strong>User</strong></span></h2>
             <div class="wallet-balance">Your Wallet Balance: <strong>₦1,200.00</strong><br>
                 <span style="font-size: 12px;"><i>(Approx. 53 Minutes 45 Sec.)</i></span></div>
@@ -351,6 +409,10 @@
             <div class="dialpad-actions">
                 <button class="dialpad-call-btn" onclick="startCallFromDialpad()"><i class="fas fa-phone"></i></button>
             </div>
+            <div class="dialpad-bottom-actions">
+                <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
+                <button class="btn cancel" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
+            </div>
         </div>
     </div>
     
@@ -360,6 +422,10 @@
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('contactsPage')"></i>
         </div>
         <div class="overlay-content">
+            <div class="search-input-container">
+                <input type="text" id="contactSearchInput" placeholder="Search contacts..." onkeyup="searchContacts()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openAddContactPage()"><i class="fas fa-plus"></i> Add New Contact</button>
             <div id="contactsList"></div>
         </div>
@@ -390,7 +456,7 @@
                 <p><strong>Phone:</strong> <span id="profilePhone">N/A</span></p>
                 <p><strong>Member Since:</strong> <span id="profileMemberSince">N/A</span></p>
             </div>
-            <button class="btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button class="btn" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
     
@@ -430,101 +496,119 @@
         </div>
     </div>
 
+    <!-- Custom Confirmation Dialog -->
+    <div id="customConfirmDialog">
+        <div class="custom-confirm-content">
+            <p id="customConfirmMessage"></p>
+            <div class="custom-confirm-buttons">
+                <button class="btn cancel" id="confirmCancelBtn">Cancel</button>
+                <button class="btn" id="confirmOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // --- Global State & Config ---
     let isRegistering = false;
+    let isOtpSent = false;
+    let correctOtp = '';
+    let otpResendTimer = 0;
+    let otpTimerInterval;
+
     let loggedInUser = {
         firstName: 'Alkassim',
         email: 'alkassim.suleiman@example.com',
-        phoneNumber: '+2348001234567', // Added more profile info
-        memberSince: 'July 2023'      // Added more profile info
+        phoneNumber: '+2348001234567',
+        memberSince: 'July 2023'
     };
     const countryCodes = [
-{ name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-            { name: 'Ghana', code: '+233', flag: '🇬🇭' },
-             { name: 'Algeria', code: '+213', flag: '🇩🇿' },
-            { name: 'Angola', code: '+244', flag: '🇦🇴' },
-            { name: 'Benin', code: '+229', flag: '🇧🇯' },
-            { name: 'Botswana', code: '+267', flag: '🇧🇼' },
-            { name: 'Burkina Faso', code: '+226', flag: '🇧🇫' },
-            { name: 'Burundi', code: '+257', flag: '🇧🇮' },
-            { name: 'Cabo Verde', code: '+238', flag: '🇨🇻' },
-            { name: 'Cameroon', code: '+237', flag: '🇨🇲' },
-            { name: 'Central African Republic', code: '+236', flag: '🇨🇫' },
-            { name: 'Chad', code: '+235', flag: '🇹🇩' },
-            { name: 'Comoros', code: '+269', flag: '🇰🇲' },
-            { name: 'Congo, Dem. Rep.', code: '+243', flag: '🇨🇩' },
-            { name: 'Congo, Rep.', code: '+242', flag: '🇨🇬' },
-            { name: 'Côte d\'Ivoire', code: '+225', flag: '🇨🇮' },
-            { name: 'Djibouti', code: '+253', flag: '🇩🇯' },
-            { name: 'Egypt', code: '+20', flag: '🇪🇬' },
-            { name: 'Equatorial Guinea', code: '+240', flag: '🇬🇶' },
-            { name: 'Eritrea', code: '+291', flag: '🇪🇷' },
-            { name: 'Eswatini', code: '+268', flag: '🇸🇿' },
-            { name: 'Ethiopia', code: '+251', flag: '🇪🇹' },
-            { name: 'Gabon', code: '+241', flag: '🇬🇦' },
-            { name: 'Gambia', code: '+220', flag: '🇬🇲' },
-            { name: 'Ghana', code: '+233', flag: '🇬🇭' },
-            { name: 'Guinea', code: '+224', flag: '🇬🇳' },
-            { name: 'Guinea-Bissau', code: '+245', flag: '🇬🇼' },
-            { name: 'Kenya', code: '+254', flag: '🇰🇪' },
-            { name: 'Lesotho', code: '+266', flag: '🇱🇸' },
-            { name: 'Liberia', code: '+231', flag: '🇱🇷' },
-            { name: 'Libya', code: '+218', flag: '🇱🇾' },
-            { name: 'Madagascar', code: '+261', flag: '🇲🇬' },
-            { name: 'Malawi', code: '+265', flag: '🇲🇼' },
-            { name: 'Mali', code: '+223', flag: '🇲🇱' },
-            { name: 'Mauritania', code: '+222', flag: '🇲🇷' },
-            { name: 'Mauritius', code: '+230', flag: '🇲🇺' },
-            { name: 'Morocco', code: '+212', flag: '🇲🇦' },
-            { name: 'Mozambique', code: '+258', flag: '🇲🇿' },
-            { name: 'Namibia', code: '+264', flag: '🇳🇦' },
-            { name: 'Niger', code: '+227', flag: '🇳🇪' },
-            { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-            { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
-            { name: 'São Tomé and Príncipe', code: '+239', flag: '🇸🇹' },
-            { name: 'Senegal', code: '+221', flag: '�🇳' },
-            { name: 'Seychelles', code: '+248', flag: '🇸🇨' },
-            { name: 'Sierra Leone', code: '+232', flag: '🇸🇱' },
-            { name: 'Somalia', code: '+252', flag: '🇸🇴' },
-            { name: 'South Africa', code: '+27', flag: '🇿🇦' },
-            { name: 'South Sudan', code: '+211', flag: '🇸🇸' },
-            { name: 'Sudan', code: '+249', flag: '🇸🇩' },
-            { name: 'Tanzania', code: '+255', flag: '🇹🇿' },
-            { name: 'Togo', code: '+228', flag: '🇹🇬' },
-            { name: 'Tunisia', code: '+216', flag: '🇹🇳' },
-            { name: 'Uganda', code: '+256', flag: '🇺🇬' },
-            { name: 'Zambia', code: '+260', flag: '🇿🇲' },
-            { name: 'Zimbabwe', code: '+263', flag: '🇿🇼' },
-            // Non-African countries from previous list, kept for completeness
-            { name: 'USA', code: '+1', flag: '🇺🇸' },
-            { name: 'UK', code: '+44', flag: '🇬🇧' },
-            { name: 'Canada', code: '+1', flag: '🇨🇦' },
-            { name: 'Australia', code: '+61', flag: '🇦🇺' },
-            { name: 'Germany', code: '+49', flag: '🇩🇪' },
-            { name: 'France', code: '+33', flag: '🇫🇷' },
-            { name: 'Japan', code: '+81', flag: '🇯🇵' },
-            { name: 'China', code: '+86', flag: '🇨🇳' },
-            { name: 'India', code: '+91', flag: '🇮🇳' },
-            { name: 'Brazil', code: '+55', flag: '🇧🇷' },
-            { name: 'Mexico', code: '+52', flag: '🇲🇽' },
-            { name: 'Spain', code: '+34', flag: '🇪🇸' },
-            { name: 'Italy', code: '+39', flag: '🇮🇹' },
-            { name: 'Netherlands', code: '+31', flag: '🇳🇱' },
-            { name: 'Sweden', code: '+46', flag: '🇸🇪' }
-
+        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+        { name: 'Algeria', code: '+213', flag: '🇩🇿' },
+        { name: 'Angola', code: '+244', flag: '🇦🇴' },
+        { name: 'Benin', code: '+229', flag: '🇧🇯' },
+        { name: 'Botswana', code: '+267', flag: '🇧🇼' },
+        { name: 'Burkina Faso', code: '+226', flag: '🇧🇫' },
+        { name: 'Burundi', code: '+257', flag: '🇧🇮' },
+        { name: 'Cabo Verde', code: '+238', flag: '🇨🇻' },
+        { name: 'Cameroon', code: '+237', flag: '🇨🇲' },
+        { name: 'Central African Republic', code: '+236', flag: '🇨🇫' },
+        { name: 'Chad', code: '+235', flag: '🇹🇩' },
+        { name: 'Comoros', code: '+269', flag: '🇰🇲' },
+        { name: 'Congo, Dem. Rep.', code: '+243', flag: '🇨🇩' },
+        { name: 'Congo, Rep.', code: '+242', flag: '🇨🇬' },
+        { name: 'Côte d\'Ivoire', code: '+225', flag: '🇨🇮' },
+        { name: 'Djibouti', code: '+253', flag: '🇩🇯' },
+        { name: 'Egypt', code: '+20', flag: '🇪🇬' },
+        { name: 'Equatorial Guinea', code: '+240', flag: '🇬🇶' },
+        { name: 'Eritrea', code: '+291', flag: '🇪🇷' },
+        { name: 'Eswatini', code: '+268', flag: '🇸🇿' },
+        { name: 'Ethiopia', code: '+251', flag: '🇪🇹' },
+        { name: 'Gabon', code: '+241', flag: '🇬🇦' },
+        { name: 'Gambia', code: '+220', flag: '🇬🇲' },
+        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+        { name: 'Guinea', code: '+224', flag: '🇬🇳' },
+        { name: 'Guinea-Bissau', code: '+245', flag: '🇬🇼' },
+        { name: 'Kenya', code: '+254', flag: '🇰🇪' },
+        { name: 'Lesotho', code: '+266', flag: '🇱🇸' },
+        { name: 'Liberia', code: '+231', flag: '🇱🇷' },
+        { name: 'Libya', code: '+218', flag: '🇱🇾' },
+        { name: 'Madagascar', code: '+261', flag: '🇲🇬' },
+        { name: 'Malawi', code: '+265', flag: '🇲🇼' },
+        { name: 'Mali', code: '+223', flag: '🇲🇱' },
+        { name: 'Mauritania', code: '+222', flag: '🇲🇷' },
+        { name: 'Mauritius', code: '+230', flag: '🇲🇺' },
+        { name: 'Morocco', code: '+212', flag: '🇲🇦' },
+        { name: 'Mozambique', code: '+258', flag: '🇲🇿' },
+        { name: 'Namibia', code: '+264', flag: '🇳🇦' },
+        { name: 'Niger', code: '+227', flag: '🇳🇪' },
+        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+        { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
+        { name: 'São Tomé and Príncipe', code: '+239', flag: '🇸🇹' },
+        { name: 'Senegal', code: '+221', flag: '🇸🇳' },
+        { name: 'Seychelles', code: '+248', flag: '🇸🇨' },
+        { name: 'Sierra Leone', code: '+232', flag: '🇸🇱' },
+        { name: 'Somalia', code: '+252', flag: '🇸🇴' },
+        { name: 'South Africa', code: '+27', flag: '🇿🇦' },
+        { name: 'South Sudan', code: '+211', flag: '🇸🇸' },
+        { name: 'Sudan', code: '+249', flag: '🇸🇩' },
+        { name: 'Tanzania', code: '+255', flag: '🇹🇿' },
+        { name: 'Togo', code: '+228', flag: '🇹🇬' },
+        { name: 'Tunisia', code: '+216', flag: '🇹🇳' },
+        { name: 'Uganda', code: '+256', flag: '🇺🇬' },
+        { name: 'Zambia', code: '+260', flag: '🇿🇲' },
+        { name: 'Zimbabwe', 'code': '+263', flag: '🇿🇼' },
+        // Non-African countries from previous list, kept for completeness
+        { name: 'USA', code: '+1', flag: '🇺🇸' },
+        { name: 'UK', code: '+44', flag: '🇬🇧' },
+        { name: 'Canada', code: '+1', flag: '🇨🇦' },
+        { name: 'Australia', code: '+61', flag: '🇦🇺' },
+        { name: 'Germany', code: '+49', flag: '🇩🇪' },
+        { name: 'France', code: '+33', flag: '🇫🇷' },
+        { name: 'Japan', code: '+81', flag: '🇯🇵' },
+        { name: 'China', code: '+86', flag: '🇨🇳' },
+        { name: 'India', code: '+91', flag: '🇮🇳' },
+        { name: 'Brazil', code: '+55', flag: '🇧🇷' },
+        { name: 'Mexico', code: '+52', flag: '🇲🇽' },
+        { name: 'Spain', code: '+34', flag: '🇪🇸' },
+        { name: 'Italy', code: '+39', flag: '🇮🇹' },
+        { name: 'Netherlands', code: '+31', flag: '🇳🇱' },
+        { name: 'Sweden', code: '+46', flag: '🇸🇪' }
     ];
     let callTimerInterval;
     let callDuration = 0;
     let contacts = [ // Initial contacts data
         { name: 'Ibrahim Adamu', phone: '+233535964511', email: 'ferendee@gmail.com' },
-        { name: 'Alkassim Suleiman', phone: '+2348035147421', email: 'alkassimsulaiman6@gmail.com' }
+        { name: 'Alkassim Suleiman', phone: '+2348035147421', email: 'alkassimsulaiman6@gmail.com' },
+        { name: 'Aisha Bello', phone: '+2347012345678', email: 'aisha.bello@example.com' },
+        { name: 'Musa Abubakar', phone: '+2349098765432', email: 'musa.a@example.com' }
     ];
+    let callHistory = []; // Array to store call history
 
     // --- Initial Setup ---
     document.addEventListener('DOMContentLoaded', () => {
         populateCountryCodes();
-        populateStaticData(); // This now mainly populates recent calls
+        renderRecentCalls(); // Render initial recent calls (now from callHistory)
         renderContacts(); // Render initial contacts
         toggleAuthFormView();
     });
@@ -539,26 +623,39 @@
         });
     }
     
-    function populateStaticData() {
-        document.getElementById('recentCallsList').innerHTML = `
-            <div class="history-item">
-                <div class="call-info"><div>Ibrahim Adamu<br> +233 5359 64511</div><div class="call-time">Just now</div></div>
-                <button class="call-again-btn" onclick="simulateCallBack('+233535964511')">Call Again</button>
-            </div>
-            <div class="history-item">
-                <div class="call-info"><div>Alkassim Suleiman<br>+234 803 514 7421</div><div class="call-time">Today</div></div>
-                <button class="call-again-btn" onclick="simulateCallBack('+2348035147421')">Call Again</button>
-            </div>`;
-    }
-
-    function renderContacts() {
-        const contactsListDiv = document.getElementById('contactsList');
-        contactsListDiv.innerHTML = ''; // Clear existing list
-        if (contacts.length === 0) {
-            contactsListDiv.innerHTML = '<p>No contacts yet. Add a new one!</p>';
+    // Function to render recent calls
+    function renderRecentCalls() {
+        const recentCallsListDiv = document.getElementById('recentCallsList');
+        recentCallsListDiv.innerHTML = ''; // Clear existing list
+        if (callHistory.length === 0) {
+            recentCallsListDiv.innerHTML = '<p>No recent calls yet.</p>';
             return;
         }
-        contacts.forEach(contact => {
+        // Display in reverse chronological order
+        callHistory.slice().reverse().forEach(call => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            const durationMinutes = String(Math.floor(call.duration / 60)).padStart(2, '0');
+            const durationSeconds = String(call.duration % 60).padStart(2, '0');
+            historyItem.innerHTML = `
+                <div class="call-info">
+                    <div>${call.name || call.number}<br> ${call.number}</div>
+                    <div class="call-time">${call.time} (${durationMinutes}:${durationSeconds})</div>
+                </div>
+                <button class="call-again-btn" onclick="simulateCallBack('${call.number}')">Call Again</button>
+            `;
+            recentCallsListDiv.appendChild(historyItem);
+        });
+    }
+
+    function renderContacts(filteredContacts = contacts) {
+        const contactsListDiv = document.getElementById('contactsList');
+        contactsListDiv.innerHTML = ''; // Clear existing list
+        if (filteredContacts.length === 0) {
+            contactsListDiv.innerHTML = '<p>No contacts found.</p>';
+            return;
+        }
+        filteredContacts.forEach(contact => {
             const contactItem = document.createElement('div');
             contactItem.className = 'contact-item';
             contactItem.innerHTML = `
@@ -571,6 +668,17 @@
             `;
             contactsListDiv.appendChild(contactItem);
         });
+    }
+
+    // Function to search contacts
+    function searchContacts() {
+        const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
+        const filteredContacts = contacts.filter(contact =>
+            contact.name.toLowerCase().includes(searchTerm) ||
+            contact.phone.toLowerCase().includes(searchTerm) ||
+            contact.email.toLowerCase().includes(searchTerm)
+        );
+        renderContacts(filteredContacts);
     }
 
     // --- Page & Overlay Navigation ---
@@ -587,64 +695,148 @@
         document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
         document.getElementById('profileName').textContent = loggedInUser.firstName;
         document.getElementById('profileEmail').textContent = loggedInUser.email;
-        document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber; // Populate new profile info
-        document.getElementById('profileMemberSince').textContent = loggedInUser.memberSince; // Populate new profile info
+        document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber;
+        document.getElementById('profileMemberSince').textContent = loggedInUser.memberSince;
+        renderRecentCalls(); // Ensure recent calls are updated when returning to home
     }
+    
+    function confirmLogout() {
+        showCustomConfirm("Are you sure you want to log out?", () => {
+            logout();
+        });
+    }
+
     function logout() {
         showCustomAlert("Logging out...");
         setTimeout(() => {
+            hideCustomAlert();
             showPage('welcomePage');
             isRegistering = false;
+            isOtpSent = false; // Reset OTP state on logout
+            clearInterval(otpTimerInterval); // Clear any active OTP timer
+            document.getElementById('otpInput').value = ''; // Clear OTP input
             toggleAuthFormView();
-        }, 1500);
+        }, 1000);
     }
 
     // --- Authentication ---
     function toggleForm() {
         isRegistering = !isRegistering;
+        isOtpSent = false; // Reset OTP state when toggling form
+        clearInterval(otpTimerInterval); // Clear any active OTP timer
+        document.getElementById('otpInput').value = ''; // Clear OTP input
         toggleAuthFormView();
     }
+
     function toggleAuthFormView() {
         document.getElementById('authMessage').textContent = '';
-        document.getElementById('formTitle').innerText = isRegistering ? "Register" : "Login";
-        document.getElementById('authSubmitBtn').innerText = isRegistering ? "Register" : "Login";
         document.getElementById("firstName").classList.toggle("hidden", !isRegistering);
         document.getElementById("phoneRegSection").classList.toggle("hidden", !isRegistering);
         document.getElementById("authIdentifierLogin").classList.toggle("hidden", isRegistering);
-    }
-    function handleAuthSubmit() {
-        // Basic validation
+        
+        // OTP specific visibility
+        document.getElementById("otpSection").classList.toggle("hidden", !isRegistering || !isOtpSent);
+        document.getElementById("authPassword").classList.toggle("hidden", isOtpSent && isRegistering); // Hide password after OTP is sent for registration
+
         if (isRegistering) {
-            const firstName = document.getElementById("firstName").value;
-            const phoneNumber = document.getElementById("authPhoneNumber").value;
+            if (!isOtpSent) {
+                document.getElementById('formTitle').innerText = "Register";
+                document.getElementById('authSubmitBtn').innerText = "Send OTP";
+            } else {
+                document.getElementById('formTitle').innerText = "Verify OTP";
+                document.getElementById('authSubmitBtn').innerText = "Verify OTP";
+            }
+        } else {
+            document.getElementById('formTitle').innerText = "Login to NaijaCall";
+            document.getElementById('authSubmitBtn').innerText = "Login";
+            document.getElementById("otpSection").classList.add("hidden"); // Ensure OTP section is hidden for login
+        }
+    }
+
+    function handleAuthSubmit() {
+        document.getElementById('authMessage').textContent = ''; // Clear previous messages
+
+        if (isRegistering) {
+            const firstName = document.getElementById("firstName").value.trim();
+            const phoneNumber = document.getElementById("authPhoneNumber").value.trim();
             const countryCode = document.getElementById("authCountryCode").value;
-            if (!firstName || !phoneNumber || countryCode === "Select Country") {
+            const password = document.getElementById("authPassword").value.trim();
+
+            if (!firstName || !phoneNumber || countryCode === "Select Country" || !password) {
                 document.getElementById('authMessage').textContent = "Please fill all registration fields.";
                 return;
             }
-            loggedInUser.firstName = firstName;
-            loggedInUser.phoneNumber = countryCode + phoneNumber;
-            loggedInUser.email = 'registered@example.com'; // Placeholder for registration
-            loggedInUser.memberSince = new Date().toLocaleDateString();
 
+            if (!isOtpSent) {
+                // First click on "Register" (now "Send OTP")
+                sendOtp(phoneNumber);
+            } else {
+                // Second click on "Verify OTP"
+                verifyOtp();
+            }
         } else {
-            const identifier = document.getElementById("authIdentifierLogin").value;
-            if (!identifier || !document.getElementById("authPassword").value) {
+            // Login logic
+            const identifier = document.getElementById("authIdentifierLogin").value.trim();
+            const password = document.getElementById("authPassword").value.trim();
+
+            if (!identifier || !password) {
                 document.getElementById('authMessage').textContent = "Please enter login credentials.";
                 return;
             }
-            // In a real app, you'd verify credentials here
-            // For this demo, just simulate login
-            loggedInUser.firstName = "Demo"; // Can be changed based on identifier
+            // Simulate login success
+            loggedInUser.firstName = "Demo";
             loggedInUser.email = identifier.includes('@') ? identifier : 'demo@example.com';
             loggedInUser.phoneNumber = identifier.includes('+') ? identifier : '+2348012345678';
             loggedInUser.memberSince = 'July 2023';
+            showCustomAlert("Login successful!", () => goToHome());
         }
-        showCustomAlert(isRegistering ? "Registration successful!" : "Login successful!");
-        setTimeout(() => {
-            hideCustomAlert();
-            goToHome();
-        }, 1000);
+    }
+
+    function sendOtp(phoneNumber) {
+        // Simulate OTP generation (4-digit number)
+        correctOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        isOtpSent = true;
+        toggleAuthFormView(); // Update UI to show OTP input
+
+        showCustomAlert(`OTP sent to ${phoneNumber}. Your OTP is: ${correctOtp}. (For demo purposes)`, () => {
+            // Start resend timer
+            otpResendTimer = 60; // 60 seconds
+            const otpMessageElement = document.getElementById('otpMessage');
+            otpMessageElement.textContent = `Resend OTP in ${otpResendTimer}s`;
+            clearInterval(otpTimerInterval); // Clear any previous timer
+            otpTimerInterval = setInterval(() => {
+                otpResendTimer--;
+                if (otpResendTimer <= 0) {
+                    clearInterval(otpTimerInterval);
+                    otpMessageElement.innerHTML = 'OTP expired. <a href="#" onclick="sendOtp(\'' + phoneNumber + '\')">Resend OTP</a>';
+                    isOtpSent = false; // Allow resend
+                    toggleAuthFormView(); // Revert button to "Send OTP"
+                } else {
+                    otpMessageElement.textContent = `Resend OTP in ${otpResendTimer}s`;
+                }
+            }, 1000);
+        });
+    }
+
+    function verifyOtp() {
+        const enteredOtp = document.getElementById('otpInput').value.trim();
+        if (enteredOtp === correctOtp) {
+            clearInterval(otpTimerInterval); // Stop timer on successful verification
+            // Simulate successful registration
+            loggedInUser.firstName = document.getElementById("firstName").value.trim();
+            loggedInUser.phoneNumber = document.getElementById("authCountryCode").value + document.getElementById("authPhoneNumber").value.trim();
+            loggedInUser.email = 'registered@example.com'; // Placeholder
+            loggedInUser.memberSince = new Date().toLocaleDateString();
+            
+            showCustomAlert("Registration successful!", () => {
+                isRegistering = false; // Exit registration mode
+                isOtpSent = false; // Reset OTP state
+                document.getElementById('otpInput').value = ''; // Clear OTP input
+                goToHome();
+            });
+        } else {
+            document.getElementById('authMessage').textContent = "Invalid OTP. Please try again.";
+        }
     }
 
     // --- Dial Pad & Calling ---
@@ -660,6 +852,11 @@
             display.value += char;
         }
     }
+
+    function clearDialPad() {
+        document.getElementById('dialPadDisplay').value = '';
+    }
+
     function startCallFromDialpad() {
         const number = document.getElementById('dialPadDisplay').value;
         if (!number) return showCustomAlert("Please enter a number.");
@@ -670,7 +867,33 @@
         }
         const fullNumber = selectedCountryCode + number;
         closeOverlay('dialPadPage');
-        setTimeout(() => startCallSimulation(fullNumber, fullNumber), 300); // Pass number as name initially
+        // Find contact name if available, otherwise use number
+        const contact = contacts.find(c => c.phone === fullNumber);
+        const nameToDisplay = contact ? contact.name : fullNumber;
+        setTimeout(() => startCallSimulation(fullNumber, nameToDisplay), 300);
+    }
+
+    // Function to open contacts from dialpad
+    function openContactsFromDialpad() {
+        closeOverlay('dialPadPage');
+        openOverlay('contactsPage');
+        // Pre-fill dialPadDisplay with selected contact's number when returning from contacts
+        document.getElementById('contactsList').onclick = function(event) {
+            const target = event.target.closest('.contact-item');
+            if (target) {
+                const phoneNumber = target.querySelector('.contact-phone').textContent;
+                const contactName = target.querySelector('.contact-name').textContent;
+                closeOverlay('contactsPage');
+                document.getElementById('dialPadDisplay').value = phoneNumber;
+                // Attempt to set country code
+                const matchingCountry = countryCodes.find(c => phoneNumber.startsWith(c.code));
+                if (matchingCountry) {
+                    document.getElementById('dialPadCountryCode').value = matchingCountry.code;
+                    document.getElementById('dialPadDisplay').value = phoneNumber.substring(matchingCountry.code.length);
+                }
+                openOverlay('dialPadPage');
+            }
+        };
     }
 
     function startCallSimulation(number, name = 'Unknown Number') {
@@ -702,7 +925,18 @@
         document.getElementById("muteBtn").classList.remove("active");
         document.getElementById("speakerBtn").classList.remove("active");
         showCustomAlert("Call Ended.");
+
+        // Add call to history
+        const callInfo = {
+            name: document.getElementById("callingContactName").textContent,
+            number: document.getElementById("dialPadDisplay").value, // Use the number from dialpad
+            time: new Date().toLocaleString(),
+            duration: callDuration // Store call duration
+        };
+        callHistory.push(callInfo);
+        renderRecentCalls(); // Update the recent calls list
     }
+
     function simulateCallBack(number) {
         openOverlay('dialPadPage');
         document.getElementById('dialPadDisplay').value = number;
@@ -757,13 +991,41 @@
         showCustomAlert("Contact added successfully!");
     }
 
-    // --- Custom Alert ---
-    function showCustomAlert(message) {
+    // --- Custom Alert & Confirm ---
+    let alertTimeout;
+    function showCustomAlert(message, callback = null) {
         document.getElementById("customAlertMessage").textContent = message;
         document.getElementById("customAlertDialog").classList.add("active");
+        clearTimeout(alertTimeout); // Clear any existing timeout
+
+        // Auto-hide after 3 seconds for non-error messages
+        alertTimeout = setTimeout(() => {
+            hideCustomAlert();
+            if (callback) callback();
+        }, 3000);
     }
     function hideCustomAlert() {
         document.getElementById("customAlertDialog").classList.remove("active");
+        clearTimeout(alertTimeout); // Ensure timeout is cleared if hidden manually
+    }
+
+    let confirmCallback = null;
+    function showCustomConfirm(message, onConfirm) {
+        document.getElementById("customConfirmMessage").textContent = message;
+        document.getElementById("customConfirmDialog").classList.add("active");
+        confirmCallback = onConfirm;
+
+        document.getElementById("confirmOkBtn").onclick = () => {
+            hideCustomConfirm();
+            if (confirmCallback) confirmCallback();
+        };
+        document.getElementById("confirmCancelBtn").onclick = () => {
+            hideCustomConfirm();
+            confirmCallback = null; // Clear callback
+        };
+    }
+    function hideCustomConfirm() {
+        document.getElementById("customConfirmDialog").classList.remove("active");
     }
 </script>
 </body>

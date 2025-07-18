@@ -13,18 +13,166 @@
             box-sizing: border-box;
         }
 
-        /* Body Styling */
+        /* Body Styling - Default to Light Mode */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0a0a1e; /* Dark solid background for body */
+            background-color: #f0f2f5; /* Light Ash Background */
             height: 100vh;
-            color: #e0e0e0;
+            color: #333; /* Darker text for readability */
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            overflow: hidden; /* Prevent body scroll, container handles it */
+            overflow: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #0a0a1e; /* Original Dark solid background */
+            color: #e0e0e0; /* Original Light text */
+        }
+        body.dark-mode .container {
+            /* In dark mode, container background matches body */
+            background-color: rgba(10, 10, 30, 0.9);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+            color: #ffeaa7;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+        body.dark-mode p {
+            color: #e0e0e0;
+        }
+        body.dark-mode .hausa-tagline {
+            color: #fab1a0;
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder {
+            color: #ccc;
+        }
+        body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+        body.dark-mode select option {
+            background-color: rgba(10, 10, 30, 0.95);
+            color: #fff;
+        }
+        body.dark-mode .section-title {
+            color: #f6e58d;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        body.dark-mode .history-item, body.dark-mode .contact-item, body.dark-mode .message-thread-item, body.dark-mode .profile-info p {
+            background-color: rgba(255,255,255,0.1);
+        }
+        body.dark-mode .history-item:hover, body.dark-mode .contact-item:hover, body.dark-mode .message-thread-item:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        body.dark-mode .call-again-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffeaa7;
+            border: 1px solid #ffeaa7;
+        }
+        body.dark-mode .call-again-btn:hover {
+            background: #ffeaa7;
+            color: #2d3436;
+        }
+        body.dark-mode .hex-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .hex-btn span {
+            color: #fff;
+        }
+        body.dark-mode .fullscreen-overlay {
+            background: rgba(10, 10, 30, 0.98);
+        }
+        body.dark-mode .overlay-title {
+            color: #ffeaa7;
+        }
+        body.dark-mode .close-overlay-btn {
+            color: #fff;
+        }
+        body.dark-mode .close-overlay-btn:hover {
+            color: #ff6b6b;
+        }
+        body.dark-mode #dialPadDisplay {
+            border-bottom: 2px solid #ffeaa7;
+            color: #fff;
+        }
+        body.dark-mode .dial-btn {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        body.dark-mode .dial-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        body.dark-mode .dialpad-bottom-actions .btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        body.dark-mode .dialpad-bottom-actions .btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        body.dark-mode .contact-name, body.dark-mode .profile-info strong, body.dark-mode .message-thread-name {
+            color: #ffeaa7;
+        }
+        body.dark-mode .contact-phone, body.dark-mode .message-thread-last-msg, body.dark-mode .message-thread-time {
+            color: #ccc;
+        }
+        body.dark-mode .call-screen {
+            background: rgba(10, 10, 30, 0.95);
+        }
+        body.dark-mode .call-name {
+            color: #ffeaa7;
+        }
+        body.dark-mode .call-status, body.dark-mode .call-timer {
+            color: #fff;
+        }
+        body.dark-mode .call-control-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        body.dark-mode .call-control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+        body.dark-mode .call-control-btn.active {
+            background-color: #ffeaa7;
+            color: #2d3436;
+        }
+        body.dark-mode #customAlertDialog, body.dark-mode #customConfirmDialog {
+            background: rgba(0,0,0,0.7);
+        }
+        body.dark-mode .custom-alert-content, body.dark-mode .custom-confirm-content {
+            background: rgba(30, 30, 50, 0.95);
+            color: #fff;
+        }
+        body.dark-mode .custom-confirm-buttons .btn.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        body.dark-mode .custom-confirm-buttons .btn.cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        body.dark-mode .search-input-container .search-icon {
+            color: #ccc;
+        }
+        body.dark-mode .scrolling-tagline {
+            animation: glow 1.5s infinite alternate; /* Revert to original glow in dark mode */
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #ffeaa7; }
+            to { text-shadow: 0 0 15px #ffeaa7, 0 0 20px #fab1a0; }
+        }
+        body.dark-mode .theme-switch-wrapper {
+            color: #e0e0e0; /* Dark mode text */
+        }
+
 
         /* Utility Class for Hiding Elements */
         .hidden {
@@ -33,18 +181,17 @@
 
         /* Main Container Styling */
         .container {
-            background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1950&q=80') no-repeat center center;
-            background-size: cover;
-            background-color: rgba(10, 10, 30, 0.9); /* Adjust opacity for background image visibility */
+            /* Removed background image */
+            background-color: rgba(255, 255, 255, 0.9); /* Lighter background for light mode */
             padding: 20px;
             border-radius: 25px;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.05), 0 0 80px rgba(0, 0, 0, 0.02); /* Lighter shadow for light mode */
             width: 100%;
             height: 100%;
             max-width: 600px;
             max-height: 900px;
             backdrop-filter: blur(8px);
-            transition: all 0.5s ease-in-out; /* Smoother page transition */
+            transition: all 0.5s ease-in-out;
             position: relative;
             overflow-y: auto;
             display: flex;
@@ -64,42 +211,42 @@
         .container { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Headings & Text */
-        h1, h2, h3 { color: #ffeaa7; text-shadow: 0 0 10px rgba(255,255,255,0.4); }
+        h1, h2, h3 { color: #2c3e50; text-shadow: none; } /* Darker headings for light mode */
         h1 { font-size: 2.5rem; margin-bottom: 10px; }
         h2 { font-size: 2rem; margin-bottom: 15px; }
         h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; }
+        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: #555; } /* Darker paragraph text */
         .hausa-tagline {
             font-size: 1.1rem;
             font-style: italic;
-            color: #fab1a0;
+            color: #6a0572; /* A purple tone for contrast */
             margin: 15px 0 5px 0;
         }
 
         /* Input Fields & Select */
         input, select, textarea {
             width: 100%; padding: 14px; margin: 10px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px;
-            font-size: 1.1rem; background-color: rgba(255, 255, 255, 0.15);
-            color: #fff; outline: none; transition: all 0.2s ease;
+            border: 1px solid #ccc; border-radius: 10px; /* Lighter borders */
+            font-size: 1.1rem; background-color: #fff; /* White background */
+            color: #333; outline: none; transition: all 0.2s ease;
         }
-        input::placeholder, textarea::placeholder { color: #ccc; }
+        input::placeholder, textarea::placeholder { color: #888; } /* Darker placeholders */
         input:focus, select:focus, textarea:focus {
-            background-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); /* Enhanced focus shadow */
+            background-color: #f9f9f9;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Lighter focus shadow */
         }
-        select option { background-color: rgba(10, 10, 30, 0.95); color: #fff; }
+        select option { background-color: #f0f2f5; color: #333; } /* Light background for select options */
 
         /* General Button */
         .btn {
             width: 100%; padding: 16px; background: linear-gradient(to right, #ffeaa7, #fab1a0);
             color: #2d3436; font-weight: bold; border: none; border-radius: 40px;
             font-size: 1.2rem; cursor: pointer; margin-top: 15px;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); transition: all 0.2s ease; /* Lighter shadow */
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(255, 255, 255, 0.4); }
-        .btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3); }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); }
+        .btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
 
         /* --- Home Page Specific Styles --- */
         #homePage { justify-content: space-between; }
@@ -159,23 +306,26 @@
 
         /* Call History */
         .section-title {
-            font-size: 1.3rem; color: #f6e58d; border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 1.3rem; color: #555; border-bottom: 1px solid #ddd; /* Darker text, lighter border */
             padding-bottom: 5px; margin: 20px 0 10px 0;
         }
         .history-item {
-            background-color: rgba(255,255,255,0.1); padding: 12px 15px;
+            background-color: #f8f8f8; /* Lighter background */
+            padding: 12px 15px;
             border-radius: 8px; margin-top: 8px; display: flex;
             justify-content: space-between; align-items: center;
             font-size: 0.95rem; transition: background-color 0.2s ease;
+            color: #333; /* Dark text */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .history-item:hover { background-color: rgba(255,255,255,0.2); }
+        .history-item:hover { background-color: #e0e0e0; } /* Lighter hover */
         .call-again-btn {
-            background: rgba(255, 255, 255, 0.15); color: #ffeaa7;
-            border: 1px solid #ffeaa7; border-radius: 20px;
+            background: #f0f0f0; color: #6a0572; /* Lighter background, accent color text */
+            border: 1px solid #6a0572; border-radius: 20px;
             padding: 6px 12px; font-size: 0.8rem; font-weight: bold;
             cursor: pointer; transition: all 0.2s ease;
         }
-        .call-again-btn:hover { background: #ffeaa7; color: #2d3436; }
+        .call-again-btn:hover { background: #6a0572; color: #fff; } /* Hover accent */
 
         /* --- Hexagonal Bottom Navigation --- */
         .bottom-nav {
@@ -187,38 +337,40 @@
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; transition: all 0.2s ease;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #e0e0e0; /* Lighter background for buttons */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .hex-btn:hover { transform: scale(1.1); }
-        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; }
-        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #fff; }
+        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; color: #333; } /* Darker icons */
+        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #333; } /* Darker text */
 
-        /* Individual Hex Button Colors */
+        /* Individual Hex Button Colors - Retaining their vibrancy */
         .hex-btn.recharge { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .hex-btn.recharge i { color: #fff; }
+        .hex-btn.recharge i, .hex-btn.recharge span { color: #fff; }
         .hex-btn.contacts { background: linear-gradient(135deg, #373B44, #4286f4); }
-        .hex-btn.contacts i { color: #fff; }
-        .hex-btn.messages { background: linear-gradient(135deg, #fd79a8, #a29bfe); } /* New color for messages */
-        .hex-btn.messages i { color: #fff; }
+        .hex-btn.contacts i, .hex-btn.contacts span { color: #fff; }
+        .hex-btn.messages { background: linear-gradient(135deg, #fd79a8, #a29bfe); }
+        .hex-btn.messages i, .hex-btn.messages span { color: #fff; }
         .hex-btn.referral { background: linear-gradient(135deg, #f7971e, #ffd200); }
-        .hex-btn.referral i { color: #fff; }
+        .hex-btn.referral i, .hex-btn.referral span { color: #fff; }
         .hex-btn.profile { background: linear-gradient(135deg, #FF416C, #FF4B2B); }
-        .hex-btn.profile i { color: #fff; }
+        .hex-btn.profile i, .hex-btn.profile span { color: #fff; }
 
 
         /* --- Full Screen Overlays (DialPad, Contacts, Profile etc) --- */
         .fullscreen-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 30, 0.98); border-radius: 25px; padding: 20px;
+            background: rgba(240, 242, 245, 0.98); /* Light background for overlays */
+            border-radius: 25px; padding: 20px;
             display: flex; flex-direction: column;
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
             transform: translateY(100%); opacity: 0; z-index: 100; visibility: hidden;
         }
         .fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
         .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .overlay-title { font-size: 1.8rem; color: #ffeaa7; }
-        .close-overlay-btn { font-size: 1.8rem; color: #fff; cursor: pointer; transition: color 0.2s ease; }
-        .close-overlay-btn:hover { color: #ff6b6b; } /* Highlight close button on hover */
+        .overlay-title { font-size: 1.8rem; color: #2c3e50; } /* Darker title */
+        .close-overlay-btn { font-size: 1.8rem; color: #555; cursor: pointer; transition: color 0.2s ease; } /* Darker close button */
+        .close-overlay-btn:hover { color: #e74c3c; }
         .overlay-content { flex-grow: 1; overflow-y: auto; }
         .overlay-content::-webkit-scrollbar { display: none; }
         .overlay-content { -ms-overflow-style: none; scrollbar-width: none; }
@@ -226,19 +378,20 @@
         /* --- Dial Pad Specific Styles --- */
         #dialPadPage .overlay-content { display: flex; flex-direction: column; justify-content: space-between; }
         #dialPadDisplay {
-            width: 100%; background: transparent; border: none; border-bottom: 2px solid #ffeaa7;
-            color: #fff; font-size: 2.5rem; text-align: center; padding-bottom: 10px; letter-spacing: 2px;
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid #6a0572; /* Accent color border */
+            color: #333; font-size: 2.5rem; text-align: center; padding-bottom: 10px; letter-spacing: 2px;
         }
         .phone-input-group { display: flex; gap: 5px; margin: 15px 0; }
         #dialPadCountryCode { flex: 1; }
         .dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
         .dial-btn {
-            width: 75px; height: 75px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1.8rem; cursor: pointer; margin: auto;
+            width: 75px; height: 75px; border-radius: 50%; border: 1px solid #ccc; /* Lighter border */
+            background: #fff; color: #333; font-size: 1.8rem; cursor: pointer; margin: auto; /* White background, dark text */
             display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .dial-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
-        .dial-btn:active { background: rgba(255, 255, 255, 0.3); transform: scale(0.98); }
+        .dial-btn:hover { background: #f0f0f0; transform: scale(1.05); }
+        .dial-btn:active { background: #e0e0e0; transform: scale(0.98); }
 
         .dialpad-actions { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
         .dialpad-call-btn {
@@ -257,28 +410,30 @@
             margin-top: 20px;
         }
         .dialpad-bottom-actions .btn {
-            width: 48%; /* Adjust width for two buttons */
+            width: 48%;
             margin-top: 0;
             padding: 10px;
             font-size: 1rem;
             border-radius: 25px;
         }
         .dialpad-bottom-actions .btn.cancel {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: #e0e0e0; /* Lighter cancel button */
+            color: #333;
         }
         .dialpad-bottom-actions .btn.cancel:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #ccc;
         }
 
         /* --- Other Pages Styles (Contacts, Profile, etc.) --- */
         .contact-item {
-            display: flex; align-items: center; background-color: rgba(255,255,255,0.1);
+            display: flex; align-items: center; background-color: #f8f8f8; /* Lighter background */
             padding: 12px; border-radius: 10px; margin-bottom: 10px;
             transition: background-color 0.2s ease;
-            cursor: pointer; /* Make contact item clickable */
+            cursor: pointer;
+            color: #333; /* Dark text */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .contact-item:hover { background-color: rgba(255,255,255,0.2); }
+        .contact-item:hover { background-color: #e0e0e0; }
 
         .contact-avatar {
             width: 45px; height: 45px; border-radius: 50%; background-color: #fab1a0;
@@ -286,36 +441,42 @@
             font-weight: bold; margin-right: 15px; flex-shrink: 0;
         }
         .contact-info { flex-grow: 1; text-align: left; }
-        .contact-name { font-weight: bold; color: #ffeaa7; }
-        .contact-phone { font-size: 0.9rem; color: #ccc; }
+        .contact-name { font-weight: bold; color: #2c3e50; } /* Darker name */
+        .contact-phone { font-size: 0.9rem; color: #555; } /* Darker phone */
         .profile-info p {
-            background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;
+            background-color: #f8f8f8; /* Lighter background */
+            padding: 15px; border-radius: 10px;
             margin-bottom: 10px; text-align: left; font-size: 1.1rem;
+            color: #333; /* Dark text */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .profile-info strong { color: #ffeaa7; }
+        .profile-info strong { color: #6a0572; } /* Accent color for strong text */
 
         /* Call Screen Overlay */
         .call-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 30, 0.95); border-radius: 25px;
+            background: rgba(240, 242, 245, 0.95); /* Light background */
+            border-radius: 25px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 20px; transition: all 0.3s ease-in-out;
             transform: scale(0.9); opacity: 0; z-index: 200; visibility: hidden;
+            color: #333;
         }
         .call-screen.active { transform: scale(1); opacity: 1; visibility: visible; }
         .call-avatar { width: 120px; height: 120px; border-radius: 50%; background-color: #fab1a0; display: flex; justify-content: center; align-items: center; font-size: 3rem; color: #2d3436; margin-bottom: 20px; }
-        .call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #ffeaa7; }
-        .call-status { font-size: 1.2rem; color: #ccc; margin-bottom: 15px; }
-        .call-timer { font-size: 1.8rem; font-weight: bold; color: #fff; margin-bottom: 30px; }
+        .call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; } /* Darker name */
+        .call-status { font-size: 1.2rem; color: #555; margin-bottom: 15px; } /* Darker status */
+        .call-timer { font-size: 1.8rem; font-weight: bold; color: #333; margin-bottom: 30px; } /* Darker timer */
         .call-controls { display: flex; gap: 20px; margin-bottom: 30px; }
         .call-control-btn {
-            background-color: rgba(255, 255, 255, 0.15); color: #fff;
+            background-color: #e0e0e0; color: #333; /* Lighter background, dark text */
             width: 60px; height: 60px; border-radius: 50%; border: none;
             display: flex; justify-content: center; align-items: center;
             font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .call-control-btn:hover { background-color: rgba(255, 255, 255, 0.25); }
-        .call-control-btn.active { background-color: #ffeaa7; color: #2d3436; } /* For active mute/speaker */
+        .call-control-btn:hover { background-color: #ccc; }
+        .call-control-btn.active { background-color: #6a0572; color: #fff; } /* Accent color for active state */
 
         .end-call-btn { background-color: #e74c3c; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s ease; }
         .end-call-btn:hover { background-color: #c0392b; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5); }
@@ -324,13 +485,13 @@
         /* Custom Alert Dialog */
         #customAlertDialog, #customConfirmDialog {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
             z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease;
         }
         #customAlertDialog.active, #customConfirmDialog.active { opacity: 1; visibility: visible; }
         .custom-alert-content, .custom-confirm-content {
-            background: rgba(30, 30, 50, 0.95); padding: 30px; border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5); color: #fff; text-align: center;
+            background: #fff; padding: 30px; border-radius: 15px; /* White background */
+            box-shadow: 0 0 30px rgba(0,0,0,0.2); color: #333; text-align: center; /* Dark text */
             width: 80%; max-width: 400px;
         }
         #customAlertMessage, #customConfirmMessage { margin-bottom: 20px; font-size: 1.1rem; }
@@ -347,11 +508,11 @@
             border-radius: 25px;
         }
         .custom-confirm-buttons .btn.cancel {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: #e0e0e0; /* Lighter cancel button */
+            color: #333;
         }
         .custom-confirm-buttons .btn.cancel:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: #ccc;
         }
 
         /* Search input for contacts */
@@ -360,34 +521,34 @@
             margin-bottom: 15px;
         }
         .search-input-container input {
-            padding-right: 40px; /* Make space for the icon */
+            padding-right: 40px;
         }
         .search-input-container .search-icon {
             position: absolute;
             right: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #ccc;
-            pointer-events: none; /* Allow clicks to pass through to the input */
+            color: #888; /* Darker icon */
+            pointer-events: none;
         }
 
         .scrolling-tagline {
-            color: #ffeaa7;
+            color: #6a0572; /* Accent color for tagline */
             font-size: 1.3rem;
             font-weight: bold;
             padding: 10px 0;
             text-align: center;
-            animation: glow 1.5s infinite alternate; /* Added glow animation */
+            animation: glow-light 1.5s infinite alternate;
         }
 
-        @keyframes glow {
-            from { text-shadow: 0 0 5px #ffeaa7; }
-            to { text-shadow: 0 0 15px #ffeaa7, 0 0 20px #fab1a0; }
+        @keyframes glow-light {
+            from { text-shadow: 0 0 5px #6a0572; }
+            to { text-shadow: 0 0 15px #6a0572, 0 0 20px #9a32a8; }
         }
 
         /* Message Page Specific Styles */
         .message-thread-item {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: #f8f8f8; /* Lighter background */
             padding: 12px 15px;
             border-radius: 8px;
             margin-bottom: 8px;
@@ -397,20 +558,22 @@
             font-size: 0.95rem;
             transition: background-color 0.2s ease;
             cursor: pointer;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .message-thread-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: #e0e0e0;
         }
         .message-thread-info {
             text-align: left;
         }
         .message-thread-name {
             font-weight: bold;
-            color: #ffeaa7;
+            color: #2c3e50;
         }
         .message-thread-last-msg {
             font-size: 0.85rem;
-            color: #ccc;
+            color: #555;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -418,7 +581,7 @@
         }
         .message-thread-time {
             font-size: 0.75rem;
-            color: #aaa;
+            color: #777;
             flex-shrink: 0;
             margin-left: 10px;
         }
@@ -426,27 +589,118 @@
             min-height: 80px;
             resize: vertical;
         }
+
+        /* Dark Mode Toggle Button */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+            color: #555; /* Default light mode text */
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+        }
+
+        input:checked + .slider {
+            background-color: #2196f3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDEzS2-1-Gi7hWf1hm1h55lDTDwspzxhyI",
+    authDomain: "smartcall-2974d.firebaseapp.com",
+    projectId: "smartcall-2974d",
+    storageBucket: "smartcall-2974d.firebasestorage.app",
+    messagingSenderId: "900407552357",
+    appId: "1:900407552357:web:671ea8d9409ce6caf0d98c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.firebaseAuth = auth;
+  window.firebaseDB = db;
+  window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+  window.setDoc = setDoc;
+  window.getDoc = getDoc;
+  window.doc = doc;
+  window.updateProfile = updateProfile; // Added updateProfile
+</script>
+
 </head>
 
 <body>
 
     <div class="container active-page" id="welcomePage">
         <h1>Welcome to NaijaCall</h1>
-        <p>Connect with the world — simple, fast, and secured.</p>
-        <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
+        <p>Connect with the world � simple, fast, and secured.</p>
+        <button class="btn" onclick="goToAuth()"> Get Started</button>
     </div>
 
     <div class="container hidden" id="authPage">
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <i class="fas fa-user-circle" style="font-size: 4rem; color: #ffeaa7; margin-bottom: 10px;"></i>
+            <i class="fas fa-user-circle" style="font-size: 4rem; color: #6a0572; margin-bottom: 10px;"></i> <!-- Accent color for icon -->
             <h2 id="formTitle" style="margin-bottom: 10px;">Login to NaijaCall</h2>
         </div>
 
         <div style="width: 100%;">
+            <!-- This input is for login (email or phone) -->
             <input id="authIdentifierLogin" placeholder="Email or Phone Number" type="text" />
+            
+            <!-- These inputs are for registration -->
             <input class="hidden" id="firstName" placeholder="Full Name" type="text" />
-
             <div class="hidden" id="phoneRegSection">
                 <select id="authCountryCode"></select>
                 <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
@@ -454,16 +708,17 @@
 
             <input id="authPassword" placeholder="Password" type="password" />
 
+            <!-- OTP section is now hidden as per simplified auth flow -->
             <div id="otpSection" class="hidden">
                 <input id="otpInput" placeholder="Enter OTP" type="text" maxlength="4" />
-                <p id="otpMessage" style="color: #ccc; margin-top: 10px;"></p>
+                <p id="otpMessage" style="color: #555; margin-top: 10px;"></p>
             </div>
 
             <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">
                 <i class="fas fa-lock"></i> Login
             </button>
 
-            <p style="margin-top: 15px;">Don't have an account? <a style="color: #74b9ff; cursor: pointer;" onclick="toggleForm()">Register</a></p>
+            <p style="margin-top: 15px;">Don't have an account? <a style="color: #007bff; cursor: pointer;" onclick="toggleForm()">Register</a></p>
 
             <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
@@ -474,14 +729,14 @@
             <div class="welcome-balance-box">
                 <h2>Welcome Back! <br>
                 <span id="welcomeUserName"><strong>User</strong></span></h2>
-                <div class="wallet-balance">Your Wallet Balance: <strong>₦1,650.00</strong><br>
+                <div class="wallet-balance">Your Wallet Balance: <strong>1,650.00</strong><br>
                     <span><i>(Approx. 58 Minutes, 45 Sec.)</i></span></div>
             </div>
         </div>
 
         <div class="main-call-button-container">
             <div class="scrolling-tagline">
-                Call your family, friends, and loved ones the easy & secure way — at affordable rates!  
+                Call your family, friends, and loved ones the easy & secure way � at affordable rates!  
             </div>
             <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!</h3>
             <br>
@@ -491,7 +746,7 @@
             </div>
         </div>
         <div class="call-history-container">
-            <div class="section-title">🕓 Recent Calls</div>
+            <div class="section-title"> Recent Calls</div>
             <div id="recentCallsList"></div>
         </div>
 
@@ -590,7 +845,7 @@
             </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openNewMessagePage()"><i class="fas fa-plus"></i> New Message</button>
             <div id="messageThreadsList">
-                <p style="color: #aaa; margin-top: 15px;">No messages yet.</p>
+                <p style="color: #555; margin-top: 15px;">No messages yet.</p>
             </div>
         </div>
     </div>
@@ -619,7 +874,15 @@
                 <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
                 <p><strong>Member Since:</strong> <span id="profileMemberSince"></span></p>
             </div>
-            <button class="btn" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="theme-switch-wrapper">
+                <span>Light Mode</span>
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <span>Dark Mode</span>
+            </div>
+            <button class="btn" style="margin-top: 20px;" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
     
@@ -672,11 +935,6 @@
 <script>
     // --- Global State & Config ---
     let isRegistering = false;
-    let isOtpSent = false;
-    let correctOtp = '';
-    let otpResendTimer = 0;
-    let otpTimerInterval;
-
     let loggedInUser = {
         firstName: 'Alkassim',
         email: 'alkassim.suleiman@example.com',
@@ -684,78 +942,78 @@
         memberSince: 'July 2023'
     };
     const countryCodes = [
-        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
-        { name: 'Algeria', code: '+213', flag: '🇩🇿' },
-        { name: 'Angola', code: '+244', flag: '🇦🇴' },
-        { name: 'Benin', code: '+229', flag: '🇧🇯' },
-        { name: 'Botswana', code: '+267', flag: '🇧🇼' },
-        { name: 'Burkina Faso', code: '+226', flag: '🇧🇫' },
-        { name: 'Burundi', code: '+257', flag: '🇧🇮' },
-        { name: 'Cabo Verde', code: '+238', flag: '🇨🇻' },
-        { name: 'Cameroon', code: '+237', flag: '🇨🇲' },
-        { name: 'Central African Republic', code: '+236', flag: '🇨🇫' },
-        { name: 'Chad', code: '+235', flag: '🇹🇩' },
-        { name: 'Comoros', code: '+269', flag: '🇰🇲' },
-        { name: 'Congo, Dem. Rep.', code: '+243', flag: '🇨🇩' },
-        { name: 'Congo, Rep.', code: '+242', flag: '🇨🇬' },
-        { name: 'Côte d\'Ivoire', code: '+225', flag: '🇨🇮' },
-        { name: 'Djibouti', code: '+253', flag: '🇩🇯' },
-        { name: 'Egypt', code: '+20', flag: '🇪🇬' },
-        { name: 'Equatorial Guinea', code: '+240', flag: '🇬🇶' },
-        { name: 'Eritrea', code: '+291', flag: '🇪🇷' },
-        { name: 'Eswatini', code: '+268', flag: '🇸🇿' },
-        { name: 'Ethiopia', code: '+251', flag: '🇪🇹' },
-        { name: 'Gabon', code: '+241', flag: '🇬🇦' },
-        { name: 'Gambia', code: '+220', flag: '🇬🇲' },
-        { name: 'Ghana', code: '+233', flag: '🇬🇭' },
-        { name: 'Guinea', code: '+224', flag: '🇬🇳' },
-        { name: 'Guinea-Bissau', code: '+245', flag: '🇬🇼' },
-        { name: 'Kenya', code: '+254', flag: '🇰🇪' },
-        { name: 'Lesotho', code: '+266', flag: '🇱🇸' },
-        { name: 'Liberia', code: '+231', flag: '🇱🇷' },
-        { name: 'Libya', code: '+218', flag: '🇱🇾' },
-        { name: 'Madagascar', code: '+261', flag: '🇲🇬' },
-        { name: 'Malawi', code: '+265', flag: '🇲🇼' },
-        { name: 'Mali', code: '+223', flag: '🇲🇱' },
-        { name: 'Mauritania', code: '+222', flag: '🇲🇷' },
-        { name: 'Mauritius', code: '+230', flag: '🇲🇺' },
-        { name: 'Morocco', code: '+212', flag: '🇲🇦' },
-        { name: 'Mozambique', code: '+258', flag: '🇲🇿' },
-        { name: 'Namibia', code: '+264', flag: '🇳🇦' },
-        { name: 'Niger', code: '+227', flag: '🇳🇪' },
-        { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
-        { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
-        { name: 'São Tomé and Príncipe', code: '+239', flag: '🇸🇹' },
-        { name: 'Senegal', code: '+221', flag: '🇸🇳' },
-        { name: 'Seychelles', code: '+248', flag: '🇸🇨' },
-        { name: 'Sierra Leone', code: '+232', flag: '🇸🇱' },
-        { name: 'Somalia', code: '+252', flag: '🇸🇴' },
-        { name: 'South Africa', code: '+27', flag: '🇿🇦' },
-        { name: 'South Sudan', code: '+211', flag: '🇸🇸' },
-        { name: 'Sudan', code: '+249', flag: '🇸🇩' },
-        { name: 'Tanzania', code: '+255', flag: '🇹🇿' },
-        { name: 'Togo', code: '+228', flag: '🇹🇬' },
-        { name: 'Tunisia', code: '+216', flag: '🇹🇳' },
-        { name: 'Uganda', code: '+256', flag: '🇺🇬' },
-        { name: 'Zambia', code: '+260', flag: '🇿🇲' },
-        { name: 'Zimbabwe', 'code': '+263', flag: '🇿🇼' },
+        { name: 'Nigeria', code: '+234', flag: '' },
+        { name: 'Ghana', code: '+233', flag: '' },
+        { name: 'Algeria', code: '+213', flag: '' },
+        { name: 'Angola', code: '+244', flag: '' },
+        { name: 'Benin', code: '+229', flag: '' },
+        { name: 'Botswana', code: '+267', flag: '' },
+        { name: 'Burkina Faso', code: '+226', flag: '' },
+        { name: 'Burundi', code: '+257', flag: '' },
+        { name: 'Cabo Verde', code: '+238', flag: '' },
+        { name: 'Cameroon', code: '+237', flag: '' },
+        { name: 'Central African Republic', code: '+236', flag: '' },
+        { name: 'Chad', code: '+235', flag: '' },
+        { name: 'Comoros', code: '+269', flag: '' },
+        { name: 'Congo, Dem. Rep.', code: '+243', flag: '' },
+        { name: 'Congo, Rep.', code: '+242', flag: '' },
+        { name: 'C�te d\'Ivoire', code: '+225', flag: '' },
+        { name: 'Djibouti', code: '+253', flag: '' },
+        { name: 'Egypt', code: '+20', flag: '' },
+        { name: 'Equatorial Guinea', code: '+240', flag: '' },
+        { name: 'Eritrea', code: '+291', flag: '' },
+        { name: 'Eswatini', code: '+268', flag: '' },
+        { name: 'Ethiopia', code: '+251', flag: '' },
+        { name: 'Gabon', code: '+241', flag: '' },
+        { name: 'Gambia', code: '+220', flag: '' },
+        { name: 'Ghana', code: '+233', flag: '' },
+        { name: 'Guinea', code: '+224', flag: '' },
+        { name: 'Guinea-Bissau', code: '+245', flag: '' },
+        { name: 'Kenya', code: '+254', flag: '' },
+        { name: 'Lesotho', code: '+266', flag: '' },
+        { name: 'Liberia', code: '+231', flag: '' },
+        { name: 'Libya', code: '+218', flag: '' },
+        { name: 'Madagascar', code: '+261', flag: '' },
+        { name: 'Malawi', code: '+265', flag: '' },
+        { name: 'Mali', code: '+223', flag: '' },
+        { name: 'Mauritania', code: '+222', flag: '' },
+        { name: 'Mauritius', code: '+230', flag: '' },
+        { name: 'Morocco', code: '+212', flag: '' },
+        { name: 'Mozambique', code: '+258', flag: '' },
+        { name: 'Namibia', code: '+264', flag: '' },
+        { name: 'Niger', code: '+227', flag: '' },
+        { name: 'Nigeria', code: '+234', flag: '' },
+        { name: 'Rwanda', code: '+250', flag: '' },
+        { name: 'S�o Tom� and Pr�ncipe', code: '+239', flag: '' },
+        { name: 'Senegal', code: '+221', flag: '' },
+        { name: 'Seychelles', code: '+248', flag: '' },
+        { name: 'Sierra Leone', code: '+232', flag: '' },
+        { name: 'Somalia', code: '+252', flag: '' },
+        { name: 'South Africa', code: '+27', flag: '' },
+        { name: 'South Sudan', code: '+211', flag: '' },
+        { name: 'Sudan', code: '+249', flag: '' },
+        { name: 'Tanzania', code: '+255', flag: '' },
+        { name: 'Togo', code: '+228', flag: '' },
+        { name: 'Tunisia', code: '+216', flag: '' },
+        { name: 'Uganda', code: '+256', flag: '' },
+        { name: 'Zambia', code: '+260', flag: '' },
+        { name: 'Zimbabwe', 'code': '+263', flag: '' },
         // Non-African countries from previous list, kept for completeness
-        { name: 'USA', code: '+1', flag: '🇺🇸' },
-        { name: 'UK', code: '+44', flag: '🇬🇧' },
-        { name: 'Canada', code: '+1', flag: '🇨🇦' },
-        { name: 'Australia', code: '+61', flag: '🇦🇺' },
-        { name: 'Germany', code: '+49', flag: '🇩🇪' },
-        { name: 'France', code: '+33', flag: '🇫🇷' },
-        { name: 'Japan', code: '+81', flag: '🇯🇵' },
-        { name: 'China', code: '+86', flag: '🇨🇳' },
-        { name: 'India', code: '+91', flag: '🇮🇳' },
-        { name: 'Brazil', code: '+55', flag: '🇧🇷' },
-        { name: 'Mexico', code: '+52', flag: '🇲🇽' },
-        { name: 'Spain', code: '+34', flag: '🇪🇸' },
-        { name: 'Italy', code: '+39', flag: '🇮🇹' },
-        { name: 'Netherlands', code: '+31', flag: '🇳🇱' },
-        { name: 'Sweden', code: '+46', flag: '🇸🇪' }
+        { name: 'USA', code: '+1', flag: '' },
+        { name: 'UK', code: '+44', flag: '' },
+        { name: 'Canada', code: '+1', flag: '' },
+        { name: 'Australia', code: '+61', flag: '' },
+        { name: 'Germany', code: '+49', flag: '' },
+        { name: 'France', code: '+33', flag: '' },
+        { name: 'Japan', code: '+81', flag: '' },
+        { name: 'China', code: '+86', flag: '' },
+        { name: 'India', code: '+91', flag: '' },
+        { name: 'Brazil', code: '+55', flag: '' },
+        { name: 'Mexico', code: '+52', flag: '' },
+        { name: 'Spain', code: '+34', flag: '' },
+        { name: 'Italy', code: '+39', flag: '' },
+        { name: 'Netherlands', code: '+31', flag: '' },
+        { name: 'Sweden', code: '+46', flag: '' }
     ];
     let callTimerInterval;
     let callDuration = 0;
@@ -771,21 +1029,38 @@
     // --- Initial Setup ---
     document.addEventListener('DOMContentLoaded', () => {
         populateCountryCodes();
-        renderRecentCalls(); // Render initial recent calls (now from callHistory)
-        renderContacts(); // Render initial contacts
-        renderMessageThreads(); // Render initial message threads
-        showPage('welcomePage'); // Ensure only welcome page is shown initially
+        renderRecentCalls();
+        renderContacts();
+        renderMessageThreads();
+        showPage('welcomePage');
+
+        // Theme Toggle Listener
+        const themeToggle = document.getElementById('checkbox');
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+                localStorage.setItem('theme', this.checked ? 'dark' : 'light');
+            });
+            // Apply saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+            }
+        }
     });
 
     function populateCountryCodes() {
         const selects = document.querySelectorAll('#authCountryCode, #dialPadCountryCode');
         selects.forEach(select => {
-            select.innerHTML = '<option disabled selected value="">Select Country</option>'; // Added value=""
+            select.innerHTML = '<option disabled selected value="">Select Country</option>';
             countryCodes.forEach(c => {
                 select.innerHTML += `<option value="${c.code}">${c.flag} ${c.name} (${c.code})</option>`;
             });
         });
-        // Set Nigeria as default for authCountryCode if available
         const nigeriaOptionAuth = Array.from(document.getElementById('authCountryCode').options).find(opt => opt.value === '+234');
         if (nigeriaOptionAuth) {
             document.getElementById('authCountryCode').value = '+234';
@@ -795,12 +1070,11 @@
     // Function to render recent calls
     function renderRecentCalls() {
         const recentCallsListDiv = document.getElementById('recentCallsList');
-        recentCallsListDiv.innerHTML = ''; // Clear existing list
+        recentCallsListDiv.innerHTML = '';
         if (callHistory.length === 0) {
             recentCallsListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No recent calls yet.</p>';
             return;
         }
-        // Display in reverse chronological order
         callHistory.slice().reverse().forEach(call => {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
@@ -819,15 +1093,15 @@
 
     function renderContacts(filteredContacts = contacts) {
         const contactsListDiv = document.getElementById('contactsList');
-        contactsListDiv.innerHTML = ''; // Clear existing list
+        contactsListDiv.innerHTML = '';
         if (filteredContacts.length === 0) {
             contactsListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No contacts found.</p>';
             return;
         }
-        filteredContacts.sort((a, b) => a.name.localeCompare(b.name)).forEach(contact => { // Sort contacts alphabetically
+        filteredContacts.sort((a, b) => a.name.localeCompare(b.name)).forEach(contact => {
             const contactItem = document.createElement('div');
             contactItem.className = 'contact-item';
-            contactItem.onclick = () => selectContactForCall(contact.phone, contact.name); // Make item clickable
+            contactItem.onclick = () => selectContactForCall(contact.phone, contact.name);
             
             const initials = contact.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 
@@ -843,7 +1117,6 @@
         });
     }
 
-    // Function to search contacts
     function searchContacts() {
         const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
         const filteredContacts = contacts.filter(contact =>
@@ -857,7 +1130,7 @@
     // --- Message Functions ---
     function renderMessageThreads(filteredThreads = messageThreads) {
         const messageThreadsListDiv = document.getElementById('messageThreadsList');
-        messageThreadsListDiv.innerHTML = ''; // Clear existing list
+        messageThreadsListDiv.innerHTML = '';
         if (filteredThreads.length === 0) {
             messageThreadsListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No messages yet.</p>';
             return;
@@ -865,7 +1138,6 @@
         filteredThreads.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(thread => {
             const threadItem = document.createElement('div');
             threadItem.className = 'message-thread-item';
-            // Placeholder for opening specific message thread details
             threadItem.onclick = () => showCustomAlert(`Opening chat with ${thread.contactName || thread.contactNumber}.`);
             threadItem.innerHTML = `
                 <div class="message-thread-info">
@@ -924,14 +1196,11 @@
             return;
         }
 
-        // Simulate sending message
         showCustomAlert(`Message sent to ${recipient}: "${message}"`, () => {
-            // Find if recipient is an existing contact
             const contact = contacts.find(c => c.name.toLowerCase() === recipient.toLowerCase() || c.phone === recipient);
             const contactName = contact ? contact.name : null;
-            const contactNumber = contact ? contact.phone : recipient; // Use actual phone if found, otherwise the input
+            const contactNumber = contact ? contact.phone : recipient;
 
-            // Add or update message thread
             const existingThreadIndex = messageThreads.findIndex(t => t.contactNumber === contactNumber);
             if (existingThreadIndex > -1) {
                 messageThreads[existingThreadIndex].lastMessage = message;
@@ -963,14 +1232,32 @@
     function openOverlay(overlayId) { document.getElementById(overlayId).classList.add('active'); }
     function closeOverlay(overlayId) { document.getElementById(overlayId).classList.remove('active'); }
     function goToAuth() { showPage('authPage'); }
-    function goToHome() {
+    async function goToHome() {
         showPage('homePage');
+        if (window.firebaseAuth.currentUser) {
+            const user = window.firebaseAuth.currentUser;
+            const userDocRef = window.doc(window.firebaseDB, "users", user.uid);
+            const userDocSnap = await window.getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                loggedInUser.firstName = userData.name || "User";
+                loggedInUser.email = userData.email || user.email;
+                loggedInUser.phoneNumber = userData.phone || user.phoneNumber || "N/A";
+                loggedInUser.memberSince = new Date(userData.createdAt).toLocaleDateString();
+            } else {
+                // Fallback if user document doesn't exist (e.g., old user or direct sign-in without full data)
+                loggedInUser.firstName = user.displayName || "User";
+                loggedInUser.email = user.email;
+                loggedInUser.phoneNumber = user.phoneNumber || "N/A";
+                loggedInUser.memberSince = new Date(user.metadata.creationTime).toLocaleDateString();
+            }
+        }
         document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
         document.getElementById('profileName').textContent = loggedInUser.firstName;
         document.getElementById('profileEmail').textContent = loggedInUser.email;
         document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber;
         document.getElementById('profileMemberSince').textContent = loggedInUser.memberSince;
-        renderRecentCalls(); // Ensure recent calls are updated when returning to home
+        renderRecentCalls();
     }
     
     function confirmLogout() {
@@ -980,86 +1267,85 @@
     }
 
     function logout() {
-        showCustomAlert("Logging out...", () => { // Use callback for alert
-            // Clear user data (optional, for a real app you'd clear session/token)
-            loggedInUser = {
-                firstName: '',
-                email: '',
-                phoneNumber: '',
-                memberSince: ''
-            };
-            isRegistering = false;
-            isOtpSent = false;
-            clearInterval(otpTimerInterval);
-            document.getElementById('otpInput').value = '';
-            document.getElementById('authIdentifierLogin').value = '';
-            document.getElementById('authPassword').value = '';
-            document.getElementById('firstName').value = '';
-            document.getElementById('authPhoneNumber').value = '';
-            // Reset country code select
-            const selects = document.querySelectorAll('#authCountryCode, #dialPadCountryCode');
-            selects.forEach(select => {
-                select.value = ''; // Set to the disabled selected option's value
+        window.firebaseAuth.signOut().then(() => {
+            showCustomAlert("Logging out...", () => {
+                loggedInUser = {
+                    firstName: '',
+                    email: '',
+                    phoneNumber: '',
+                    memberSince: ''
+                };
+                isRegistering = false;
+                document.getElementById('authIdentifierLogin').value = '';
+                document.getElementById('authPassword').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('authPhoneNumber').value = '';
+                const selects = document.querySelectorAll('#authCountryCode, #dialPadCountryCode');
+                selects.forEach(select => {
+                    select.value = '';
+                });
+                toggleAuthFormView();
+                showPage('welcomePage');
             });
-            toggleAuthFormView(); // Reset auth form to login view
-            showPage('welcomePage');
+        }).catch((error) => {
+            showCustomAlert("Logout Error: " + error.message);
         });
     }
 
     // --- Authentication ---
     function toggleForm() {
         isRegistering = !isRegistering;
-        isOtpSent = false; // Reset OTP state when toggling form
-        clearInterval(otpTimerInterval); // Clear any active OTP timer
-        document.getElementById('otpInput').value = ''; // Clear OTP input
-        document.getElementById('otpMessage').textContent = ''; // Clear OTP message
-        document.getElementById('authPassword').value = ''; // Clear password on toggle
-        document.getElementById('authIdentifierLogin').value = ''; // Clear identifier
-        document.getElementById('firstName').value = ''; // Clear name
-        document.getElementById('authPhoneNumber').value = ''; // Clear phone
+        // Clear all relevant fields on toggle
+        document.getElementById('authPassword').value = '';
+        document.getElementById('authIdentifierLogin').value = '';
+        document.getElementById('firstName').value = '';
+        document.getElementById('authPhoneNumber').value = '';
+        // Reset country code select for registration
+        const authCountryCodeSelect = document.getElementById('authCountryCode');
+        if (authCountryCodeSelect) {
+            const nigeriaOptionAuth = Array.from(authCountryCodeSelect.options).find(opt => opt.value === '+234');
+            if (nigeriaOptionAuth) {
+                authCountryCodeSelect.value = '+234';
+            } else {
+                authCountryCodeSelect.value = ''; // Fallback
+            }
+        }
         toggleAuthFormView();
     }
 
     function toggleAuthFormView() {
         document.getElementById('authMessage').textContent = '';
+        // Toggle visibility based on registration mode
         document.getElementById("firstName").classList.toggle("hidden", !isRegistering);
         document.getElementById("phoneRegSection").classList.toggle("hidden", !isRegistering);
         document.getElementById("authIdentifierLogin").classList.toggle("hidden", isRegistering);
-        
-        // OTP specific visibility
-        document.getElementById("otpSection").classList.toggle("hidden", !isOtpSent); // OTP section always hidden if OTP not sent
-        document.getElementById("authPassword").classList.toggle("hidden", isOtpSent && isRegistering); // Hide password after OTP is sent for registration
+        document.getElementById("otpSection").classList.add("hidden"); // OTP section always hidden for this simplified flow
 
         if (isRegistering) {
-            if (!isOtpSent) {
-                document.getElementById('formTitle').innerText = "Register";
-                document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
-            } else {
-                document.getElementById('formTitle').innerText = "Verify OTP";
-                document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP';
-            }
+            document.getElementById('formTitle').innerText = "Register";
+            document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-user-plus"></i> Register';
         } else {
             document.getElementById('formTitle').innerText = "Login to NaijaCall";
             document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-lock"></i> Login';
-            document.getElementById("otpSection").classList.add("hidden"); // Ensure OTP section is hidden for login
         }
     }
-
-    function handleAuthSubmit() {
-        document.getElementById('authMessage').textContent = ''; // Clear previous messages
+    
+    async function handleAuthSubmit() {
+        document.getElementById('authMessage').textContent = '';
 
         if (isRegistering) {
-            const firstName = document.getElementById("firstName").value.trim();
-            const phoneNumber = document.getElementById("authPhoneNumber").value.trim();
+            const fullName = document.getElementById("firstName").value.trim();
+            const phone = document.getElementById("authPhoneNumber").value.trim();
             const countryCode = document.getElementById("authCountryCode").value;
             const password = document.getElementById("authPassword").value.trim();
 
-            if (!firstName || !phoneNumber || countryCode === "" || !password) {
+            // Basic validation
+            if (!fullName || !phone || countryCode === "" || !password) {
                 document.getElementById('authMessage').textContent = "Please fill all registration fields.";
                 return;
             }
-            if (phoneNumber.length < 7 || phoneNumber.length > 15 || !/^\d+$/.test(phoneNumber)) {
-                document.getElementById('authMessage').textContent = "Please enter a valid phone number (7-15 digits).";
+            if (!/^\d+$/.test(phone)) {
+                document.getElementById('authMessage').textContent = "Phone number should contain only digits.";
                 return;
             }
             if (password.length < 6) {
@@ -1067,15 +1353,33 @@
                 return;
             }
 
-            if (!isOtpSent) {
-                // First click on "Register" (now "Send OTP")
-                sendOtp(countryCode + phoneNumber); // Pass full number for OTP
-            } else {
-                // Second click on "Verify OTP"
-                verifyOtp();
+            // Generate an email for Firebase Authentication
+            // Remove non-digits from phone for a clean email part
+            const cleanPhoneNumber = phone.replace(/\D/g, ''); 
+            const firebaseEmail = `${countryCode.replace(/\D/g, '')}${cleanPhoneNumber}@naijacall.com`;
+
+            try {
+                const userCredential = await window.createUserWithEmailAndPassword(window.firebaseAuth, firebaseEmail, password);
+                const user = userCredential.user;
+
+                // Update user profile with display name
+                await window.updateProfile(user, { displayName: fullName });
+
+                // Store user data in Firestore
+                await window.setDoc(window.doc(window.firebaseDB, "users", user.uid), {
+                    name: fullName,
+                    phone: `${countryCode}${cleanPhoneNumber}`, // Store full phone number
+                    email: firebaseEmail, // Store the generated email
+                    createdAt: new Date().toISOString()
+                });
+
+                showCustomAlert("Registration successful!", () => {
+                    goToHome();
+                });
+            } catch (error) {
+                document.getElementById('authMessage').textContent = error.message;
             }
         } else {
-            // Login logic
             const identifier = document.getElementById("authIdentifierLogin").value.trim();
             const password = document.getElementById("authPassword").value.trim();
 
@@ -1083,70 +1387,33 @@
                 document.getElementById('authMessage').textContent = "Please enter login credentials.";
                 return;
             }
-            // Basic mock login validation
-            if ((identifier === 'demo@example.com' || identifier === '+2348012345678') && password === 'password123') {
-                loggedInUser.firstName = "Demo";
-                loggedInUser.email = identifier.includes('@') ? identifier : 'demo@example.com';
-                loggedInUser.phoneNumber = identifier.includes('+') ? identifier : '+2348012345678';
-                loggedInUser.memberSince = 'July 2023';
-                showCustomAlert("Login successful!", () => goToHome());
-            } else {
-                document.getElementById('authMessage').textContent = "Invalid credentials. Try 'demo@example.com' / 'password123'";
+
+            let emailToLogin = identifier;
+            // If the identifier doesn't look like an email, assume it's a phone number
+            if (!identifier.includes('@')) {
+                const cleanIdentifier = identifier.replace(/\D/g, '');
+                // Try to derive the Firebase email format from the phone number
+                // This assumes phone numbers registered will have a country code prefix
+                let foundCountryCode = countryCodes.find(c => cleanIdentifier.startsWith(c.code.replace(/\D/g, '')));
+                if (foundCountryCode) {
+                    emailToLogin = `${foundCountryCode.code.replace(/\D/g, '')}${cleanIdentifier.substring(foundCountryCode.code.replace(/\D/g, '').length)}@naijacall.com`;
+                } else {
+                    // Fallback if no country code matches, assume a default or just use as is (might fail if not matching Firebase's format)
+                    emailToLogin = `${cleanIdentifier}@naijacall.com`; // Generic fallback
+                }
+            }
+
+            try {
+                await window.signInWithEmailAndPassword(window.firebaseAuth, emailToLogin, password);
+                showCustomAlert("Login successful!", () => {
+                    goToHome();
+                });
+            } catch (error) {
+                document.getElementById('authMessage').textContent = error.message;
             }
         }
     }
 
-    function sendOtp(fullPhoneNumber) {
-        // Simulate OTP generation (4-digit number)
-        correctOtp = Math.floor(1000 + Math.random() * 9000).toString();
-        isOtpSent = true;
-        toggleAuthFormView(); // Update UI to show OTP input
-
-        showCustomAlert(`OTP sent to ${fullPhoneNumber}. Your OTP is: ${correctOtp}. (For demo purposes, expires in 60s)`, () => {
-            // Start resend timer
-            otpResendTimer = 60; // 60 seconds
-            const otpMessageElement = document.getElementById('otpMessage');
-            otpMessageElement.textContent = `Resend OTP in ${otpResendTimer}s`;
-            clearInterval(otpTimerInterval); // Clear any previous timer
-            otpTimerInterval = setInterval(() => {
-                otpResendTimer--;
-                if (otpResendTimer <= 0) {
-                    clearInterval(otpTimerInterval);
-                    otpMessageElement.innerHTML = 'OTP expired. <a href="#" onclick="event.preventDefault(); sendOtp(\'' + fullPhoneNumber + '\')">Resend OTP</a>';
-                    // Do not set isOtpSent = false here, keep the field visible for re-sending
-                } else {
-                    otpMessageElement.textContent = `Resend OTP in ${otpResendTimer}s`;
-                }
-            }, 1000);
-        });
-    }
-
-    function verifyOtp() {
-        const enteredOtp = document.getElementById('otpInput').value.trim();
-        if (enteredOtp === correctOtp) {
-            clearInterval(otpTimerInterval); // Stop timer on successful verification
-            // Simulate successful registration
-            loggedInUser.firstName = document.getElementById("firstName").value.trim();
-            loggedInUser.phoneNumber = document.getElementById("authCountryCode").value + document.getElementById("authPhoneNumber").value.trim();
-            loggedInUser.email = document.getElementById("authIdentifierLogin").value || 'registered@example.com'; // Use email if entered for login, else placeholder
-            loggedInUser.memberSince = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            
-            showCustomAlert("Registration successful!", () => {
-                isRegistering = false; // Exit registration mode
-                isOtpSent = false; // Reset OTP state
-                document.getElementById('otpInput').value = ''; // Clear OTP input
-                document.getElementById('otpMessage').textContent = ''; // Clear OTP message
-                document.getElementById('authIdentifierLogin').value = ''; // Clear input used for registration
-                document.getElementById('authPassword').value = ''; // Clear password
-                document.getElementById('firstName').value = ''; // Clear name
-                document.getElementById('authPhoneNumber').value = ''; // Clear phone
-                toggleAuthFormView(); // Reset auth form to login view
-                goToHome();
-            });
-        } else {
-            document.getElementById('authMessage').textContent = "Invalid OTP. Please try again.";
-        }
-    }
 
     // --- Dial Pad & Calling ---
     function dialInput(char) {
@@ -1154,7 +1421,6 @@
         if (char === 'backspace') {
             display.value = display.value.slice(0, -1);
         } else if (char === 'keypad') {
-            // Placeholder for opening keypad during a call
             showCustomAlert("Keypad functionality during call not implemented yet.");
         }
         else {
@@ -1164,7 +1430,7 @@
 
     function clearDialPad() {
         document.getElementById('dialPadDisplay').value = '';
-        document.getElementById('dialPadCountryCode').value = ''; // Clear selected country code
+        document.getElementById('dialPadCountryCode').value = '';
     }
 
     function startCallFromDialpad() {
@@ -1184,7 +1450,6 @@
         const fullNumber = selectedCountryCode + number;
         
         closeOverlay('dialPadPage');
-        // Find contact name if available, otherwise use number
         const contact = contacts.find(c => c.phone === fullNumber);
         const nameToDisplay = contact ? contact.name : fullNumber;
         setTimeout(() => startCallSimulation(fullNumber, nameToDisplay), 300);
@@ -1193,24 +1458,21 @@
     function selectContactForCall(phoneNumber, contactName) {
         closeOverlay('contactsPage');
         openOverlay('dialPadPage');
-        // Pre-fill dialPadDisplay with selected contact's number
-        document.getElementById('dialPadDisplay').value = phoneNumber;
         
-        // Attempt to set country code for dialPadCountryCode
         const matchingCountry = countryCodes.find(c => phoneNumber.startsWith(c.code));
         if (matchingCountry) {
             document.getElementById('dialPadCountryCode').value = matchingCountry.code;
-            // Adjust dialPadDisplay to only show the local part if country code is selected
             document.getElementById('dialPadDisplay').value = phoneNumber.substring(matchingCountry.code.length);
         } else {
-            document.getElementById('dialPadCountryCode').value = ''; // Reset if no match
+            document.getElementById('dialPadCountryCode').value = '';
+            document.getElementById('dialPadDisplay').value = phoneNumber;
         }
     }
 
     function openContactsFromDialpad() {
         closeOverlay('dialPadPage');
         openOverlay('contactsPage');
-        renderContacts(); // Ensure contacts are freshly rendered
+        renderContacts();
     }
 
     function startCallSimulation(number, name = 'Unknown Number') {
@@ -1220,10 +1482,9 @@
         document.getElementById("callScreen").classList.add("active");
         callDuration = 0;
 
-        // Simulate ringing and then connecting
         setTimeout(() => {
             document.getElementById("callStatus").textContent = "Ringing...";
-        }, 2000); // Ringing after 2 seconds
+        }, 2000);
 
         setTimeout(() => {
             document.getElementById("callStatus").textContent = "Connected";
@@ -1233,7 +1494,7 @@
                 const seconds = String(callDuration % 60).padStart(2, '0');
                 document.getElementById("callTimer").textContent = `${minutes}:${seconds}`;
             }, 1000);
-        }, 5000); // Connected after 5 seconds
+        }, 5000);
     }
 
     function endCallSimulation() {
@@ -1241,19 +1502,17 @@
         document.getElementById("callScreen").classList.remove("active");
         document.getElementById("muteBtn").classList.remove("active");
         document.getElementById("speakerBtn").classList.remove("active");
-        document.getElementById("muteBtn").querySelector('i').className = 'fas fa-microphone'; // Reset icon
-        document.getElementById("speakerBtn").querySelector('i').className = 'fas fa-volume-up'; // Reset icon
+        document.getElementById("muteBtn").querySelector('i').className = 'fas fa-microphone';
+        document.getElementById("speakerBtn").querySelector('i').className = 'fas fa-volume-up';
         
         showCustomAlert("Call Ended.");
 
-        // Add call to history
-        const numberCalled = document.getElementById('dialPadDisplay').value; // Get the number from dialpad display
+        const numberCalled = document.getElementById('dialPadDisplay').value;
         const selectedCC = document.getElementById('dialPadCountryCode').value;
-        const fullNumberForHistory = selectedCC + numberCalled; // Reconstruct full number
+        const fullNumberForHistory = selectedCC + numberCalled;
 
-        // Find the actual name based on the full number if it exists in contacts
         const contactForHistory = contacts.find(c => c.phone === fullNumberForHistory);
-        const nameForHistory = contactForHistory ? contactForHistory.name : document.getElementById("callingContactName").textContent; // Use callingContactName if it was set to a name, otherwise use number
+        const nameForHistory = contactForHistory ? contactForHistory.name : document.getElementById("callingContactName").textContent;
 
         const callInfo = {
             name: nameForHistory,
@@ -1262,12 +1521,11 @@
             duration: callDuration
         };
         callHistory.push(callInfo);
-        renderRecentCalls(); // Update the recent calls list
-        clearDialPad(); // Clear the dialpad after the call ends
+        renderRecentCalls();
+        clearDialPad();
     }
 
     function simulateCallBack(number) {
-        // Pre-fill dialpad with number for calling back
         openOverlay('dialPadPage');
         
         const matchingCountry = countryCodes.find(c => number.startsWith(c.code));
@@ -1275,7 +1533,7 @@
             document.getElementById('dialPadCountryCode').value = matchingCountry.code;
             document.getElementById('dialPadDisplay').value = number.substring(matchingCountry.code.length);
         } else {
-            document.getElementById('dialPadCountryCode').value = ''; // Reset if no match
+            document.getElementById('dialPadCountryCode').value = '';
             document.getElementById('dialPadDisplay').value = number;
         }
     }
@@ -1315,7 +1573,7 @@
             showCustomAlert("Contact Name and Phone Number are required.");
             return;
         }
-        if (!/^\+?\d+$/.test(phone)) { // Allows optional '+' at the beginning and then digits
+        if (!/^\+?\d+$/.test(phone)) {
             showCustomAlert("Invalid phone number format. Please include country code (e.g., +234...) and only digits.");
             return;
         }
@@ -1326,24 +1584,23 @@
 
         const newContact = { name, phone, email };
         contacts.push(newContact);
-        renderContacts(); // Re-render the contacts list with the new contact
+        renderContacts();
         closeAddContactPage();
         showCustomAlert("Contact added successfully!");
     }
 
     // --- Custom Alert & Confirm ---
     let alertTimeout;
-    let currentAlertCallback = null; // Store the callback for the current alert
+    let currentAlertCallback = null;
 
     function showCustomAlert(message, callback = null) {
         document.getElementById("customAlertMessage").textContent = message;
         document.getElementById("customAlertDialog").classList.add("active");
-        currentAlertCallback = callback; // Assign the callback
+        currentAlertCallback = callback;
 
-        clearTimeout(alertTimeout); // Clear any existing timeout
+        clearTimeout(alertTimeout);
 
-        // Auto-hide after 3 seconds for non-error messages, or allow manual dismissal
-        if (!message.includes("Invalid") && !message.includes("Error") && !message.includes("failed")) { // Heuristic for auto-dismiss
+        if (!message.includes("Invalid") && !message.includes("Error") && !message.includes("failed")) {
             alertTimeout = setTimeout(() => {
                 hideCustomAlert();
             }, 3000);
@@ -1351,10 +1608,10 @@
     }
     function hideCustomAlert() {
         document.getElementById("customAlertDialog").classList.remove("active");
-        clearTimeout(alertTimeout); // Ensure timeout is cleared if hidden manually
+        clearTimeout(alertTimeout);
         if (currentAlertCallback) {
-            currentAlertCallback(); // Execute the callback
-            currentAlertCallback = null; // Clear the callback
+            currentAlertCallback();
+            currentAlertCallback = null;
         }
     }
 
@@ -1370,12 +1627,553 @@
         };
         document.getElementById("confirmCancelBtn").onclick = () => {
             hideCustomConfirm();
-            confirmCallback = null; // Clear callback
+            confirmCallback = null;
         };
     }
     function hideCustomConfirm() {
         document.getElementById("customConfirmDialog").classList.remove("active");
     }
 </script>
+    
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+    authDomain: "smartcalls-d49f5.firebaseapp.com",
+    projectId: "smartcalls-d49f5",
+    storageBucket: "smartcalls-d49f5.firebasestorage.app",
+    messagingSenderId: "854255870421",
+    appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+    measurementId: "G-JKKWJEJK0B"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+    
+</body>
+</html>
+
+                </div>
+                <button class="call-again-btn" onclick="event.stopPropagation(); startCallSimulation('${contact.phone}', '${contact.name}')">Call</button>
+            `;
+            contactsListDiv.appendChild(contactItem);
+        });
+    }
+
+    function searchContacts() {
+        const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
+        const filteredContacts = contacts.filter(contact =>
+            contact.name.toLowerCase().includes(searchTerm) ||
+            contact.phone.toLowerCase().includes(searchTerm) ||
+            (contact.email && contact.email.toLowerCase().includes(searchTerm))
+        );
+        renderContacts(filteredContacts);
+    }
+
+    // --- Message Functions ---
+    function renderMessageThreads(filteredThreads = messageThreads) {
+        const messageThreadsListDiv = document.getElementById('messageThreadsList');
+        messageThreadsListDiv.innerHTML = '';
+        if (filteredThreads.length === 0) {
+            messageThreadsListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No messages yet.</p>';
+            return;
+        }
+        filteredThreads.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(thread => {
+            const threadItem = document.createElement('div');
+            threadItem.className = 'message-thread-item';
+            threadItem.onclick = () => showCustomAlert(`Opening chat with ${thread.contactName || thread.contactNumber}.`);
+            threadItem.innerHTML = `
+                <div class="message-thread-info">
+                    <div class="message-thread-name">${thread.contactName || thread.contactNumber}</div>
+                    <div class="message-thread-last-msg">${thread.lastMessage}</div>
+                </div>
+                <div class="message-thread-time">${formatMessageTime(thread.timestamp)}</div>
+            `;
+            messageThreadsListDiv.appendChild(threadItem);
+        });
+    }
+
+    function formatMessageTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+        if (diffDays === 0) {
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        } else if (diffDays === 1) {
+            return 'Yesterday';
+        } else if (diffDays < 7) {
+            return date.toLocaleDateString('en-US', { weekday: 'short' });
+        } else {
+            return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        }
+    }
+
+    function searchMessages() {
+        const searchTerm = document.getElementById('messageSearchInput').value.toLowerCase();
+        const filteredThreads = messageThreads.filter(thread =>
+            (thread.contactName && thread.contactName.toLowerCase().includes(searchTerm)) ||
+            thread.contactNumber.toLowerCase().includes(searchTerm) ||
+            thread.lastMessage.toLowerCase().includes(searchTerm)
+        );
+        renderMessageThreads(filteredThreads);
+    }
+
+    function openNewMessagePage() {
+        document.getElementById('messageRecipient').value = '';
+        document.getElementById('messageInput').value = '';
+        openOverlay('newMessagePage');
+    }
+
+    function closeNewMessagePage() {
+        closeOverlay('newMessagePage');
+    }
+
+    function sendMessage() {
+        const recipient = document.getElementById('messageRecipient').value.trim();
+        const message = document.getElementById('messageInput').value.trim();
+
+        if (!recipient || !message) {
+            showCustomAlert("Please enter a recipient and a message.");
+            return;
+        }
+
+        showCustomAlert(`Message sent to ${recipient}: "${message}"`, () => {
+            const contact = contacts.find(c => c.name.toLowerCase() === recipient.toLowerCase() || c.phone === recipient);
+            const contactName = contact ? contact.name : null;
+            const contactNumber = contact ? contact.phone : recipient;
+
+            const existingThreadIndex = messageThreads.findIndex(t => t.contactNumber === contactNumber);
+            if (existingThreadIndex > -1) {
+                messageThreads[existingThreadIndex].lastMessage = message;
+                messageThreads[existingThreadIndex].timestamp = new Date().toISOString();
+            } else {
+                messageThreads.push({
+                    contactName: contactName,
+                    contactNumber: contactNumber,
+                    lastMessage: message,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            renderMessageThreads();
+            closeNewMessagePage();
+        });
+    }
+
+    // --- Page & Overlay Navigation ---
+    function showPage(pageId) {
+        document.querySelectorAll('.container').forEach(p => {
+            p.classList.remove('active-page');
+            p.classList.add('hidden');
+        });
+        const targetPage = document.getElementById(pageId);
+        targetPage.classList.remove('hidden');
+        targetPage.classList.add('active-page');
+    }
+
+    function openOverlay(overlayId) { document.getElementById(overlayId).classList.add('active'); }
+    function closeOverlay(overlayId) { document.getElementById(overlayId).classList.remove('active'); }
+    function goToAuth() { showPage('authPage'); }
+    async function goToHome() {
+        showPage('homePage');
+        if (window.firebaseAuth.currentUser) {
+            const user = window.firebaseAuth.currentUser;
+            const userDocRef = window.doc(window.firebaseDB, "users", user.uid);
+            const userDocSnap = await window.getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                loggedInUser.firstName = userData.name || "User";
+                loggedInUser.email = userData.email || user.email;
+                loggedInUser.phoneNumber = userData.phone || user.phoneNumber || "N/A";
+                loggedInUser.memberSince = new Date(userData.createdAt).toLocaleDateString();
+            } else {
+                loggedInUser.firstName = user.displayName || "User";
+                loggedInUser.email = user.email;
+                loggedInUser.phoneNumber = user.phoneNumber || "N/A";
+                loggedInUser.memberSince = new Date(user.metadata.creationTime).toLocaleDateString();
+            }
+        }
+        document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
+        document.getElementById('profileName').textContent = loggedInUser.firstName;
+        document.getElementById('profileEmail').textContent = loggedInUser.email;
+        document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber;
+        document.getElementById('profileMemberSince').textContent = loggedInUser.memberSince;
+        renderRecentCalls();
+    }
+    
+    function confirmLogout() {
+        showCustomConfirm("Are you sure you want to log out?", () => {
+            logout();
+        });
+    }
+
+    function logout() {
+        window.firebaseAuth.signOut().then(() => {
+            showCustomAlert("Logging out...", () => {
+                loggedInUser = {
+                    firstName: '',
+                    email: '',
+                    phoneNumber: '',
+                    memberSince: ''
+                };
+                isRegistering = false;
+                document.getElementById('authIdentifierLogin').value = '';
+                document.getElementById('authPassword').value = '';
+                document.getElementById('firstName').value = '';
+                document.getElementById('authPhoneNumber').value = '';
+                const selects = document.querySelectorAll('#authCountryCode, #dialPadCountryCode');
+                selects.forEach(select => {
+                    select.value = '';
+                });
+                toggleAuthFormView();
+                showPage('welcomePage');
+            });
+        }).catch((error) => {
+            showCustomAlert("Logout Error: " + error.message);
+        });
+    }
+
+    // --- Authentication ---
+    function toggleForm() {
+        isRegistering = !isRegistering;
+        document.getElementById('authPassword').value = '';
+        document.getElementById('authIdentifierLogin').value = '';
+        document.getElementById('firstName').value = '';
+        document.getElementById('authPhoneNumber').value = '';
+        toggleAuthFormView();
+    }
+
+    function toggleAuthFormView() {
+        document.getElementById('authMessage').textContent = '';
+        document.getElementById("firstName").classList.toggle("hidden", !isRegistering);
+        document.getElementById("phoneRegSection").classList.toggle("hidden", !isRegistering);
+        document.getElementById("authIdentifierLogin").classList.toggle("hidden", isRegistering);
+        document.getElementById("otpSection").classList.add("hidden"); // OTP section always hidden for now, simplified auth
+
+        if (isRegistering) {
+            document.getElementById('formTitle').innerText = "Register";
+            document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-user-plus"></i> Register'; // Changed to "Register"
+        } else {
+            document.getElementById('formTitle').innerText = "Login to NaijaCall";
+            document.getElementById('authSubmitBtn').innerHTML = '<i class="fas fa-lock"></i> Login';
+        }
+    }
+    
+    async function handleAuthSubmit() {
+        document.getElementById('authMessage').textContent = '';
+
+        if (isRegistering) {
+            const fullName = document.getElementById("firstName").value.trim();
+            const phone = document.getElementById("authPhoneNumber").value.trim();
+            const countryCode = document.getElementById("authCountryCode").value;
+            const password = document.getElementById("authPassword").value.trim();
+            const email = `${countryCode}${phone.replace(/\D/g, '')}@naijacall.com`; // Create email from phone
+
+            if (!fullName || !phone || countryCode === "" || !password) {
+                document.getElementById('authMessage').textContent = "Please fill all registration fields.";
+                return;
+            }
+            if (password.length < 6) {
+                document.getElementById('authMessage').textContent = "Password must be at least 6 characters.";
+                return;
+            }
+
+            try {
+                const userCredential = await window.createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+                const user = userCredential.user;
+
+                // Update user profile with display name
+                await window.updateProfile(user, { displayName: fullName });
+
+                // Store user data in Firestore
+                await window.setDoc(window.doc(window.firebaseDB, "users", user.uid), {
+                    name: fullName,
+                    phone: `${countryCode}${phone}`,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                });
+
+                showCustomAlert("Registration successful!", () => {
+                    goToHome();
+                });
+            } catch (error) {
+                document.getElementById('authMessage').textContent = error.message;
+            }
+        } else {
+            const identifier = document.getElementById("authIdentifierLogin").value.trim();
+            const password = document.getElementById("authPassword").value.trim();
+
+            if (!identifier || !password) {
+                document.getElementById('authMessage').textContent = "Please enter login credentials.";
+                return;
+            }
+
+            // Determine if identifier is email or phone for Firebase login
+            let emailToLogin = identifier;
+            if (!identifier.includes('@')) {
+                // Assuming phone numbers will be stored as email format: +234XXXXXXXXXX@naijacall.com
+                emailToLogin = `${identifier.replace(/\D/g, '')}@naijacall.com`;
+            }
+
+            try {
+                await window.signInWithEmailAndPassword(window.firebaseAuth, emailToLogin, password);
+                showCustomAlert("Login successful!", () => {
+                    goToHome();
+                });
+            } catch (error) {
+                document.getElementById('authMessage').textContent = error.message;
+            }
+        }
+    }
+
+
+    // --- Dial Pad & Calling ---
+    function dialInput(char) {
+        const display = document.getElementById('dialPadDisplay');
+        if (char === 'backspace') {
+            display.value = display.value.slice(0, -1);
+        } else if (char === 'keypad') {
+            showCustomAlert("Keypad functionality during call not implemented yet.");
+        }
+        else {
+            display.value += char;
+        }
+    }
+
+    function clearDialPad() {
+        document.getElementById('dialPadDisplay').value = '';
+        document.getElementById('dialPadCountryCode').value = '';
+    }
+
+    function startCallFromDialpad() {
+        const number = document.getElementById('dialPadDisplay').value.trim();
+        const selectedCountryCode = document.getElementById('dialPadCountryCode').value;
+
+        if (!number) {
+            return showCustomAlert("Please enter a phone number.");
+        }
+        if (selectedCountryCode === "") {
+            return showCustomAlert("Please select a country code.");
+        }
+        if (!/^\d+$/.test(number)) {
+            return showCustomAlert("Invalid phone number format. Only digits allowed.");
+        }
+
+        const fullNumber = selectedCountryCode + number;
+        
+        closeOverlay('dialPadPage');
+        const contact = contacts.find(c => c.phone === fullNumber);
+        const nameToDisplay = contact ? contact.name : fullNumber;
+        setTimeout(() => startCallSimulation(fullNumber, nameToDisplay), 300);
+    }
+
+    function selectContactForCall(phoneNumber, contactName) {
+        closeOverlay('contactsPage');
+        openOverlay('dialPadPage');
+        
+        const matchingCountry = countryCodes.find(c => phoneNumber.startsWith(c.code));
+        if (matchingCountry) {
+            document.getElementById('dialPadCountryCode').value = matchingCountry.code;
+            document.getElementById('dialPadDisplay').value = phoneNumber.substring(matchingCountry.code.length);
+        } else {
+            document.getElementById('dialPadCountryCode').value = '';
+            document.getElementById('dialPadDisplay').value = phoneNumber;
+        }
+    }
+
+    function openContactsFromDialpad() {
+        closeOverlay('dialPadPage');
+        openOverlay('contactsPage');
+        renderContacts();
+    }
+
+    function startCallSimulation(number, name = 'Unknown Number') {
+        document.getElementById("callingContactName").textContent = name;
+        document.getElementById("callStatus").textContent = "Dialing...";
+        document.getElementById("callTimer").textContent = "00:00";
+        document.getElementById("callScreen").classList.add("active");
+        callDuration = 0;
+
+        setTimeout(() => {
+            document.getElementById("callStatus").textContent = "Ringing...";
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById("callStatus").textContent = "Connected";
+            callTimerInterval = setInterval(() => {
+                callDuration++;
+                const minutes = String(Math.floor(callDuration / 60)).padStart(2, '0');
+                const seconds = String(callDuration % 60).padStart(2, '0');
+                document.getElementById("callTimer").textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }, 5000);
+    }
+
+    function endCallSimulation() {
+        clearInterval(callTimerInterval);
+        document.getElementById("callScreen").classList.remove("active");
+        document.getElementById("muteBtn").classList.remove("active");
+        document.getElementById("speakerBtn").classList.remove("active");
+        document.getElementById("muteBtn").querySelector('i').className = 'fas fa-microphone';
+        document.getElementById("speakerBtn").querySelector('i').className = 'fas fa-volume-up';
+        
+        showCustomAlert("Call Ended.");
+
+        const numberCalled = document.getElementById('dialPadDisplay').value;
+        const selectedCC = document.getElementById('dialPadCountryCode').value;
+        const fullNumberForHistory = selectedCC + numberCalled;
+
+        const contactForHistory = contacts.find(c => c.phone === fullNumberForHistory);
+        const nameForHistory = contactForHistory ? contactForHistory.name : document.getElementById("callingContactName").textContent;
+
+        const callInfo = {
+            name: nameForHistory,
+            number: fullNumberForHistory,
+            time: new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, day: 'numeric', month: 'short' }),
+            duration: callDuration
+        };
+        callHistory.push(callInfo);
+        renderRecentCalls();
+        clearDialPad();
+    }
+
+    function simulateCallBack(number) {
+        openOverlay('dialPadPage');
+        
+        const matchingCountry = countryCodes.find(c => number.startsWith(c.code));
+        if (matchingCountry) {
+            document.getElementById('dialPadCountryCode').value = matchingCountry.code;
+            document.getElementById('dialPadDisplay').value = number.substring(matchingCountry.code.length);
+        } else {
+            document.getElementById('dialPadCountryCode').value = '';
+            document.getElementById('dialPadDisplay').value = number;
+        }
+    }
+
+    function toggleMute() {
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.classList.toggle('active');
+        muteBtn.querySelector('i').className = muteBtn.classList.contains('active') ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+        showCustomAlert(muteBtn.classList.contains('active') ? "Muted" : "Unmuted");
+    }
+
+    function toggleSpeaker() {
+        const speakerBtn = document.getElementById('speakerBtn');
+        speakerBtn.classList.toggle('active');
+        speakerBtn.querySelector('i').className = speakerBtn.classList.contains('active') ? 'fas fa-volume-off' : 'fas fa-volume-up';
+        showCustomAlert(speakerBtn.classList.contains('active') ? "Speaker Off" : "Speaker On");
+    }
+
+    // --- Contacts Management ---
+    function openAddContactPage() {
+        document.getElementById('newContactName').value = '';
+        document.getElementById('newContactPhone').value = '';
+        document.getElementById('newContactEmail').value = '';
+        openOverlay('addContactPage');
+    }
+
+    function closeAddContactPage() {
+        closeOverlay('addContactPage');
+    }
+
+    function saveNewContact() {
+        const name = document.getElementById('newContactName').value.trim();
+        const phone = document.getElementById('newContactPhone').value.trim();
+        const email = document.getElementById('newContactEmail').value.trim();
+
+        if (!name || !phone) {
+            showCustomAlert("Contact Name and Phone Number are required.");
+            return;
+        }
+        if (!/^\+?\d+$/.test(phone)) {
+            showCustomAlert("Invalid phone number format. Please include country code (e.g., +234...) and only digits.");
+            return;
+        }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showCustomAlert("Invalid email format.");
+            return;
+        }
+
+        const newContact = { name, phone, email };
+        contacts.push(newContact);
+        renderContacts();
+        closeAddContactPage();
+        showCustomAlert("Contact added successfully!");
+    }
+
+    // --- Custom Alert & Confirm ---
+    let alertTimeout;
+    let currentAlertCallback = null;
+
+    function showCustomAlert(message, callback = null) {
+        document.getElementById("customAlertMessage").textContent = message;
+        document.getElementById("customAlertDialog").classList.add("active");
+        currentAlertCallback = callback;
+
+        clearTimeout(alertTimeout);
+
+        if (!message.includes("Invalid") && !message.includes("Error") && !message.includes("failed")) {
+            alertTimeout = setTimeout(() => {
+                hideCustomAlert();
+            }, 3000);
+        }
+    }
+    function hideCustomAlert() {
+        document.getElementById("customAlertDialog").classList.remove("active");
+        clearTimeout(alertTimeout);
+        if (currentAlertCallback) {
+            currentAlertCallback();
+            currentAlertCallback = null;
+        }
+    }
+
+    let confirmCallback = null;
+    function showCustomConfirm(message, onConfirm) {
+        document.getElementById("customConfirmMessage").textContent = message;
+        document.getElementById("customConfirmDialog").classList.add("active");
+        confirmCallback = onConfirm;
+
+        document.getElementById("confirmOkBtn").onclick = () => {
+            hideCustomConfirm();
+            if (confirmCallback) confirmCallback();
+        };
+        document.getElementById("confirmCancelBtn").onclick = () => {
+            hideCustomConfirm();
+            confirmCallback = null;
+        };
+    }
+    function hideCustomConfirm() {
+        document.getElementById("customConfirmDialog").classList.remove("active");
+    }
+</script>
+    
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+    authDomain: "smartcalls-d49f5.firebaseapp.com",
+    projectId: "smartcalls-d49f5",
+    storageBucket: "smartcalls-d49f5.firebasestorage.app",
+    messagingSenderId: "854255870421",
+    appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+    measurementId: "G-JKKWJEJK0B"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+    
 </body>
 </html>

@@ -427,35 +427,6 @@
             resize: vertical;
         }
     </style>
-
-<!-- Firebase SDKs -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDEzS2-1-Gi7hWf1hm1h55lDTDwspzxhyI",
-    authDomain: "smartcall-2974d.firebaseapp.com",
-    projectId: "smartcall-2974d",
-    storageBucket: "smartcall-2974d.firebasestorage.app",
-    messagingSenderId: "900407552357",
-    appId: "1:900407552357:web:671ea8d9409ce6caf0d98c"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  window.firebaseAuth = auth;
-  window.firebaseDB = db;
-  window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-  window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-  window.setDoc = setDoc;
-  window.getDoc = getDoc;
-  window.doc = doc;
-</script>
-
 </head>
 
 <body>
@@ -1074,68 +1045,19 @@
         }
     }
 
-    
     function handleAuthSubmit() {
         document.getElementById('authMessage').textContent = ''; // Clear previous messages
 
         if (isRegistering) {
-            const fullName = document.getElementById("firstName").value.trim();
-            const phone = document.getElementById("authPhoneNumber").value.trim();
+            const firstName = document.getElementById("firstName").value.trim();
+            const phoneNumber = document.getElementById("authPhoneNumber").value.trim();
             const countryCode = document.getElementById("authCountryCode").value;
             const password = document.getElementById("authPassword").value.trim();
-            const email = `${countryCode}${phone}@naijacall.com`;
 
-            if (!fullName || !phone || countryCode === "" || !password) {
+            if (!firstName || !phoneNumber || countryCode === "" || !password) {
                 document.getElementById('authMessage').textContent = "Please fill all registration fields.";
                 return;
             }
-
-            window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    await window.setDoc(window.doc(window.firebaseDB, "users", user.uid), {
-                        name: fullName,
-                        phone: `${countryCode}${phone}`,
-                        email: email,
-                        createdAt: new Date().toISOString()
-                    });
-
-                    showCustomAlert("Registration successful!", () => {
-                        loggedInUser.firstName = fullName;
-                        loggedInUser.phoneNumber = `${countryCode}${phone}`;
-                        loggedInUser.email = email;
-                        loggedInUser.memberSince = new Date().toLocaleDateString();
-                        goToHome();
-                    });
-                })
-                .catch((error) => {
-                    document.getElementById('authMessage').textContent = error.message;
-                });
-        } else {
-            const identifier = document.getElementById("authIdentifierLogin").value.trim();
-            const password = document.getElementById("authPassword").value.trim();
-
-            if (!identifier || !password) {
-                document.getElementById('authMessage').textContent = "Please enter login credentials.";
-                return;
-            }
-
-            window.signInWithEmailAndPassword(window.firebaseAuth, identifier, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    showCustomAlert("Login successful!", () => {
-                        loggedInUser.firstName = user.displayName || "User";
-                        loggedInUser.email = user.email;
-                        loggedInUser.phoneNumber = user.phoneNumber || "N/A";
-                        loggedInUser.memberSince = new Date(user.metadata.creationTime).toLocaleDateString();
-                        goToHome();
-                    });
-                })
-                .catch((error) => {
-                    document.getElementById('authMessage').textContent = error.message;
-                });
-        }
-    }
             if (phoneNumber.length < 7 || phoneNumber.length > 15 || !/^\d+$/.test(phoneNumber)) {
                 document.getElementById('authMessage').textContent = "Please enter a valid phone number (7-15 digits).";
                 return;

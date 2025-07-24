@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SmartCall - Live</title>
+    <title>NaijaCall - Galaxy Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -16,20 +16,20 @@
         /* Body Styling */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+            background-color: #ffffff; /* Default white background */
             height: 100vh;
-            color: #333;
+            color: #333; /* Default dark text */
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            overflow: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden; /* Prevent body scroll, container handles it */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
         }
 
         body.dark-theme {
-            background-color: #0a0a1e;
-            color: #e0e0e0;
+            background-color: #0a0a1e; /* Dark background */
+            color: #e0e0e0; /* Light text for dark theme */
         }
 
         body.dark-theme h1, body.dark-theme h2, body.dark-theme h3 {
@@ -152,12 +152,14 @@
             background-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* Utility Class for Hiding Elements */
         .hidden {
             display: none !important;
         }
 
+        /* Main Container Styling */
         .container {
-            background-color: #ffffff;
+            background-color: #ffffff; /* Default white background for container */
             padding: 20px;
             border-radius: 25px;
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
@@ -166,7 +168,7 @@
             max-width: 600px;
             max-height: 900px;
             backdrop-filter: blur(8px);
-            transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out; /* Smoother page transition */
             position: relative;
             overflow-y: auto;
             display: flex;
@@ -185,18 +187,20 @@
         .container::-webkit-scrollbar { display: none; }
         .container { -ms-overflow-style: none; scrollbar-width: none; }
 
-        h1, h2, h3 { color: #2c3e50; text-shadow: none; }
+        /* Headings & Text */
+        h1, h2, h3 { color: #2c3e50; text-shadow: none; } /* Darker color for headings, removed shadow */
         h1 { font-size: 2.5rem; margin-bottom: 10px; }
         h2 { font-size: 2rem; margin-bottom: 15px; }
         h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: #555; }
+        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: #555; } /* Darker color for paragraphs */
         .hausa-tagline {
             font-size: 1.1rem;
             font-style: italic;
-            color: #e74c3c;
+            color: #e74c3c; /* Changed to a more readable color */
             margin: 15px 0 5px 0;
         }
 
+        /* Input Fields & Select */
         input, select, textarea {
             width: 100%; padding: 14px; margin: 10px 0;
             border: 1px solid #ccc; border-radius: 10px;
@@ -206,12 +210,13 @@
         input::placeholder, textarea::placeholder { color: #777; }
         input:focus, select:focus, textarea:focus {
             background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* More subtle focus shadow */
         }
         select option { background-color: #f9f9f9; color: #333; }
 
+        /* General Button */
         .btn {
-            width: 100%; padding: 16px; background: linear-gradient(to right, #3498db, #2980b9);
+            width: 100%; padding: 16px; background: linear-gradient(to right, #3498db, #2980b9); /* More readable button color */
             color: #fff; font-weight: bold; border: none; border-radius: 40px;
             font-size: 1.2rem; cursor: pointer; margin-top: 15px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); transition: all 0.2s ease;
@@ -220,35 +225,37 @@
         .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); }
         .btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
 
+        /* --- Home Page Specific Styles --- */
         #homePage { justify-content: space-between; }
         .home-header { padding: 10px; }
+        /* Updated style for the welcome/balance box */
         .welcome-balance-box {
-            background-color: #a29bfe;
+            background-color: #a29bfe; /* Purplish background */
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
-            color: #fff;
-            background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
+            color: #fff; /* Light text for better readability on purple */
+            background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7); /* Sweetened purple gradient */
         }
         .welcome-balance-box h2 {
             margin-bottom: 5px;
-            color: #fff;
-            text-shadow: none;
+            color: #fff; /* White color for heading */
+            text-shadow: none; /* Remove text shadow for better clarity */
         }
         .welcome-balance-box h2 strong {
-            color: #f0f0f0;
+            color: #f0f0f0; /* A slightly lighter color for emphasis */
         }
         .wallet-balance {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #fff;
+            color: #fff; /* White text for balance */
             margin-top: 10px;
         }
         .wallet-balance span {
             font-size: 0.9rem;
-            color: #eee;
+            color: #eee; /* Slightly lighter white for subtext */
             font-style: italic;
         }
 
@@ -261,7 +268,7 @@
         }
         .make-call-circle {
             width: 180px; height: 180px; border-radius: 50%;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: linear-gradient(135deg, #3498db, #2980b9); /* Updated button color */
             color: white; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer;
@@ -275,6 +282,7 @@
         .make-call-circle i { font-size: 4rem; margin-bottom: 5px; }
         .make-call-circle .button-label { font-size: 1.1rem; font-weight: bold; }
 
+        /* Call History */
         .section-title {
             font-size: 1.3rem; color: #3498db; border-bottom: 1px solid #ddd;
             padding-bottom: 5px; margin: 20px 0 10px 0;
@@ -295,6 +303,7 @@
         }
         .call-again-btn:hover { background: #2980b9; }
 
+        /* --- Hexagonal Bottom Navigation --- */
         .bottom-nav {
             display: flex; justify-content: space-around;
             align-items: center; padding: 15px 0; margin-top: 20px;
@@ -304,24 +313,26 @@
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; transition: all 0.2s ease;
-            background-color: #f0f0f0;
+            background-color: #f0f0f0; /* Light background for buttons */
         }
         .hex-btn:hover { transform: scale(1.1); }
-        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; color: #555; }
-        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #333; }
+        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; color: #555; } /* Darker icons */
+        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #333; } /* Darker text */
 
+        /* Individual Hex Button Colors */
         .hex-btn.recharge { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .hex-btn.recharge i, .hex-btn.recharge span { color: #fff; }
+        .hex-btn.recharge i { color: #fff; }
         .hex-btn.contacts { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .hex-btn.contacts i, .hex-btn.contacts span { color: #fff; }
-        .hex-btn.messages { background: linear-gradient(135deg, #f1c40f, #f39c12); }
-        .hex-btn.messages i, .hex-btn.messages span { color: #fff; }
+        .hex-btn.contacts i { color: #fff; }
+        .hex-btn.messages { background: linear-gradient(135deg, #f1c40f, #f39c12); } /* New color for messages */
+        .hex-btn.messages i { color: #fff; }
         .hex-btn.referral { background: linear-gradient(135deg, #e67e22, #d35400); }
-        .hex-btn.referral i, .hex-btn.referral span { color: #fff; }
+        .hex-btn.referral i { color: #fff; }
         .hex-btn.profile { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .hex-btn.profile i, .hex-btn.profile span { color: #fff; }
+        .hex-btn.profile i { color: #fff; }
 
 
+        /* --- Full Screen Overlays (DialPad, Contacts, Profile etc) --- */
         .fullscreen-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; border-radius: 25px; padding: 20px;
@@ -333,11 +344,12 @@
         .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .overlay-title { font-size: 1.8rem; color: #3498db; }
         .close-overlay-btn { font-size: 1.8rem; color: #555; cursor: pointer; transition: color 0.2s ease; }
-        .close-overlay-btn:hover { color: #e74c3c; }
+        .close-overlay-btn:hover { color: #e74c3c; } /* Highlight close button on hover */
         .overlay-content { flex-grow: 1; overflow-y: auto; }
         .overlay-content::-webkit-scrollbar { display: none; }
         .overlay-content { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* --- Dial Pad Specific Styles --- */
         #dialPadPage .overlay-content { display: flex; flex-direction: column; justify-content: space-between; }
         #dialPadDisplay {
             width: 100%; background: transparent; border: none; border-bottom: 2px solid #3498db;
@@ -371,7 +383,7 @@
             margin-top: 20px;
         }
         .dialpad-bottom-actions .btn {
-            width: 48%;
+            width: 48%; /* Adjust width for two buttons */
             margin-top: 0;
             padding: 10px;
             font-size: 1rem;
@@ -385,11 +397,12 @@
             background: #eee;
         }
 
+        /* --- Other Pages Styles (Contacts, Profile, etc.) --- */
         .contact-item {
             display: flex; align-items: center; background-color: #f9f9f9;
             padding: 12px; border-radius: 10px; margin-bottom: 10px;
             transition: background-color 0.2s ease;
-            cursor: pointer;
+            cursor: pointer; /* Make contact item clickable */
             color: #333;
         }
         .contact-item:hover { background-color: #eee; }
@@ -409,6 +422,7 @@
         }
         .profile-info strong { color: #3498db; }
 
+        /* Call Screen Overlay */
         .call-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; border-radius: 25px;
@@ -429,12 +443,13 @@
             font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s ease;
         }
         .call-control-btn:hover { background-color: #eee; }
-        .call-control-btn.active { background-color: #3498db; color: #fff; }
+        .call-control-btn.active { background-color: #3498db; color: #fff; } /* For active mute/speaker */
 
         .end-call-btn { background-color: #e74c3c; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s ease; }
         .end-call-btn:hover { background-color: #c0392b; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5); }
 
 
+        /* Custom Alert Dialog */
         #customAlertDialog, #customConfirmDialog {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
@@ -467,12 +482,13 @@
             background: #eee;
         }
 
+        /* Search input for contacts */
         .search-input-container {
             position: relative;
             margin-bottom: 15px;
         }
         .search-input-container input {
-            padding-right: 40px;
+            padding-right: 40px; /* Make space for the icon */
         }
         .search-input-container .search-icon {
             position: absolute;
@@ -480,7 +496,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: #777;
-            pointer-events: none;
+            pointer-events: none; /* Allow clicks to pass through to the input */
         }
 
         .scrolling-tagline {
@@ -489,7 +505,7 @@
             font-weight: bold;
             padding: 10px 0;
             text-align: center;
-            animation: glow 1.5s infinite alternate;
+            animation: glow 1.5s infinite alternate; /* Added glow animation */
         }
 
         @keyframes glow {
@@ -497,6 +513,7 @@
             to { text-shadow: 0 0 15px #3498db, 0 0 20px #2980b9; }
         }
 
+        /* Message Page Specific Styles */
         .message-thread-item {
             background-color: #f9f9f9;
             padding: 12px 15px;
@@ -539,10 +556,11 @@
             resize: vertical;
         }
 
+ /* Theme Toggle Button */
         #themeToggleButton {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; /* Moved to the bottom */
+            right: 20px; /* Kept on the right */
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -554,7 +572,7 @@
             align-items: center;
             font-size: 1.2rem;
             color: #555;
-            z-index: 101;
+            z-index: 101; /* Ensure it's above other elements */
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
@@ -571,6 +589,7 @@
         .dark-theme #themeToggleButton:hover {
             background-color: #555;
         }
+  
     </style>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
@@ -584,7 +603,7 @@
         <h1>Welcome to<br>
           <strong><i>SmartCall!</i></strong>
         </h1>
-        <p>Connect with the world — simple, fast, and secured.</p>
+        <p style="color: #fff;">Connect with the world — simple, fast, and secured.</p>
         <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
     </div>
 
@@ -595,13 +614,27 @@
         </div>
 
         <div style="width: 100%;">
-            <input id="authEmail" placeholder="Email" type="email" />
-            <input class="hidden" id="authFullName" placeholder="Full Name" type="text" />
+            <input id="authIdentifierLogin" placeholder="Email or Phone Number" type="text" />
+            <input class="hidden" id="firstName" placeholder="Full Name" type="text" />
+
+            <div class="hidden" id="phoneRegSection">
+                <select id="authCountryCode"></select>
+                <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
+            </div>
+
             <input id="authPassword" placeholder="Password" type="password" />
+
+            <div id="otpSection" class="hidden">
+                <input id="otpInput" placeholder="Enter OTP" type="text" maxlength="4" />
+                <p id="otpMessage" style="color: #777; margin-top: 10px;"></p>
+            </div>
+
             <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">
                 <i class="fas fa-lock"></i> Login
             </button>
+
             <p style="margin-top: 15px; color: #555;">Don't have an account? <a style="color: #3498db; cursor: pointer;" onclick="toggleForm()">Register</a></p>
+
             <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
     </div>
@@ -609,10 +642,10 @@
     <div class="container hidden" id="homePage">
         <div class="home-header">
             <div class="welcome-balance-box">
-                <h2>Welcome Back, <br>
-                <span id="welcomeUserName"><strong>User</strong></span>!</h2>
-                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦0.00</strong><br>
-                    <span><i>(Approx. 0 Minutes)</i></span></div>
+                <h2>Welcome Back! <br>
+                <span id="welcomeUserName"><strong>User</strong></span></h2>
+                <div class="wallet-balance">Your Wallet Balance: <strong>₦1,650.00</strong><br>
+                    <span><i>(Approx. 58 Minutes, 45 Sec.)</i></span></div>
             </div>
         </div>
     
@@ -629,7 +662,7 @@
         </div>
         <div class="call-history-container">
             <div class="section-title">🕓 Recent Calls</div>
-            <div id="recentCallsList"><p style="color:#aaa;">No recent calls.</p></div>
+            <div id="recentCallsList"></div>
         </div>
 
         <div class="bottom-nav">
@@ -698,7 +731,7 @@
                 <i class="fas fa-search search-icon"></i>
             </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openAddContactPage()"><i class="fas fa-plus"></i> Add New Contact</button>
-            <div id="contactsList"><p style="color:#aaa;">No contacts yet. Add one!</p></div>
+            <div id="contactsList"></div>
         </div>
     </div>
 
@@ -721,7 +754,26 @@
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('messagePage')"></i>
         </div>
         <div class="overlay-content">
-             <p style="color: #aaa; margin-top: 15px;">Messaging feature coming soon!</p>
+            <div class="search-input-container">
+                <input type="text" id="messageSearchInput" placeholder="Search messages or contacts..." onkeyup="searchMessages()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button class="btn" style="margin-bottom: 20px;" onclick="openNewMessagePage()"><i class="fas fa-plus"></i> New Message</button>
+            <div id="messageThreadsList">
+                <p style="color: #aaa; margin-top: 15px;">No messages yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="newMessagePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">New Message</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeNewMessagePage()"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="messageRecipient" placeholder="Recipient (Name or Phone Number)" type="text" />
+            <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+            <button class="btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
         </div>
     </div>
 
@@ -735,7 +787,6 @@
                 <p><strong>Name:</strong> <span id="profileName"></span></p>
                 <p><strong>Email:</strong> <span id="profileEmail"></span></p>
                 <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
-                <p><strong>User ID:</strong> <span id="profileUserId"></span></p>
                 <p><strong>Member Since:</strong> <span id="profileMemberSince"></span></p>
             </div>
             <button class="btn" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -744,15 +795,16 @@
 
     <div class="fullscreen-overlay" id="rechargePage">
         <div class="overlay-header">
-            <h3 class="overlay-title">Recharge Wallet</h3>
+            <h3 class="overlay-title">Recharge</h3>
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('rechargePage')"></i>
         </div>
-        <div class="overlay-content">
-            <p>Enter the amount you want to add to your wallet.</p>
-            <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
-            <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
-            <div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
-        </div>
+        
+<div style="margin-top: 20px;">
+    <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
+    <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
+</div>
+<div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
+</div>
     </div>
 
     <div class="fullscreen-overlay" id="referralPage">
@@ -771,7 +823,7 @@
         <div class="call-controls">
             <button class="call-control-btn" id="muteBtn" onclick="toggleMute()"><i class="fas fa-microphone"></i></button>
             <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()"><i class="fas fa-volume-up"></i></button>
-            <button class="call-control-btn" onclick="showAlert('Keypad not implemented yet')"><i class="fas fa-th-large"></i></button>
+            <button class="call-control-btn" onclick="dialInput('keypad')"><i class="fas fa-th-large">i></button>
         </div>
         <button class="end-call-btn" onclick="endCallSimulation()">End Call</button>
     </div>
@@ -792,58 +844,20 @@
             </div>
         </div>
     </div>
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-  authDomain: "smartcalls-d49f5.firebaseapp.com",
-  projectId: "smartcalls-d49f5",
-  storageBucket: "smartcalls-d49f5.firebasestorage.app",
-  messagingSenderId: "854255870421",
-  appId: "1:854255870421:web:54841bdad9d49f3b6edd5c",
-  measurementId: "G-CX5C1QCHEC"
-};
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Make auth and db globally accessible
-        window.auth = auth;
-        window.db = db;
-        window.getAuth = getAuth;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.onAuthStateChanged = onAuthStateChanged;
-        window.signOut = signOut;
-        window.updateProfile = updateProfile;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.getDoc = getDoc;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.onSnapshot = onSnapshot;
-        window.query = query;
-        window.where = where;
-        window.serverTimestamp = serverTimestamp;
-
-    </script>
-
-    <script>
+<script>
     // --- Global State & Config ---
     let isRegistering = false;
-    let isDarkTheme = false;
-    let currentUser = null;
-    let contactsUnsubscribe = null;
-    let callsUnsubscribe = null;
+    let isOtpSent = false;
+    let correctOtp = '';
+    let otpResendTimer = 0;
+    let otpTimerInterval;
+    let isDarkTheme = false; // To track the current theme
+
+    let loggedInUser = {
+        firstName: 'Alkassim',
+        email: 'alkassim.suleiman@smartcall'
+    };
 
     // --- Theme Toggle Function ---
     function toggleTheme() {
@@ -852,7 +866,7 @@ const firebaseConfig = {
         const themeIcon = document.querySelector('#themeToggleButton i');
         themeIcon.classList.toggle('fa-sun', !isDarkTheme);
         themeIcon.classList.toggle('fa-moon', isDarkTheme);
-        localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+        localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light'); // Save theme preference
     }
 
     // --- Check for saved theme on page load ---
@@ -862,24 +876,21 @@ const firebaseConfig = {
             isDarkTheme = true;
             document.body.classList.add('dark-theme');
             const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.remove('fa-sun');
             themeIcon.classList.add('fa-moon');
         } else {
             const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.remove('fa-moon');
             themeIcon.classList.add('fa-sun');
         }
     });
 
     // --- Utility Functions ---
     function showPage(pageId) {
-        document.querySelectorAll('.container').forEach(page => {
-            page.classList.remove('active-page');
-            page.classList.add('hidden');
-        });
-        const page = document.getElementById(pageId);
-        page.classList.remove('hidden');
-        page.classList.add('active-page');
+        document.querySelectorAll('.container').forEach(page => page.classList.add('hidden'));
+        document.getElementById(pageId).classList.remove('hidden');
+        document.getElementById(pageId).classList.add('active-page');
+        if (pageId === 'homePage') {
+            document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
+        }
     }
 
     function openOverlay(overlayId) {
@@ -896,138 +907,146 @@ const firebaseConfig = {
         setupAuthForm('login');
     }
 
-    // --- Authentication ---
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            console.log("User is signed in:", user);
-            fetchUserData(user);
-            showPage('homePage');
-        } else {
-            currentUser = null;
-            console.log("User is signed out");
-            if(contactsUnsubscribe) contactsUnsubscribe();
-            if(callsUnsubscribe) callsUnsubscribe();
-            showPage('welcomePage');
-        }
-    });
-
-    async function fetchUserData(user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            document.getElementById('welcomeUserName').textContent = userData.fullName || user.email;
-            updateWalletBalance(userData.walletBalance || 0);
-            
-            // Profile Page
-            document.getElementById('profileName').textContent = userData.fullName;
-            document.getElementById('profileEmail').textContent = user.email;
-            document.getElementById('profilePhone').textContent = userData.phone || 'N/A';
-            document.getElementById('profileUserId').textContent = user.uid;
-            document.getElementById('profileMemberSince').textContent = user.metadata.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : 'N/A';
-
-            // Fetch contacts and call history
-            fetchContacts();
-            fetchRecentCalls();
-
-        } else {
-            console.log("No such user document!");
-        }
-    }
-
+    // --- Authentication Page ---
     function setupAuthForm(type) {
-        isRegistering = (type === 'register');
         const formTitle = document.getElementById('formTitle');
-        const emailInput = document.getElementById('authEmail');
-        const fullNameInput = document.getElementById('authFullName');
+        const identifierInput = document.getElementById('authIdentifierLogin');
         const passwordInput = document.getElementById('authPassword');
         const submitBtn = document.getElementById('authSubmitBtn');
-        const toggleLink = document.querySelector('#authPage p a');
+        const registerLink = document.querySelector('#authPage p a');
+        const firstNameInput = document.getElementById('firstName');
+        const phoneRegSection = document.getElementById('phoneRegSection');
 
-        formTitle.textContent = isRegistering ? 'Register for SmartCall' : 'Login to SmartCall';
-        fullNameInput.classList.toggle('hidden', !isRegistering);
-        submitBtn.innerHTML = `<i class="fas fa-${isRegistering ? 'user-plus' : 'lock'}"></i> ${isRegistering ? 'Register' : 'Login'}`;
-        toggleLink.textContent = isRegistering ? 'Login' : 'Register';
+        isRegistering = (type === 'register');
+        formTitle.textContent = isRegistering ? 'Register for NaijaCall' : 'Login to NaijaCall';
+
+        // Toggle visibility of relevant fields based on login/registration
+        identifierInput.classList.toggle('hidden', isRegistering);
+        identifierInput.placeholder = 'Email or Phone Number'; // Set placeholder for login
+
+        firstNameInput.classList.toggle('hidden', !isRegistering);
+
+        phoneRegSection.classList.toggle('hidden', !isRegistering);
+
+        passwordInput.placeholder = 'Password';
+        submitBtn.innerHTML = `<i class="fas fa-${isRegistering ? 'user-plus' : 'lock'}"></i> ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        registerLink.textContent = isRegistering ? 'Login' : 'Register';
     }
 
     function toggleForm() {
         setupAuthForm(isRegistering ? 'login' : 'register');
     }
 
-    async function handleAuthSubmit() {
-        const email = document.getElementById('authEmail').value;
+    function handleAuthSubmit() {
+        const identifierLogin = document.getElementById('authIdentifierLogin').value;
         const password = document.getElementById('authPassword').value;
-        const fullName = document.getElementById('authFullName').value;
+        const firstName = document.getElementById('firstName').value;
+        const phoneNumber = document.getElementById('authPhoneNumber').value;
         const authMessage = document.getElementById('authMessage');
-        authMessage.textContent = '';
 
-        try {
-            if (isRegistering) {
-                if (!fullName || !email || !password) {
-                    authMessage.textContent = 'All fields are required.';
-                    return;
-                }
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                
-                // Add user info to Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    fullName: fullName,
-                    email: user.email,
-                    createdAt: serverTimestamp(),
-                    walletBalance: 0
-                });
-
-                await updateProfile(user, { displayName: fullName });
-
-            } else {
-                if (!email || !password) {
-                    authMessage.textContent = 'Email and password are required.';
-                    return;
-                }
-                await signInWithEmailAndPassword(auth, email, password);
+        if (isRegistering) {
+            if (!firstName || !phoneNumber || !password) {
+                authMessage.textContent = 'All fields are required.';
+                return;
             }
-        } catch (error) {
-            console.error("Authentication error:", error);
-            authMessage.textContent = error.message;
+            // Simulate registration (replace with actual API call)
+            console.log('Simulating registration:', { firstName, phoneNumber, password });
+            loggedInUser.firstName = firstName;
+            showPage('homePage');
+        } else {
+            if (!identifierLogin || !password) {
+                authMessage.textContent = 'Please enter your Email/Phone and Password.';
+                return;
+            }
+            // Simulate login (replace with actual API call)
+            console.log('Simulating login:', { identifier: identifierLogin, password });
+            showPage('homePage');
+        }
+        authMessage.textContent = '';
+    }
+
+    // --- Home Page ---
+    // Simulate fetching recent calls (replace with actual API call)
+    document.addEventListener('DOMContentLoaded', () => {
+        const recentCallsList = document.getElementById('recentCallsList');
+        const recentCalls = [
+            { name: 'Aisha Musa', number: '080********', date: 'Today 6:30 PM' },
+            { name: 'Chinedu Okoro', number: '090********', date: 'Yesterday 10:15 AM' }
+        ];
+
+        recentCalls.forEach(call => {
+            const callItem = document.createElement('div');
+            callItem.classList.add('history-item');
+            callItem.innerHTML = `
+                <div>${call.name}<br><span style="color:#777;">${call.number}</span></div>
+                <div style="font-size:0.8rem; color:#aaa; text-align:right;">${call.date}</div>
+            `;
+            recentCallsList.appendChild(callItem);
+        });
+
+        // Populate country codes for dial pad and registration
+        const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
+        const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
+        countryCodeSelects.forEach(select => {
+            countryCodes.forEach(code => {
+                const option = document.createElement('option');
+                option.value = code.split(' ')[0];
+                option.textContent = code;
+                select.appendChild(option);
+            });
+        });
+    });
+
+    // --- Dial Pad ---
+    let currentNumber = '';
+    const dialPadDisplay = document.getElementById('dialPadDisplay');
+
+    function dialInput(value) {
+        if (value === 'backspace' && currentNumber.length > 0) {
+            currentNumber = currentNumber.slice(0, -1);
+        } else if (value !== 'backspace') {
+            currentNumber += value;
+        }
+        dialPadDisplay.value = currentNumber;
+    }
+
+    function clearDialPad() {
+        currentNumber = '';
+        dialPadDisplay.value = '';
+    }
+
+    function startCallFromDialpad() {
+        if (currentNumber) {
+            openCallScreen(currentNumber);
+            closeOverlay('dialPadPage');
+        } else {
+            showAlert('Please enter a number to call.');
         }
     }
 
-    function confirmLogout() {
-        showConfirm('Are you sure you want to logout?', async () => {
-            try {
-                await signOut(auth);
-                closeOverlay('profilePage');
-            } catch (error) {
-                console.error("Logout error:", error);
-                showAlert('Failed to logout.');
-            }
-        });
+    function openContactsFromDialpad() {
+        closeOverlay('dialPadPage');
+        openOverlay('contactsPage');
     }
 
-    // --- Contacts ---
-    function fetchContacts() {
-        if (!currentUser) return;
-        const contactsCollection = collection(db, "users", currentUser.uid, "contacts");
-        contactsUnsubscribe = onSnapshot(contactsCollection, (snapshot) => {
-            const contacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            displayContacts(contacts);
-        });
-    }
-    
+    // --- Contacts Page ---
+    let contacts = [
+        { name: 'Aisha Musa', phone: '080********', email: 'aisha@example.com' },
+        { name: 'Chinedu Okoro', phone: '090********', email: 'chinedu@example.com' },
+        { name: 'Fatima Hassan', phone: '070********', email: 'fatima@example.com' }
+    ];
+
     function displayContacts(list) {
         const contactsListDiv = document.getElementById('contactsList');
         contactsListDiv.innerHTML = '';
         if (list.length === 0) {
-            contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts yet. Add one!</p>';
+            contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found.</p>';
             return;
         }
         list.forEach(contact => {
             const contactDiv = document.createElement('div');
             contactDiv.classList.add('contact-item');
-            contactDiv.onclick = () => startCallSimulation(contact.name, contact.phone);
+            contactDiv.onclick = () => openCallScreen(contact.phone);
             const nameParts = contact.name.split(' ');
             const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
             contactDiv.innerHTML = `
@@ -1050,154 +1069,139 @@ const firebaseConfig = {
         document.getElementById('newContactName').value = '';
         document.getElementById('newContactPhone').value = '';
         document.getElementById('newContactEmail').value = '';
-        closeOverlay('addContactPage');
         openOverlay('contactsPage');
     }
 
-    async function saveNewContact() {
+    function saveNewContact() {
         const name = document.getElementById('newContactName').value;
         const phone = document.getElementById('newContactPhone').value;
         const email = document.getElementById('newContactEmail').value;
-        if (!name || !phone) {
-            showAlert('Name and phone number are required.');
-            return;
-        }
-        if (!currentUser) {
-            showAlert('You must be logged in to save contacts.');
-            return;
-        }
-
-        try {
-            const contactsCollection = collection(db, "users", currentUser.uid, "contacts");
-            await addDoc(contactsCollection, {
-                name: name,
-                phone: phone,
-                email: email,
-                createdAt: serverTimestamp()
-            });
-            showAlert('Contact saved successfully!');
+        if (name && phone) {
+            contacts.push({ name, phone, email });
+            displayContacts(contacts);
             closeAddContactPage();
-        } catch (error) {
-            console.error("Error adding contact: ", error);
-            showAlert('Failed to save contact. Please try again.');
+            showAlert('Contact saved successfully!');
+        } else {
+            showAlert('Name and phone number are required.');
         }
     }
-    
-    async function searchContacts() {
+
+    function searchContacts() {
         const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
-        if (!currentUser) return;
-
-        const contactsCollection = collection(db, "users", currentUser.uid, "contacts");
-        const q = query(contactsCollection);
-        const querySnapshot = await getDocs(q);
-        const allContacts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        const filteredContacts = allContacts.filter(contact =>
+        const filteredContacts = contacts.filter(contact =>
             contact.name.toLowerCase().includes(searchTerm) ||
             contact.phone.includes(searchTerm)
         );
         displayContacts(filteredContacts);
     }
 
-    // --- Call History ---
-    function fetchRecentCalls() {
-        if (!currentUser) return;
-        const callsCollection = collection(db, "users", currentUser.uid, "calls");
-        const q = query(callsCollection); // Add orderBy and limit later
-        callsUnsubscribe = onSnapshot(q, (snapshot) => {
-            const calls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            displayRecentCalls(calls);
-        });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+        displayContacts(contacts);
+    });
 
-    function displayRecentCalls(calls) {
-        const recentCallsList = document.getElementById('recentCallsList');
-        recentCallsList.innerHTML = '';
-        if (calls.length === 0) {
-            recentCallsList.innerHTML = '<p style="color:#aaa;">No recent calls.</p>';
+    // --- Messages Page ---
+    // Simulate message threads
+    let messageThreads = [
+        { id: 1, contactName: 'Aisha Musa', lastMessage: 'Hello!', lastTime: 'Today 6:28 PM' },
+        { id: 2, contactName: 'Chinedu Okoro', lastMessage: 'How are you?', lastTime: 'Yesterday 10:10 AM' }
+    ];
+
+    function displayMessageThreads(list) {
+        const messageThreadsListDiv = document.getElementById('messageThreadsList');
+        messageThreadsListDiv.innerHTML = '';
+        if (list.length === 0) {
+            messageThreadsListDiv.innerHTML = '<p style="color:#aaa;">No messages found.</p>';
             return;
         }
-        calls.forEach(call => {
-            const callItem = document.createElement('div');
-            callItem.classList.add('history-item');
-            const callDate = call.timestamp?.toDate ? call.timestamp.toDate().toLocaleString() : 'N/A';
-            callItem.innerHTML = `
-                <div>${call.contactName}<br><span style="color:#777;">${call.contactNumber}</span></div>
-                <div style="font-size:0.8rem; color:#aaa; text-align:right;">${callDate}</div>
+        list.forEach(thread => {
+            const threadDiv = document.createElement('div');
+            threadDiv.classList.add('message-thread-item');
+            threadDiv.onclick = () => openMessageThread(thread.id);
+            threadDiv.innerHTML = `
+                <div class="message-thread-info">
+                    <div class="message-thread-name">${thread.contactName}</div>
+                    <div class="message-thread-last-msg">${thread.lastMessage}</div>
+                </div>
+                <div class="message-thread-time">${thread.lastTime}</div>
             `;
-            recentCallsList.appendChild(callItem);
+            messageThreadsListDiv.appendChild(threadDiv);
         });
     }
 
-    async function logCall(contactName, contactNumber, duration) {
-        if (!currentUser) return;
-        try {
-            const callsCollection = collection(db, "users", currentUser.uid, "calls");
-            await addDoc(callsCollection, {
-                contactName,
-                contactNumber,
-                duration,
-                timestamp: serverTimestamp()
-            });
-        } catch (error) {
-            console.error("Error logging call:", error);
-        }
+    function searchMessages() {
+        const searchTerm = document.getElementById('messageSearchInput').value.toLowerCase();
+        const filteredThreads = messageThreads.filter(thread =>
+            thread.contactName.toLowerCase().includes(searchTerm) ||
+            thread.lastMessage.toLowerCase().includes(searchTerm)
+        );
+        displayMessageThreads(filteredThreads);
     }
 
-
-    // --- Dial Pad ---
-    let currentNumber = '';
-    const dialPadDisplay = document.getElementById('dialPadDisplay');
-
-    function dialInput(value) {
-        if (value === 'backspace' && currentNumber.length > 0) {
-            currentNumber = currentNumber.slice(0, -1);
-        } else if (value !== 'backspace') {
-            currentNumber += value;
-        }
-        dialPadDisplay.value = currentNumber;
+    function openNewMessagePage() {
+        closeOverlay('messagePage');
+        openOverlay('newMessagePage');
     }
 
-    function clearDialPad() {
-        currentNumber = '';
-        dialPadDisplay.value = '';
+    function closeNewMessagePage() {
+        document.getElementById('messageRecipient').value = '';
+        document.getElementById('messageInput').value = '';
+        openOverlay('messagePage');
     }
 
-    function startCallFromDialpad() {
-        if (currentNumber) {
-            startCallSimulation('Unknown', currentNumber);
-            closeOverlay('dialPadPage');
+    function sendMessage() {
+        const recipient = document.getElementById('messageRecipient').value;
+        const message = document.getElementById('messageInput').value;
+        if (recipient && message) {
+            console.log('Sending message to:', recipient, 'message:', message);
+            closeNewMessagePage();
+            showAlert('Message sent!');
         } else {
-            showAlert('Please enter a number to call.');
+            showAlert('Please enter a recipient and a message.');
         }
     }
 
-    function openContactsFromDialpad() {
-        closeOverlay('dialPadPage');
-        openOverlay('contactsPage');
+    function openMessageThread(threadId) {
+        showAlert(`Opening message thread ${threadId} (Not implemented yet)`);
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+        displayMessageThreads(messageThreads);
+    });
 
-    // --- Call Screen Simulation ---
+    // --- Profile Page ---
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('profileName').textContent = loggedInUser.firstName || 'Guest User';
+        document.getElementById('profileEmail').textContent = loggedInUser.email || 'N/A';
+        document.getElementById('profilePhone').textContent = 'N/A'; // Add phone if available
+        document.getElementById('profileMemberSince').textContent = 'July 2025'; // Example date
+    });
+
+    function confirmLogout() {
+        showConfirm('Are you sure you want to logout?', () => {
+            // Implement actual logout functionality here
+            showPage('welcomePage');
+        });
+    }
+
+    // --- Call Screen ---
     const callScreen = document.getElementById('callScreen');
     const callingContactName = document.getElementById('callingContactName');
     const callStatus = document.getElementById('callStatus');
     const callTimer = document.getElementById('callTimer');
     let callInterval;
     let seconds = 0;
-    let currentCallInfo = {};
 
-    function startCallSimulation(name, number) {
-        currentCallInfo = { name, number };
-        callingContactName.textContent = name;
+    function openCallScreen(numberOrName) {
+        callingContactName.textContent = numberOrName;
         callStatus.textContent = 'Calling...';
         callScreen.classList.add('active');
         seconds = 0;
         callTimer.textContent = '00:00';
+        // Simulate call start after a delay
         setTimeout(() => {
             callStatus.textContent = 'Connected';
             callInterval = setInterval(updateCallTimer, 1000);
-        }, 2000);
+        }, 3000);
     }
 
     function updateCallTimer() {
@@ -1209,11 +1213,8 @@ const firebaseConfig = {
 
     function endCallSimulation() {
         clearInterval(callInterval);
-        const duration = callTimer.textContent;
         callScreen.classList.remove('active');
-        showAlert(`Call ended. Duration: ${duration}`);
-        logCall(currentCallInfo.name, currentCallInfo.number, duration);
-        clearDialPad();
+        showAlert(`Call ended after ${callTimer.textContent}`);
     }
 
     let isMuted = false;
@@ -1233,66 +1234,9 @@ const firebaseConfig = {
         showAlert(isSpeakerOn ? 'Speaker On' : 'Speaker Off');
     }
 
-    // --- Recharge & Wallet ---
-    function payWithPaystack() {
-        if (!currentUser) {
-            showAlert("You must be logged in to recharge.");
-            return;
-        }
-        let amount = document.getElementById("rechargeAmount").value;
-        if (!amount || isNaN(amount) || amount < 100) {
-            showAlert("Please enter a valid amount (minimum ₦100)");
-            return;
-        }
-
-        let handler = PaystackPop.setup({
-            key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // REPLACE WITH YOUR PAYSTACK PUBLIC KEY
-            email: currentUser.email,
-            amount: amount * 100, // Amount in kobo
-            currency: 'NGN',
-            ref: 'SC-' + currentUser.uid + '-' + Date.now(),
-            callback: async function(response) {
-                document.getElementById("rechargeStatus").innerText = "Verifying payment...";
-                // In a real app, you would verify this transaction on your server
-                // For this example, we'll assume it's successful
-                await updateUserBalance(parseFloat(amount));
-                document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-                showAlert("Recharge successful!");
-                closeOverlay('rechargePage');
-            },
-            onClose: function() {
-                showAlert('Payment window closed.');
-            }
-        });
-        handler.openIframe();
-    }
-
-    async function updateUserBalance(amount) {
-        if (!currentUser) return;
-        const userDocRef = doc(db, "users", currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-            const currentBalance = userDocSnap.data().walletBalance || 0;
-            const newBalance = currentBalance + amount;
-            await setDoc(userDocRef, { walletBalance: newBalance }, { merge: true });
-            updateWalletBalance(newBalance);
-        }
-    }
-
-    function updateWalletBalance(balance) {
-        const balanceText = document.getElementById("walletBalance");
-        const callMinutes = Math.floor(balance / 28.5); // Example rate
-        balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balance.toFixed(2)}</strong><br><span><i>(Approx. ${callMinutes} Minutes)</i></span>`;
-    }
-
-    // --- Custom Dialogs ---
+    // --- Custom Alert Dialog ---
     const alertDialog = document.getElementById('customAlertDialog');
     const alertMessage = document.getElementById('customAlertMessage');
-    const confirmDialog = document.getElementById('customConfirmDialog');
-    const confirmMessage = document.getElementById('customConfirmMessage');
-    const confirmOkBtn = document.getElementById('confirmOkBtn');
-    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-    let confirmCallback;
 
     function showAlert(message) {
         alertMessage.textContent = message;
@@ -1302,6 +1246,13 @@ const firebaseConfig = {
     function hideCustomAlert() {
         alertDialog.classList.remove('active');
     }
+
+    // --- Custom Confirm Dialog ---
+    const confirmDialog = document.getElementById('customConfirmDialog');
+    const confirmMessage = document.getElementById('customConfirmMessage');
+    const confirmOkBtn = document.getElementById('confirmOkBtn');
+    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+    let confirmCallback;
 
     function showConfirm(message, onConfirm) {
         confirmMessage.textContent = message;
@@ -1319,21 +1270,40 @@ const firebaseConfig = {
     confirmCancelBtn.onclick = () => {
         confirmDialog.classList.remove('active');
     };
+</script>
 
-    // Populate country codes
-    document.addEventListener('DOMContentLoaded', () => {
-        const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-        const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-        countryCodeSelects.forEach(select => {
-            countryCodes.forEach(code => {
-                const option = document.createElement('option');
-                option.value = code.split(' ')[0];
-                option.textContent = code;
-                select.appendChild(option);
-            });
-        });
+
+<script>
+function payWithPaystack() {
+    let amount = document.getElementById("rechargeAmount").value;
+    if (!amount || isNaN(amount) || amount < 100) {
+        alert("Please enter a valid amount (minimum ₦100)");
+        return;
+    }
+
+    let handler = PaystackPop.setup({
+        key: 'pk_live_1ed27cc7f362095117cd138dc098958dfb03101e',
+        email: 'user@smartcall.com',
+        amount: amount * 100,
+        currency: 'NGN',
+        ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response) {
+            document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
+            updateWalletBalance(amount);
+        },
+        onClose: function() {
+            alert('Payment window closed');
+        }
     });
+    handler.openIframe();
+}
 
+function updateWalletBalance(amount) {
+    const balanceText = document.querySelector(".wallet-balance");
+    let currentBalance = parseFloat(balanceText.innerText.replace(/[^0-9.]/g, '')) || 0;
+    currentBalance += parseFloat(amount);
+    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${currentBalance.toFixed(2)}</strong><br><span><i>(Updated)</i></span>`;
+}
 </script>
 
 </body>

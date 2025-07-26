@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>NaijaCall - Galaxy Edition</title>
+    <title>SmartCall - Galaxy Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -591,6 +591,7 @@
         }
   
     </style>
+<script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 
 <body>
@@ -600,7 +601,7 @@
 
     <div class="container active-page" id="welcomePage">
         <h1>Welcome to<br>
-          <strong><i>SmartCall!</i></strong>
+          <strong>SmartCall </strong>
         </h1>
         <p style="color: #fff;">Connect with the world — simple, fast, and secured.</p>
         <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
@@ -797,7 +798,13 @@
             <h3 class="overlay-title">Recharge</h3>
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('rechargePage')"></i>
         </div>
-        <div class="overlay-content"><h2>Feature Coming Soon!</h2></div>
+        
+<div style="margin-top: 20px;">
+    <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
+    <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
+</div>
+<div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
+</div>
     </div>
 
     <div class="fullscreen-overlay" id="referralPage">
@@ -963,8 +970,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         const recentCallsList = document.getElementById('recentCallsList');
         const recentCalls = [
-            { name: 'Aisha Musa', number: '080********', date: 'Today 6:30 PM' },
-            { name: 'Chinedu Okoro', number: '090********', date: 'Yesterday 10:15 AM' }
+            { name: 'Aisha Musa', number: '08035114523', date: 'Today 6:30 PM' },
+            { name: 'Chinedu Okoro', number: '09065886978', date: 'Yesterday 10:15 AM' }
         ];
 
         recentCalls.forEach(call => {
@@ -1266,50 +1273,37 @@
 </script>
 
 
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyAZGW9wxc9pAsdbDg86vmTAqCctjsW5mvc",
-  authDomain: "smartcall-52d6c.firebaseapp.com",
-  projectId: "smartcall-52d6c",
-  storageBucket: "smartcall-52d6c.firebasestorage.app",
-  messagingSenderId: "631739863999",
-  appId: "1:631739863999:web:9740edbb3ef032346cc70a"
-};
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const userId = "user@smartcall.com"; // Placeholder user
-
-  async function loadWalletBalance() {
-    const userDoc = doc(db, "users", userId);
-    const docSnap = await getDoc(userDoc);
-    if (docSnap.exists()) {
-      const balance = docSnap.data().balance || 0;
-      const balanceText = document.querySelector(".wallet-balance");
-      balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balance.toFixed(2)}</strong>`;
+<script>
+function payWithPaystack() {
+    let amount = document.getElementById("rechargeAmount").value;
+    if (!amount || isNaN(amount) || amount < 100) {
+        alert("Please enter a valid amount (minimum ₦100)");
+        return;
     }
-  }
 
-  async function updateWalletBalance(amount) {
-    const userDoc = doc(db, "users", userId);
-    const docSnap = await getDoc(userDoc);
-    let newBalance = parseFloat(amount);
-    if (docSnap.exists()) {
-      const current = docSnap.data().balance || 0;
-      newBalance += current;
-    }
-    await setDoc(userDoc, { balance: newBalance });
+    let handler = PaystackPop.setup({
+        key: 'pk_live_1ed27cc7f362095117cd138dc098958dfb03101e',
+        email: 'user@smartcall.com',
+        amount: amount * 100,
+        currency: 'NGN',
+        ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function(response) {
+            document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
+            updateWalletBalance(amount);
+        },
+        onClose: function() {
+            alert('Payment window closed');
+        }
+    });
+    handler.openIframe();
+}
+
+function updateWalletBalance(amount) {
     const balanceText = document.querySelector(".wallet-balance");
-    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${newBalance.toFixed(2)}</strong><br><span><i>(Saved)</i></span>`;
-  }
-
-  window.updateWalletBalance = updateWalletBalance;
-  window.addEventListener("load", loadWalletBalance);
+    let currentBalance = parseFloat(balanceText.innerText.replace(/[^0-9.]/g, '')) || 0;
+    currentBalance += parseFloat(amount);
+    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${currentBalance.toFixed(2)}</strong><br><span><i>(Updated)</i></span>`;
+}
 </script>
 
 </body>

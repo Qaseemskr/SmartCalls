@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SmartCall - Galaxy Edition</title>
+    <title>NaijaCall - Galaxy Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
@@ -601,7 +601,7 @@
 
     <div class="container active-page" id="welcomePage">
         <h1>Welcome to<br>
-          <strong>SmartCall </strong>
+          <strong><i>SmartCall!</i></strong>
         </h1>
         <p style="color: #fff;">Connect with the world — simple, fast, and secured.</p>
         <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
@@ -614,26 +614,15 @@
         </div>
 
         <div style="width: 100%;">
-            <input id="authIdentifierLogin" placeholder="Email or Phone Number" type="text" />
-            <input class="hidden" id="firstName" placeholder="Full Name" type="text" />
-
-            <div class="hidden" id="phoneRegSection">
-                <select id="authCountryCode"></select>
-                <input id="authPhoneNumber" placeholder="Phone Number" type="tel" />
-            </div>
-
+            <input class="hidden" id="authFullName" placeholder="Full Name" type="text" />
+            <input id="authEmail" placeholder="Email Address" type="email" />
             <input id="authPassword" placeholder="Password" type="password" />
-
-            <div id="otpSection" class="hidden">
-                <input id="otpInput" placeholder="Enter OTP" type="text" maxlength="4" />
-                <p id="otpMessage" style="color: #777; margin-top: 10px;"></p>
-            </div>
 
             <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">
                 <i class="fas fa-lock"></i> Login
             </button>
 
-            <p style="margin-top: 15px; color: #555;">Don't have an account? <a style="color: #3498db; cursor: pointer;" onclick="toggleForm()">Register</a></p>
+            <p style="margin-top: 15px; color: #555;"> <span id="authToggleText">Don't have an account?</span> <a style="color: #3498db; cursor: pointer;" onclick="toggleForm()">Register</a></p>
 
             <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
@@ -644,7 +633,7 @@
             <div class="welcome-balance-box">
                 <h2>Welcome Back! <br>
                 <span id="welcomeUserName"><strong>User</strong></span></h2>
-                <div class="wallet-balance">Your Wallet Balance: <strong>₦1,650.00</strong><br>
+                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦1,650.00</strong><br>
                     <span><i>(Approx. 58 Minutes, 45 Sec.)</i></span></div>
             </div>
         </div>
@@ -662,7 +651,9 @@
         </div>
         <div class="call-history-container">
             <div class="section-title">🕓 Recent Calls</div>
-            <div id="recentCallsList"></div>
+            <div id="recentCallsList">
+                <p style="color: #aaa; margin-top: 15px;">No recent calls.</p>
+            </div>
         </div>
 
         <div class="bottom-nav">
@@ -731,7 +722,9 @@
                 <i class="fas fa-search search-icon"></i>
             </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openAddContactPage()"><i class="fas fa-plus"></i> Add New Contact</button>
-            <div id="contactsList"></div>
+            <div id="contactsList">
+                 <p style="color: #aaa; margin-top: 15px;">No contacts yet. Add one!</p>
+            </div>
         </div>
     </div>
 
@@ -844,20 +837,38 @@
             </div>
         </div>
     </div>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
+
+<script>
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+  authDomain: "smartcalls-d49f5.firebaseapp.com",
+  projectId: "smartcalls-d49f5",
+  storageBucket: "smartcalls-d49f5.firebasestorage.app",
+  messagingSenderId: "854255870421",
+  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+  measurementId: "G-JKKWJEJK0B"
+};
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+
 
 <script>
     // --- Global State & Config ---
     let isRegistering = false;
-    let isOtpSent = false;
-    let correctOtp = '';
-    let otpResendTimer = 0;
-    let otpTimerInterval;
-    let isDarkTheme = false; // To track the current theme
+    let isDarkTheme = false;
+    let loggedInUser = null;
+    let allContacts = [];
 
-    let loggedInUser = {
-        firstName: 'Alkassim',
-        email: 'alkassim.suleiman@smartcall'
-    };
 
     // --- Theme Toggle Function ---
     function toggleTheme() {
@@ -877,24 +888,33 @@
             document.body.classList.add('dark-theme');
             const themeIcon = document.querySelector('#themeToggleButton i');
             themeIcon.classList.add('fa-moon');
+            themeIcon.classList.remove('fa-sun');
         } else {
             const themeIcon = document.querySelector('#themeToggleButton i');
             themeIcon.classList.add('fa-sun');
+             themeIcon.classList.remove('fa-moon');
         }
     });
 
     // --- Utility Functions ---
     function showPage(pageId) {
-        document.querySelectorAll('.container').forEach(page => page.classList.add('hidden'));
-        document.getElementById(pageId).classList.remove('hidden');
-        document.getElementById(pageId).classList.add('active-page');
-        if (pageId === 'homePage') {
-            document.getElementById('welcomeUserName').textContent = loggedInUser.firstName;
-        }
+        document.querySelectorAll('.container').forEach(page => {
+            page.classList.add('hidden');
+            page.classList.remove('active-page');
+        });
+        const page = document.getElementById(pageId)
+        page.classList.remove('hidden');
+        page.classList.add('active-page');
     }
 
     function openOverlay(overlayId) {
         document.getElementById(overlayId).classList.add('active');
+        if (overlayId === 'contactsPage') {
+            loadContacts();
+        }
+         if (overlayId === 'profilePage') {
+            populateProfile();
+        }
     }
 
     function closeOverlay(overlayId) {
@@ -910,27 +930,19 @@
     // --- Authentication Page ---
     function setupAuthForm(type) {
         const formTitle = document.getElementById('formTitle');
-        const identifierInput = document.getElementById('authIdentifierLogin');
-        const passwordInput = document.getElementById('authPassword');
         const submitBtn = document.getElementById('authSubmitBtn');
         const registerLink = document.querySelector('#authPage p a');
-        const firstNameInput = document.getElementById('firstName');
-        const phoneRegSection = document.getElementById('phoneRegSection');
+        const authToggleText = document.getElementById('authToggleText');
+        const fullNameInput = document.getElementById('authFullName');
 
         isRegistering = (type === 'register');
-        formTitle.textContent = isRegistering ? 'Register for NaijaCall' : 'Login to NaijaCall';
+        formTitle.textContent = isRegistering ? 'Register for SmartCall' : 'Login to SmartCall';
 
-        // Toggle visibility of relevant fields based on login/registration
-        identifierInput.classList.toggle('hidden', isRegistering);
-        identifierInput.placeholder = 'Email or Phone Number'; // Set placeholder for login
+        fullNameInput.classList.toggle('hidden', !isRegistering);
 
-        firstNameInput.classList.toggle('hidden', !isRegistering);
-
-        phoneRegSection.classList.toggle('hidden', !isRegistering);
-
-        passwordInput.placeholder = 'Password';
-        submitBtn.innerHTML = `<i class="fas fa-${isRegistering ? 'user-plus' : 'lock'}"></i> ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        submitBtn.innerHTML = `<i class="fas fa-${isRegistering ? 'user-plus' : 'lock'}"></i> ${isRegistering ? 'Register' : 'Login'}`;
         registerLink.textContent = isRegistering ? 'Login' : 'Register';
+        authToggleText.textContent = isRegistering ? "Already have an account?" : "Don't have an account?";
     }
 
     function toggleForm() {
@@ -938,53 +950,85 @@
     }
 
     function handleAuthSubmit() {
-        const identifierLogin = document.getElementById('authIdentifierLogin').value;
+        const fullName = document.getElementById('authFullName').value;
+        const email = document.getElementById('authEmail').value;
         const password = document.getElementById('authPassword').value;
-        const firstName = document.getElementById('firstName').value;
-        const phoneNumber = document.getElementById('authPhoneNumber').value;
         const authMessage = document.getElementById('authMessage');
+        authMessage.textContent = '';
+
 
         if (isRegistering) {
-            if (!firstName || !phoneNumber || !password) {
+            if (!fullName || !email || !password) {
                 authMessage.textContent = 'All fields are required.';
                 return;
             }
-            // Simulate registration (replace with actual API call)
-            console.log('Simulating registration:', { firstName, phoneNumber, password });
-            loggedInUser.firstName = firstName;
-            showPage('homePage');
-        } else {
-            if (!identifierLogin || !password) {
-                authMessage.textContent = 'Please enter your Email/Phone and Password.';
+            if (password.length < 6) {
+                authMessage.textContent = 'Password must be at least 6 characters.';
                 return;
             }
-            // Simulate login (replace with actual API call)
-            console.log('Simulating login:', { identifier: identifierLogin, password });
-            showPage('homePage');
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    const user = userCredential.user;
+                    // Now save the full name and other details to Firestore
+                    return db.collection('users').doc(user.uid).set({
+                        fullName: fullName,
+                        email: email,
+                        memberSince: new Date(),
+                        balance: 0 // Initial balance
+                    });
+                })
+                .then(() => {
+                    console.log('User registered and data saved!');
+                    // No need to call loadHomePageData here, onAuthStateChanged will handle it
+                })
+                .catch(error => {
+                    authMessage.textContent = error.message;
+                });
+        } else {
+             if (!email || !password) {
+                authMessage.textContent = 'Please enter your Email and Password.';
+                return;
+            }
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(error => {
+                    authMessage.textContent = error.message;
+                });
         }
-        authMessage.textContent = '';
     }
 
+    // --- Firebase Auth State Listener ---
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // User is signed in.
+            loggedInUser = user;
+            loadHomePageData();
+        } else {
+            // User is signed out.
+            loggedInUser = null;
+            showPage('welcomePage');
+        }
+    });
+
+    async function loadHomePageData() {
+        if (!loggedInUser) return;
+
+        const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            document.getElementById('welcomeUserName').textContent = userData.fullName;
+            updateWalletBalance(userData.balance);
+            showPage('homePage');
+        } else {
+            // Handle case where user exists in Auth but not in Firestore
+            console.error("User data not found in Firestore!");
+            auth.signOut();
+        }
+    }
+
+
     // --- Home Page ---
-    // Simulate fetching recent calls (replace with actual API call)
     document.addEventListener('DOMContentLoaded', () => {
-        const recentCallsList = document.getElementById('recentCallsList');
-        const recentCalls = [
-            { name: 'Aisha Musa', number: '08035114523', date: 'Today 6:30 PM' },
-            { name: 'Chinedu Okoro', number: '09065886978', date: 'Yesterday 10:15 AM' }
-        ];
-
-        recentCalls.forEach(call => {
-            const callItem = document.createElement('div');
-            callItem.classList.add('history-item');
-            callItem.innerHTML = `
-                <div>${call.name}<br><span style="color:#777;">${call.number}</span></div>
-                <div style="font-size:0.8rem; color:#aaa; text-align:right;">${call.date}</div>
-            `;
-            recentCallsList.appendChild(callItem);
-        });
-
-        // Populate country codes for dial pad and registration
         const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
         const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
         countryCodeSelects.forEach(select => {
@@ -1017,6 +1061,7 @@
 
     function startCallFromDialpad() {
         if (currentNumber) {
+            // This is still a simulation, as WebRTC is complex
             openCallScreen(currentNumber);
             closeOverlay('dialPadPage');
         } else {
@@ -1030,17 +1075,30 @@
     }
 
     // --- Contacts Page ---
-    let contacts = [
-        { name: 'Aisha Musa', phone: '080********', email: 'aisha@example.com' },
-        { name: 'Chinedu Okoro', phone: '090********', email: 'chinedu@example.com' },
-        { name: 'Fatima Hassan', phone: '070********', email: 'fatima@example.com' }
-    ];
+    async function loadContacts() {
+        if (!loggedInUser) return;
+        const contactsListDiv = document.getElementById('contactsList');
+        contactsListDiv.innerHTML = '<p style="color:#aaa;">Loading contacts...</p>';
+
+        const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
+        contactsRef.orderBy('name').onSnapshot(snapshot => {
+             allContacts = [];
+             snapshot.forEach(doc => {
+                allContacts.push({ id: doc.id, ...doc.data() });
+             });
+             displayContacts(allContacts);
+        }, error => {
+            console.error("Error loading contacts: ", error);
+            contactsListDiv.innerHTML = '<p style="color:#e74c3c;">Could not load contacts.</p>';
+        });
+    }
+
 
     function displayContacts(list) {
         const contactsListDiv = document.getElementById('contactsList');
         contactsListDiv.innerHTML = '';
         if (list.length === 0) {
-            contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found.</p>';
+            contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found. Add one!</p>';
             return;
         }
         list.forEach(contact => {
@@ -1069,18 +1127,26 @@
         document.getElementById('newContactName').value = '';
         document.getElementById('newContactPhone').value = '';
         document.getElementById('newContactEmail').value = '';
+        closeOverlay('addContactPage');
         openOverlay('contactsPage');
     }
 
-    function saveNewContact() {
+   function saveNewContact() {
         const name = document.getElementById('newContactName').value;
         const phone = document.getElementById('newContactPhone').value;
         const email = document.getElementById('newContactEmail').value;
-        if (name && phone) {
-            contacts.push({ name, phone, email });
-            displayContacts(contacts);
-            closeAddContactPage();
-            showAlert('Contact saved successfully!');
+        if (name && phone && loggedInUser) {
+            const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
+            contactsRef.add({
+                name: name,
+                phone: phone,
+                email: email
+            }).then(() => {
+                showAlert('Contact saved successfully!');
+                closeAddContactPage();
+            }).catch(error => {
+                showAlert('Error saving contact: ' + error.message);
+            });
         } else {
             showAlert('Name and phone number are required.');
         }
@@ -1088,102 +1154,44 @@
 
     function searchContacts() {
         const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
-        const filteredContacts = contacts.filter(contact =>
+        const filteredContacts = allContacts.filter(contact =>
             contact.name.toLowerCase().includes(searchTerm) ||
             contact.phone.includes(searchTerm)
         );
         displayContacts(filteredContacts);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        displayContacts(contacts);
-    });
-
-    // --- Messages Page ---
-    // Simulate message threads
-    let messageThreads = [
-        { id: 1, contactName: 'Aisha Musa', lastMessage: 'Hello!', lastTime: 'Today 6:28 PM' },
-        { id: 2, contactName: 'Chinedu Okoro', lastMessage: 'How are you?', lastTime: 'Yesterday 10:10 AM' }
-    ];
-
-    function displayMessageThreads(list) {
-        const messageThreadsListDiv = document.getElementById('messageThreadsList');
-        messageThreadsListDiv.innerHTML = '';
-        if (list.length === 0) {
-            messageThreadsListDiv.innerHTML = '<p style="color:#aaa;">No messages found.</p>';
-            return;
-        }
-        list.forEach(thread => {
-            const threadDiv = document.createElement('div');
-            threadDiv.classList.add('message-thread-item');
-            threadDiv.onclick = () => openMessageThread(thread.id);
-            threadDiv.innerHTML = `
-                <div class="message-thread-info">
-                    <div class="message-thread-name">${thread.contactName}</div>
-                    <div class="message-thread-last-msg">${thread.lastMessage}</div>
-                </div>
-                <div class="message-thread-time">${thread.lastTime}</div>
-            `;
-            messageThreadsListDiv.appendChild(threadDiv);
-        });
-    }
-
-    function searchMessages() {
-        const searchTerm = document.getElementById('messageSearchInput').value.toLowerCase();
-        const filteredThreads = messageThreads.filter(thread =>
-            thread.contactName.toLowerCase().includes(searchTerm) ||
-            thread.lastMessage.toLowerCase().includes(searchTerm)
-        );
-        displayMessageThreads(filteredThreads);
-    }
-
+    // --- Messages Page (Simplified) ---
     function openNewMessagePage() {
-        closeOverlay('messagePage');
-        openOverlay('newMessagePage');
+        showAlert("Messaging feature is under development.");
+    }
+    function searchMessages() {
+         showAlert("Messaging feature is under development.");
     }
 
-    function closeNewMessagePage() {
-        document.getElementById('messageRecipient').value = '';
-        document.getElementById('messageInput').value = '';
-        openOverlay('messagePage');
-    }
-
-    function sendMessage() {
-        const recipient = document.getElementById('messageRecipient').value;
-        const message = document.getElementById('messageInput').value;
-        if (recipient && message) {
-            console.log('Sending message to:', recipient, 'message:', message);
-            closeNewMessagePage();
-            showAlert('Message sent!');
-        } else {
-            showAlert('Please enter a recipient and a message.');
-        }
-    }
-
-    function openMessageThread(threadId) {
-        showAlert(`Opening message thread ${threadId} (Not implemented yet)`);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        displayMessageThreads(messageThreads);
-    });
 
     // --- Profile Page ---
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('profileName').textContent = loggedInUser.firstName || 'Guest User';
-        document.getElementById('profileEmail').textContent = loggedInUser.email || 'N/A';
-        document.getElementById('profilePhone').textContent = 'N/A'; // Add phone if available
-        document.getElementById('profileMemberSince').textContent = 'July 2025'; // Example date
-    });
+    async function populateProfile() {
+        if (!loggedInUser) return;
+        const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            document.getElementById('profileName').textContent = userData.fullName || 'N/A';
+            document.getElementById('profileEmail').textContent = userData.email || 'N/A';
+            document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || 'N/A';
+            const memberSinceDate = userData.memberSince.toDate();
+            document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+    }
+
 
     function confirmLogout() {
         showConfirm('Are you sure you want to logout?', () => {
-            // Implement actual logout functionality here
-            showPage('welcomePage');
+           auth.signOut();
         });
     }
 
-    // --- Call Screen ---
+    // --- Call Screen (Simulation) ---
     const callScreen = document.getElementById('callScreen');
     const callingContactName = document.getElementById('callingContactName');
     const callStatus = document.getElementById('callStatus');
@@ -1274,35 +1282,69 @@
 
 
 <script>
-function payWithPaystack() {
+// --- Recharge and Wallet ---
+async function payWithPaystack() {
     let amount = document.getElementById("rechargeAmount").value;
     if (!amount || isNaN(amount) || amount < 100) {
         alert("Please enter a valid amount (minimum ₦100)");
         return;
     }
+    if (!loggedInUser) {
+        alert("You must be logged in to recharge.");
+        return;
+    }
+
+    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+    const userEmail = userDoc.data().email;
 
     let handler = PaystackPop.setup({
-        key: 'pk_live_1ed27cc7f362095117cd138dc098958dfb03101e',
-        email: 'user@smartcall.com',
-        amount: amount * 100,
+        key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // IMPORTANT: Use your test key
+        email: userEmail,
+        amount: amount * 100, // Amount in kobo
         currency: 'NGN',
         ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
         callback: function(response) {
+            // NOTE: In a real app, you would verify this transaction on a server
+            // using a webhook before updating the balance.
+            // For this client-only version, we'll update it directly.
             document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-            updateWalletBalance(amount);
+            updateUserBalanceInDB(parseFloat(amount));
         },
         onClose: function() {
-            alert('Payment window closed');
+            alert('Payment window closed.');
         }
     });
     handler.openIframe();
 }
 
-function updateWalletBalance(amount) {
-    const balanceText = document.querySelector(".wallet-balance");
-    let currentBalance = parseFloat(balanceText.innerText.replace(/[^0-9.]/g, '')) || 0;
-    currentBalance += parseFloat(amount);
-    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${currentBalance.toFixed(2)}</strong><br><span><i>(Updated)</i></span>`;
+async function updateUserBalanceInDB(amount) {
+    if (!loggedInUser) return;
+    const userRef = db.collection('users').doc(loggedInUser.uid);
+    
+    // Use a transaction to safely update the balance
+    return db.runTransaction(transaction => {
+        return transaction.get(userRef).then(doc => {
+            if (!doc.exists) {
+                throw "Document does not exist!";
+            }
+            const newBalance = (doc.data().balance || 0) + amount;
+            transaction.update(userRef, { balance: newBalance });
+            return newBalance;
+        });
+    }).then(newBalance => {
+        console.log("Balance updated to:", newBalance);
+        updateWalletBalance(newBalance);
+    }).catch(error => {
+        console.error("Transaction failed: ", error);
+    });
+}
+
+
+function updateWalletBalance(balance) {
+    const balanceText = document.getElementById("walletBalance");
+    const balanceInNaira = balance.toFixed(2);
+    const approxMinutes = Math.floor(balance / 28); // Assuming an average rate
+    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
 }
 </script>
 

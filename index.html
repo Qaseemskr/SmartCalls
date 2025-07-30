@@ -2,10 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>NaijaCall - Galaxy Edition</title>
+    <title>SmartCall - Your Connection to the World</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
+        /* --- LOADER/SPINNER STYLE --- */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        #loader.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Basic Reset */
         * {
             margin: 0;
@@ -224,6 +257,33 @@
         }
         .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); }
         .btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        
+        /* Auth Toggle Buttons */
+        .auth-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+        .auth-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #777;
+            transition: all 0.3s ease;
+        }
+        .auth-toggle-btn.active {
+            background-color: #3498db;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
 
         /* --- Home Page Specific Styles --- */
         #homePage { justify-content: space-between; }
@@ -556,7 +616,7 @@
             resize: vertical;
         }
 
- /* Theme Toggle Button */
+        /* Theme Toggle Button */
         #themeToggleButton {
             position: fixed;
             bottom: 20px; /* Moved to the bottom */
@@ -589,40 +649,75 @@
         .dark-theme #themeToggleButton:hover {
             background-color: #555;
         }
-  
     </style>
-<script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 
 <body>
+
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+
     <div id="themeToggleButton" onclick="toggleTheme()">
         <i class="fas fa-sun"></i>
     </div>
 
     <div class="container active-page" id="welcomePage">
         <h1>Welcome to<br>
-          <strong><i>SmartCall!</i></strong>
+          <strong>SmartCall!</strong>
         </h1>
-        <p style="color: #fff;">Connect with the world — simple, fast, and secured.</p>
+        <p>Connect with the world — simple, fast, and secured.</p>
         <button class="btn" onclick="goToAuth()">🚀 Get Started</button>
     </div>
 
+    <!-- AUTH PAGE UPDATED FOR EMAIL/PHONE CHOICE -->
     <div class="container hidden" id="authPage">
         <div style="display: flex; flex-direction: column; align-items: center;">
             <i class="fas fa-user-circle" style="font-size: 4rem; color: #3498db; margin-bottom: 10px;"></i>
-            <h2 id="formTitle" style="margin-bottom: 10px;">Login to SmartCall</h2>
+            <h2 id="formTitle" style="margin-bottom: 10px;">Register or Login</h2>
+        </div>
+
+        <div class="auth-toggle-container">
+            <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showAuthForm('phone')">Use Phone</button>
+            <button id="showEmailBtn" class="auth-toggle-btn" onclick="showAuthForm('email')">Use Email</button>
         </div>
 
         <div style="width: 100%;">
-            <input class="hidden" id="authFullName" placeholder="Full Name" type="text" />
-            <input id="authEmail" placeholder="Email Address" type="email" />
-            <input id="authPassword" placeholder="Password" type="password" />
+            <!-- Phone Auth Section -->
+            <div id="phoneAuthSection">
+                <input id="authFullNamePhone" placeholder="Full Name" type="text" />
+                <div class="phone-input-group">
+                    <select id="authCountryCode" style="flex: 1;"></select>
+                    <input id="authPhoneNumber" placeholder="Phone Number" type="tel" style="flex: 2;" />
+                </div>
+                <div id="recaptcha-container"></div>
+                <button class="btn" id="sendOtpBtn" onclick="sendOtp()">
+                    <i class="fas fa-paper-plane"></i> Send Code
+                </button>
+                <div id="otpSection" class="hidden" style="margin-top: 15px;">
+                    <input id="otpInput" placeholder="Enter 6-digit code" type="text" maxlength="6" />
+                    <button class="btn" id="verifyOtpBtn" onclick="verifyOtp()">
+                        <i class="fas fa-check-circle"></i> Verify & Sign In
+                    </button>
+                </div>
+            </div>
 
-            <button class="btn" id="authSubmitBtn" onclick="handleAuthSubmit()">
-                <i class="fas fa-lock"></i> Login
-            </button>
-
-            <p style="margin-top: 15px; color: #555;"> <span id="authToggleText">Don't have an account?</span> <a style="color: #3498db; cursor: pointer;" onclick="toggleForm()">Register</a></p>
+            <!-- Email Auth Section -->
+            <div id="emailAuthSection" class="hidden">
+                <input id="authFullNameEmail" placeholder="Full Name" type="text" />
+                <input id="authEmail" placeholder="Email Address" type="email" />
+                <input id="authPassword" placeholder="Password (min. 6 characters)" type="password" />
+                <button class="btn" id="emailRegisterBtn" onclick="handleEmailRegister()">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+                <p style="margin: 15px 0 5px 0; color: #555;">Already have an account?</p>
+                <button class="btn" id="emailLoginBtn" onclick="handleEmailLogin()" style="background: #7f8c8d;">
+                    <i class="fas fa-lock"></i> Login with Email
+                </button>
+            </div>
 
             <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
@@ -633,18 +728,18 @@
             <div class="welcome-balance-box">
                 <h2>Welcome Back! <br>
                 <span id="welcomeUserName"><strong>User</strong></span></h2>
-                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦1,650.00</strong><br>
-                    <span><i>(Approx. 58 Minutes, 45 Sec.)</i></span></div>
+                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦0.00</strong><br>
+                    <span><i>(Approx. 0 Minutes)</i></span></div>
             </div>
         </div>
-    
+
         <div class="main-call-button-container">
             <div class="scrolling-tagline">
                 Call your family, friends, and loved ones the easy & secure way — at affordable rates!
             </div>
-            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!</h3>
+            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!  </h3>
             <br>
-            <div class="make-call-circle" onclick="openOverlay('dialPadPage')">
+            <div class="make-call-circle" onclick="openOverlayWithLoader('dialPadPage')">
                 <i class="fas fa-phone"></i>
                 <span class="button-label">Make a Call</span>
             </div>
@@ -657,24 +752,25 @@
         </div>
 
         <div class="bottom-nav">
-            <div class="hex-btn recharge" onclick="openOverlay('rechargePage')">
+            <div class="hex-btn recharge" onclick="openOverlayWithLoader('rechargePage')">
                 <i class="fas fa-wallet"></i><span>Recharge</span>
             </div>
-            <div class="hex-btn contacts" onclick="openOverlay('contactsPage')">
+            <div class="hex-btn contacts" onclick="openOverlayWithLoader('contactsPage')">
                 <i class="fas fa-address-book"></i><span>Contacts</span>
             </div>
-            <div class="hex-btn messages" onclick="openOverlay('messagePage')">
+            <div class="hex-btn messages" onclick="openOverlayWithLoader('messagePage')">
                 <i class="fas fa-comment"></i><span>Messages</span>
             </div>
-            <div class="hex-btn referral" onclick="openOverlay('referralPage')">
+            <div class="hex-btn referral" onclick="openOverlayWithLoader('referralPage')">
                 <i class="fas fa-gift"></i><span>Referral</span>
             </div>
-            <div class="hex-btn profile" onclick="openOverlay('profilePage')">
+            <div class="hex-btn profile" onclick="openOverlayWithLoader('profilePage')">
                 <i class="fas fa-user"></i><span>Profile</span>
             </div>
         </div>
     </div>
 
+    <!-- All other overlay divs remain the same... -->
     <div class="fullscreen-overlay" id="dialPadPage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Call</h3>
@@ -792,12 +888,11 @@
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('rechargePage')"></i>
         </div>
         
-<div style="margin-top: 20px;">
-    <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
-    <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
-</div>
-<div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
-</div>
+        <div style="margin-top: 20px;">
+            <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
+            <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
+        </div>
+        <div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
     </div>
 
     <div class="fullscreen-overlay" id="referralPage">
@@ -816,7 +911,7 @@
         <div class="call-controls">
             <button class="call-control-btn" id="muteBtn" onclick="toggleMute()"><i class="fas fa-microphone"></i></button>
             <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()"><i class="fas fa-volume-up"></i></button>
-            <button class="call-control-btn" onclick="dialInput('keypad')"><i class="fas fa-th-large">i></button>
+            <button class="call-control-btn" onclick="dialInput('keypad')"><i class="fas fa-th-large"></i></button>
         </div>
         <button class="end-call-btn" onclick="endCallSimulation()">End Call</button>
     </div>
@@ -837,516 +932,684 @@
             </div>
         </div>
     </div>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+            authDomain: "smartcalls-d49f5.firebaseapp.com",
+            projectId: "smartcalls-d49f5",
+            storageBucket: "smartcalls-d49f5.appspot.com",
+            messagingSenderId: "854255870421",
+            appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+            measurementId: "G-JKKWJEJK0B"
+        };
 
-<script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-  authDomain: "smartcalls-d49f5.firebaseapp.com",
-  projectId: "smartcalls-d49f5",
-  storageBucket: "smartcalls-d49f5.firebasestorage.app",
-  messagingSenderId: "854255870421",
-  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-  measurementId: "G-JKKWJEJK0B"
-};
-
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-</script>
-
-
-<script>
-    // --- Global State & Config ---
-    let isRegistering = false;
-    let isDarkTheme = false;
-    let loggedInUser = null;
-    let allContacts = [];
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
 
 
-    // --- Theme Toggle Function ---
-    function toggleTheme() {
-        isDarkTheme = !isDarkTheme;
-        document.body.classList.toggle('dark-theme', isDarkTheme);
-        const themeIcon = document.querySelector('#themeToggleButton i');
-        themeIcon.classList.toggle('fa-sun', !isDarkTheme);
-        themeIcon.classList.toggle('fa-moon', isDarkTheme);
-        localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light'); // Save theme preference
-    }
+    <script>
+        // --- Global State & Config ---
+        let isDarkTheme = false;
+        let loggedInUser = null;
+        let allContacts = [];
+        let stopUserListener = () => {};
+        let stopCallHistoryListener = () => {};
+        window.confirmationResult = null;
 
-    // --- Check for saved theme on page load ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            isDarkTheme = true;
-            document.body.classList.add('dark-theme');
+        // --- LOADER FUNCTIONS ---
+        const loader = document.getElementById('loader');
+        function showLoader() { loader.classList.add('show'); }
+        function hideLoader() { loader.classList.remove('show'); }
+
+        // --- Theme Toggle Function ---
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme', isDarkTheme);
             const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.add('fa-moon');
-            themeIcon.classList.remove('fa-sun');
-        } else {
-            const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.add('fa-sun');
-             themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.toggle('fa-sun', !isDarkTheme);
+            themeIcon.classList.toggle('fa-moon', isDarkTheme);
+            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
         }
-    });
 
-    // --- Utility Functions ---
-    function showPage(pageId) {
-        document.querySelectorAll('.container').forEach(page => {
-            page.classList.add('hidden');
-            page.classList.remove('active-page');
+        // --- On Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.title = "SmartCall - Your Connection to the World";
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                isDarkTheme = true;
+                document.body.classList.add('dark-theme');
+                const themeIcon = document.querySelector('#themeToggleButton i');
+                themeIcon.classList.add('fa-moon');
+                themeIcon.classList.remove('fa-sun');
+            } else {
+                const themeIcon = document.querySelector('#themeToggleButton i');
+                themeIcon.classList.add('fa-sun');
+                themeIcon.classList.remove('fa-moon');
+            }
         });
-        const page = document.getElementById(pageId)
-        page.classList.remove('hidden');
-        page.classList.add('active-page');
-    }
 
-    function openOverlay(overlayId) {
-        document.getElementById(overlayId).classList.add('active');
-        if (overlayId === 'contactsPage') {
-            loadContacts();
+        // --- Utility Functions ---
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(page => {
+                page.classList.add('hidden');
+                page.classList.remove('active-page');
+            });
+            const page = document.getElementById(pageId)
+            page.classList.remove('hidden');
+            page.classList.add('active-page');
         }
-         if (overlayId === 'profilePage') {
-            populateProfile();
+        
+        function openOverlayWithLoader(overlayId) {
+            showLoader();
+            setTimeout(() => {
+                openOverlay(overlayId);
+                hideLoader();
+            }, 300);
         }
-    }
 
-    function closeOverlay(overlayId) {
-        document.getElementById(overlayId).classList.remove('active');
-    }
+        function openOverlay(overlayId) {
+            document.getElementById(overlayId).classList.add('active');
+            if (overlayId === 'contactsPage') loadContacts();
+            if (overlayId === 'profilePage') populateProfile();
+        }
 
-    // --- Welcome Page ---
-    function goToAuth() {
-        showPage('authPage');
-        setupAuthForm('login');
-    }
+        function closeOverlay(overlayId) {
+            document.getElementById(overlayId).classList.remove('active');
+        }
 
-    // --- Authentication Page ---
-    function setupAuthForm(type) {
-        const formTitle = document.getElementById('formTitle');
-        const submitBtn = document.getElementById('authSubmitBtn');
-        const registerLink = document.querySelector('#authPage p a');
-        const authToggleText = document.getElementById('authToggleText');
-        const fullNameInput = document.getElementById('authFullName');
+        // --- Welcome Page ---
+        function goToAuth() {
+            showPage('authPage');
+            showAuthForm('phone'); // Default to phone
+        }
 
-        isRegistering = (type === 'register');
-        formTitle.textContent = isRegistering ? 'Register for SmartCall' : 'Login to SmartCall';
+        // --- DUAL AUTHENTICATION LOGIC ---
+        function showAuthForm(type) {
+            const phoneSection = document.getElementById('phoneAuthSection');
+            const emailSection = document.getElementById('emailAuthSection');
+            const showPhoneBtn = document.getElementById('showPhoneBtn');
+            const showEmailBtn = document.getElementById('showEmailBtn');
+            document.getElementById('authMessage').textContent = '';
 
-        fullNameInput.classList.toggle('hidden', !isRegistering);
+            if (type === 'phone') {
+                phoneSection.classList.remove('hidden');
+                emailSection.classList.add('hidden');
+                showPhoneBtn.classList.add('active');
+                showEmailBtn.classList.remove('active');
+            } else {
+                phoneSection.classList.add('hidden');
+                emailSection.classList.remove('hidden');
+                showPhoneBtn.classList.remove('active');
+                showEmailBtn.classList.add('active');
+            }
+        }
 
-        submitBtn.innerHTML = `<i class="fas fa-${isRegistering ? 'user-plus' : 'lock'}"></i> ${isRegistering ? 'Register' : 'Login'}`;
-        registerLink.textContent = isRegistering ? 'Login' : 'Register';
-        authToggleText.textContent = isRegistering ? "Already have an account?" : "Don't have an account?";
-    }
+        // --- Phone Auth ---
+        function setupRecaptcha() {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {}
+            });
+        }
 
-    function toggleForm() {
-        setupAuthForm(isRegistering ? 'login' : 'register');
-    }
+        function sendOtp() {
+            showLoader();
+            const countryCode = document.getElementById('authCountryCode').value;
+            const phoneNumberInput = document.getElementById('authPhoneNumber').value;
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = '';
 
-    function handleAuthSubmit() {
-        const fullName = document.getElementById('authFullName').value;
-        const email = document.getElementById('authEmail').value;
-        const password = document.getElementById('authPassword').value;
-        const authMessage = document.getElementById('authMessage');
-        authMessage.textContent = '';
+            if (!phoneNumberInput) {
+                authMessage.textContent = 'Please enter a phone number.';
+                hideLoader();
+                return;
+            }
 
+            const fullPhoneNumber = countryCode + phoneNumberInput;
+            setupRecaptcha();
+            const appVerifier = window.recaptchaVerifier;
 
-        if (isRegistering) {
+            auth.signInWithPhoneNumber(fullPhoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    hideLoader();
+                    showAlert('Verification code has been sent!');
+                    document.getElementById('otpSection').classList.remove('hidden');
+                }).catch((error) => {
+                    hideLoader();
+                    console.error("SMS not sent error", error);
+                    authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
+                    grecaptcha.reset(window.recaptchaWidgetId);
+                });
+        }
+
+        function verifyOtp() {
+            showLoader();
+            const otp = document.getElementById('otpInput').value;
+            const fullName = document.getElementById('authFullNamePhone').value;
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = '';
+
+            if (!otp || otp.length !== 6) {
+                authMessage.textContent = 'Please enter a valid 6-digit code.';
+                hideLoader(); return;
+            }
+            if (!fullName) {
+                authMessage.textContent = 'Please enter your full name.';
+                hideLoader(); return;
+            }
+
+            window.confirmationResult.confirm(otp).then((result) => {
+                const user = result.user;
+                const userRef = db.collection('users').doc(user.uid);
+                return userRef.get().then(doc => {
+                    if (!doc.exists) {
+                        return userRef.set({
+                            fullName: fullName,
+                            phoneNumber: user.phoneNumber,
+                            memberSince: new Date(),
+                            balance: 0
+                        });
+                    }
+                });
+            }).catch((error) => {
+                hideLoader();
+                authMessage.textContent = "Invalid code. Please try again.";
+            });
+        }
+
+        // --- Email Auth ---
+        function handleEmailRegister() {
+            showLoader();
+            const fullName = document.getElementById('authFullNameEmail').value;
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = '';
+
             if (!fullName || !email || !password) {
                 authMessage.textContent = 'All fields are required.';
-                return;
+                hideLoader(); return;
             }
             if (password.length < 6) {
                 authMessage.textContent = 'Password must be at least 6 characters.';
-                return;
+                hideLoader(); return;
             }
-
+            
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     const user = userCredential.user;
-                    // Now save the full name and other details to Firestore
+                    user.sendEmailVerification(); // Send verification email
                     return db.collection('users').doc(user.uid).set({
                         fullName: fullName,
                         email: email,
                         memberSince: new Date(),
-                        balance: 0 // Initial balance
+                        balance: 0,
+                        emailVerified: false
                     });
                 })
                 .then(() => {
-                    console.log('User registered and data saved!');
-                    // No need to call loadHomePageData here, onAuthStateChanged will handle it
+                    hideLoader();
+                    showAlert("Registration successful! Please check your email to verify your account before logging in.");
                 })
                 .catch(error => {
+                    hideLoader();
                     authMessage.textContent = error.message;
                 });
-        } else {
-             if (!email || !password) {
-                authMessage.textContent = 'Please enter your Email and Password.';
-                return;
+        }
+
+        function handleEmailLogin() {
+            showLoader();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const authMessage = document.getElementById('authMessage');
+            authMessage.textContent = '';
+
+            if (!email || !password) {
+                authMessage.textContent = 'Please enter email and password.';
+                hideLoader(); return;
             }
+
             auth.signInWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    if (!userCredential.user.emailVerified) {
+                        hideLoader();
+                        showAlert("Your email is not verified. Please check your inbox for the verification link.");
+                        auth.signOut(); // Log them out until verified
+                    }
+                    // If verified, onAuthStateChanged will handle the rest
+                })
                 .catch(error => {
+                    hideLoader();
                     authMessage.textContent = error.message;
                 });
         }
-    }
 
-    // --- Firebase Auth State Listener ---
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // User is signed in.
-            loggedInUser = user;
-            loadHomePageData();
-        } else {
-            // User is signed out.
-            loggedInUser = null;
-            showPage('welcomePage');
+
+        // --- Firebase Auth State Listener ---
+        auth.onAuthStateChanged(user => {
+            if (stopUserListener) stopUserListener();
+            if (stopCallHistoryListener) stopCallHistoryListener();
+
+            if (user) {
+                if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+                    // Don't log in email users if they aren't verified
+                    return;
+                }
+                loggedInUser = user;
+                listenToUserData();
+                listenToCallHistory();
+                showPage('homePage');
+                hideLoader();
+            } else {
+                loggedInUser = null;
+                showPage('welcomePage');
+                hideLoader();
+            }
+        });
+
+        // --- Real-time listeners ---
+        function listenToUserData() {
+            if (!loggedInUser) return;
+            const userRef = db.collection('users').doc(loggedInUser.uid);
+            stopUserListener = userRef.onSnapshot(doc => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById('welcomeUserName').textContent = userData.fullName;
+                    updateWalletBalance(userData.balance);
+                } else {
+                    console.log("User document doesn't exist yet, likely during registration.");
+                }
+            }, err => console.error("Error listening to user data:", err));
         }
-    });
 
-    async function loadHomePageData() {
-        if (!loggedInUser) return;
+        function listenToCallHistory() {
+            if (!loggedInUser) return;
+            const historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc').limit(5);
+            const historyListDiv = document.getElementById('recentCallsList');
 
-        const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            document.getElementById('welcomeUserName').textContent = userData.fullName;
-            updateWalletBalance(userData.balance);
-            showPage('homePage');
-        } else {
-            // Handle case where user exists in Auth but not in Firestore
-            console.error("User data not found in Firestore!");
-            auth.signOut();
+            stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
+                if (snapshot.empty) {
+                    historyListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No recent calls.</p>';
+                    return;
+                }
+                historyListDiv.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const call = doc.data();
+                    const callDate = call.timestamp.toDate();
+                    const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+
+                    const callItem = document.createElement('div');
+                    callItem.classList.add('history-item');
+                    callItem.innerHTML = `
+                        <div>${call.contactName}<br><span style="color:#777;">${call.duration}</span></div>
+                        <div style="font-size:0.8rem; color:#aaa; text-align:right;">${formattedDate}</div>
+                    `;
+                    historyListDiv.appendChild(callItem);
+                });
+            }, err => console.error("Error listening to call history:", err));
         }
-    }
 
 
-    // --- Home Page ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-        const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-        countryCodeSelects.forEach(select => {
-            countryCodes.forEach(code => {
-                const option = document.createElement('option');
-                option.value = code.split(' ')[0];
-                option.textContent = code;
-                select.appendChild(option);
+        // --- Home Page ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
+            const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
+            countryCodeSelects.forEach(select => {
+                countryCodes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code.split(' ')[0];
+                    option.textContent = code;
+                    select.appendChild(option);
+                });
             });
         });
-    });
 
-    // --- Dial Pad ---
-    let currentNumber = '';
-    const dialPadDisplay = document.getElementById('dialPadDisplay');
+        // --- Dial Pad ---
+        let currentNumber = '';
+        const dialPadDisplay = document.getElementById('dialPadDisplay');
 
-    function dialInput(value) {
-        if (value === 'backspace' && currentNumber.length > 0) {
-            currentNumber = currentNumber.slice(0, -1);
-        } else if (value !== 'backspace') {
-            currentNumber += value;
+        function dialInput(value) {
+            if (value === 'backspace' && currentNumber.length > 0) {
+                currentNumber = currentNumber.slice(0, -1);
+            } else if (value !== 'backspace') {
+                currentNumber += value;
+            }
+            dialPadDisplay.value = currentNumber;
         }
-        dialPadDisplay.value = currentNumber;
-    }
 
-    function clearDialPad() {
-        currentNumber = '';
-        dialPadDisplay.value = '';
-    }
+        function clearDialPad() {
+            currentNumber = '';
+            dialPadDisplay.value = '';
+        }
 
-    function startCallFromDialpad() {
-        if (currentNumber) {
-            // This is still a simulation, as WebRTC is complex
-            openCallScreen(currentNumber);
+        function startCallFromDialpad() {
+            if (currentNumber) {
+                showLoader();
+                setTimeout(() => {
+                    hideLoader();
+                    openCallScreen(currentNumber, currentNumber);
+                    closeOverlay('dialPadPage');
+                }, 500);
+            } else {
+                showAlert('Please enter a number to call.');
+            }
+        }
+
+        function openContactsFromDialpad() {
             closeOverlay('dialPadPage');
-        } else {
-            showAlert('Please enter a number to call.');
+            openOverlayWithLoader('contactsPage');
         }
-    }
 
-    function openContactsFromDialpad() {
-        closeOverlay('dialPadPage');
-        openOverlay('contactsPage');
-    }
+        // --- Contacts Page ---
+        function loadContacts() {
+            if (!loggedInUser) return;
+            const contactsListDiv = document.getElementById('contactsList');
+            contactsListDiv.innerHTML = '<p style="color:#aaa;">Loading contacts...</p>';
 
-    // --- Contacts Page ---
-    async function loadContacts() {
-        if (!loggedInUser) return;
-        const contactsListDiv = document.getElementById('contactsList');
-        contactsListDiv.innerHTML = '<p style="color:#aaa;">Loading contacts...</p>';
-
-        const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-        contactsRef.orderBy('name').onSnapshot(snapshot => {
-             allContacts = [];
-             snapshot.forEach(doc => {
-                allContacts.push({ id: doc.id, ...doc.data() });
-             });
-             displayContacts(allContacts);
-        }, error => {
-            console.error("Error loading contacts: ", error);
-            contactsListDiv.innerHTML = '<p style="color:#e74c3c;">Could not load contacts.</p>';
-        });
-    }
-
-
-    function displayContacts(list) {
-        const contactsListDiv = document.getElementById('contactsList');
-        contactsListDiv.innerHTML = '';
-        if (list.length === 0) {
-            contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found. Add one!</p>';
-            return;
+            const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
+            contactsRef.orderBy('name').onSnapshot(snapshot => {
+                allContacts = [];
+                snapshot.forEach(doc => {
+                    allContacts.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                displayContacts(allContacts);
+            }, error => {
+                console.error("Error loading contacts: ", error);
+                contactsListDiv.innerHTML = '<p style="color:#e74c3c;">Could not load contacts.</p>';
+            });
         }
-        list.forEach(contact => {
-            const contactDiv = document.createElement('div');
-            contactDiv.classList.add('contact-item');
-            contactDiv.onclick = () => openCallScreen(contact.phone);
-            const nameParts = contact.name.split(' ');
-            const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
-            contactDiv.innerHTML = `
+
+
+        function displayContacts(list) {
+            const contactsListDiv = document.getElementById('contactsList');
+            contactsListDiv.innerHTML = '';
+            if (list.length === 0) {
+                contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found. Add one!</p>';
+                return;
+            }
+            list.forEach(contact => {
+                const contactDiv = document.createElement('div');
+                contactDiv.classList.add('contact-item');
+                contactDiv.onclick = () => openCallScreen(contact.name, contact.phone);
+                const nameParts = contact.name.split(' ');
+                const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
+                contactDiv.innerHTML = `
                 <div class="contact-avatar">${initials}</div>
                 <div class="contact-info">
                     <div class="contact-name">${contact.name}</div>
                     <div class="contact-phone">${contact.phone}</div>
                 </div>
             `;
-            contactsListDiv.appendChild(contactDiv);
-        });
-    }
-
-    function openAddContactPage() {
-        closeOverlay('contactsPage');
-        openOverlay('addContactPage');
-    }
-
-    function closeAddContactPage() {
-        document.getElementById('newContactName').value = '';
-        document.getElementById('newContactPhone').value = '';
-        document.getElementById('newContactEmail').value = '';
-        closeOverlay('addContactPage');
-        openOverlay('contactsPage');
-    }
-
-   function saveNewContact() {
-        const name = document.getElementById('newContactName').value;
-        const phone = document.getElementById('newContactPhone').value;
-        const email = document.getElementById('newContactEmail').value;
-        if (name && phone && loggedInUser) {
-            const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-            contactsRef.add({
-                name: name,
-                phone: phone,
-                email: email
-            }).then(() => {
-                showAlert('Contact saved successfully!');
-                closeAddContactPage();
-            }).catch(error => {
-                showAlert('Error saving contact: ' + error.message);
+                contactsListDiv.appendChild(contactDiv);
             });
-        } else {
-            showAlert('Name and phone number are required.');
         }
-    }
 
-    function searchContacts() {
-        const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
-        const filteredContacts = allContacts.filter(contact =>
-            contact.name.toLowerCase().includes(searchTerm) ||
-            contact.phone.includes(searchTerm)
-        );
-        displayContacts(filteredContacts);
-    }
-
-    // --- Messages Page (Simplified) ---
-    function openNewMessagePage() {
-        showAlert("Messaging feature is under development.");
-    }
-    function searchMessages() {
-         showAlert("Messaging feature is under development.");
-    }
-
-
-    // --- Profile Page ---
-    async function populateProfile() {
-        if (!loggedInUser) return;
-        const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            document.getElementById('profileName').textContent = userData.fullName || 'N/A';
-            document.getElementById('profileEmail').textContent = userData.email || 'N/A';
-            document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || 'N/A';
-            const memberSinceDate = userData.memberSince.toDate();
-            document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        function openAddContactPage() {
+            closeOverlay('contactsPage');
+            openOverlay('addContactPage');
         }
-    }
 
-
-    function confirmLogout() {
-        showConfirm('Are you sure you want to logout?', () => {
-           auth.signOut();
-        });
-    }
-
-    // --- Call Screen (Simulation) ---
-    const callScreen = document.getElementById('callScreen');
-    const callingContactName = document.getElementById('callingContactName');
-    const callStatus = document.getElementById('callStatus');
-    const callTimer = document.getElementById('callTimer');
-    let callInterval;
-    let seconds = 0;
-
-    function openCallScreen(numberOrName) {
-        callingContactName.textContent = numberOrName;
-        callStatus.textContent = 'Calling...';
-        callScreen.classList.add('active');
-        seconds = 0;
-        callTimer.textContent = '00:00';
-        // Simulate call start after a delay
-        setTimeout(() => {
-            callStatus.textContent = 'Connected';
-            callInterval = setInterval(updateCallTimer, 1000);
-        }, 3000);
-    }
-
-    function updateCallTimer() {
-        seconds++;
-        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
-        callTimer.textContent = `${minutes}:${remainingSeconds}`;
-    }
-
-    function endCallSimulation() {
-        clearInterval(callInterval);
-        callScreen.classList.remove('active');
-        showAlert(`Call ended after ${callTimer.textContent}`);
-    }
-
-    let isMuted = false;
-    let isSpeakerOn = false;
-    const muteBtn = document.getElementById('muteBtn');
-    const speakerBtn = document.getElementById('speakerBtn');
-
-    function toggleMute() {
-        isMuted = !isMuted;
-        muteBtn.classList.toggle('active', isMuted);
-        showAlert(isMuted ? 'Muted' : 'Unmuted');
-    }
-
-    function toggleSpeaker() {
-        isSpeakerOn = !isSpeakerOn;
-        speakerBtn.classList.toggle('active', isSpeakerOn);
-        showAlert(isSpeakerOn ? 'Speaker On' : 'Speaker Off');
-    }
-
-    // --- Custom Alert Dialog ---
-    const alertDialog = document.getElementById('customAlertDialog');
-    const alertMessage = document.getElementById('customAlertMessage');
-
-    function showAlert(message) {
-        alertMessage.textContent = message;
-        alertDialog.classList.add('active');
-    }
-
-    function hideCustomAlert() {
-        alertDialog.classList.remove('active');
-    }
-
-    // --- Custom Confirm Dialog ---
-    const confirmDialog = document.getElementById('customConfirmDialog');
-    const confirmMessage = document.getElementById('customConfirmMessage');
-    const confirmOkBtn = document.getElementById('confirmOkBtn');
-    const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-    let confirmCallback;
-
-    function showConfirm(message, onConfirm) {
-        confirmMessage.textContent = message;
-        confirmCallback = onConfirm;
-        confirmDialog.classList.add('active');
-    }
-
-    confirmOkBtn.onclick = () => {
-        if (confirmCallback) {
-            confirmCallback();
+        function closeAddContactPage() {
+            document.getElementById('newContactName').value = '';
+            document.getElementById('newContactPhone').value = '';
+            document.getElementById('newContactEmail').value = '';
+            closeOverlay('addContactPage');
+            openOverlay('contactsPage');
         }
-        confirmDialog.classList.remove('active');
-    };
 
-    confirmCancelBtn.onclick = () => {
-        confirmDialog.classList.remove('active');
-    };
-</script>
-
-
-<script>
-// --- Recharge and Wallet ---
-async function payWithPaystack() {
-    let amount = document.getElementById("rechargeAmount").value;
-    if (!amount || isNaN(amount) || amount < 100) {
-        alert("Please enter a valid amount (minimum ₦100)");
-        return;
-    }
-    if (!loggedInUser) {
-        alert("You must be logged in to recharge.");
-        return;
-    }
-
-    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-    const userEmail = userDoc.data().email;
-
-    let handler = PaystackPop.setup({
-        key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // IMPORTANT: Use your test key
-        email: userEmail,
-        amount: amount * 100, // Amount in kobo
-        currency: 'NGN',
-        ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
-        callback: function(response) {
-            // NOTE: In a real app, you would verify this transaction on a server
-            // using a webhook before updating the balance.
-            // For this client-only version, we'll update it directly.
-            document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-            updateUserBalanceInDB(parseFloat(amount));
-        },
-        onClose: function() {
-            alert('Payment window closed.');
-        }
-    });
-    handler.openIframe();
-}
-
-async function updateUserBalanceInDB(amount) {
-    if (!loggedInUser) return;
-    const userRef = db.collection('users').doc(loggedInUser.uid);
-    
-    // Use a transaction to safely update the balance
-    return db.runTransaction(transaction => {
-        return transaction.get(userRef).then(doc => {
-            if (!doc.exists) {
-                throw "Document does not exist!";
+        function saveNewContact() {
+            const name = document.getElementById('newContactName').value;
+            const phone = document.getElementById('newContactPhone').value;
+            const email = document.getElementById('newContactEmail').value;
+            if (name && phone && loggedInUser) {
+                showLoader();
+                const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
+                contactsRef.add({
+                    name: name,
+                    phone: phone,
+                    email: email
+                }).then(() => {
+                    hideLoader();
+                    showAlert('Contact saved successfully!');
+                    closeAddContactPage();
+                }).catch(error => {
+                    hideLoader();
+                    showAlert('Error saving contact: ' + error.message);
+                });
+            } else {
+                showAlert('Name and phone number are required.');
             }
-            const newBalance = (doc.data().balance || 0) + amount;
-            transaction.update(userRef, { balance: newBalance });
-            return newBalance;
-        });
-    }).then(newBalance => {
-        console.log("Balance updated to:", newBalance);
-        updateWalletBalance(newBalance);
-    }).catch(error => {
-        console.error("Transaction failed: ", error);
-    });
-}
+        }
+
+        function searchContacts() {
+            const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
+            const filteredContacts = allContacts.filter(contact =>
+                contact.name.toLowerCase().includes(searchTerm) ||
+                contact.phone.includes(searchTerm)
+            );
+            displayContacts(filteredContacts);
+        }
+
+        // --- Messages Page (Simplified) ---
+        function openNewMessagePage() {
+            showAlert("Messaging feature is under development.");
+        }
+
+        function searchMessages() {
+            showAlert("Messaging feature is under development.");
+        }
 
 
-function updateWalletBalance(balance) {
-    const balanceText = document.getElementById("walletBalance");
-    const balanceInNaira = balance.toFixed(2);
-    const approxMinutes = Math.floor(balance / 28); // Assuming an average rate
-    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
-}
-</script>
+        // --- Profile Page ---
+        async function populateProfile() {
+            if (!loggedInUser) return;
+            const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+            if (userDoc.exists) {
+                const userData = doc.data();
+                document.getElementById('profileName').textContent = userData.fullName || 'N/A';
+                document.getElementById('profileEmail').textContent = userData.email || 'N/A';
+                document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || 'N/A';
+                const memberSinceDate = userData.memberSince.toDate();
+                document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+        }
 
+
+        function confirmLogout() {
+            showConfirm('Are you sure you want to logout?', () => {
+                showLoader();
+                auth.signOut();
+            });
+        }
+
+        // --- Call Screen (Simulation) & History Logging ---
+        const callScreen = document.getElementById('callScreen');
+        const callingContactName = document.getElementById('callingContactName');
+        const callStatus = document.getElementById('callStatus');
+        const callTimer = document.getElementById('callTimer');
+        let callInterval;
+        let seconds = 0;
+
+        function openCallScreen(name, number) {
+            callingContactName.textContent = name || number;
+            callScreen.setAttribute('data-contact-name', name || number);
+            callStatus.textContent = 'Calling...';
+            callScreen.classList.add('active');
+            seconds = 0;
+            callTimer.textContent = '00:00';
+            
+            setTimeout(() => {
+                callStatus.textContent = 'Connected';
+                callInterval = setInterval(updateCallTimer, 1000);
+            }, 3000);
+        }
+
+        function updateCallTimer() {
+            seconds++;
+            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+            callTimer.textContent = `${minutes}:${remainingSeconds}`;
+        }
+
+        function endCallSimulation() {
+            clearInterval(callInterval);
+            callScreen.classList.remove('active');
+            
+            const duration = callTimer.textContent;
+            const contactName = callScreen.getAttribute('data-contact-name');
+            showAlert(`Call with ${contactName} ended after ${duration}`);
+            
+            if (loggedInUser && seconds > 0) {
+                db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
+                    contactName: contactName,
+                    duration: duration,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(err => console.error("Error logging call:", err));
+            }
+        }
+
+        let isMuted = false;
+        let isSpeakerOn = false;
+        const muteBtn = document.getElementById('muteBtn');
+        const speakerBtn = document.getElementById('speakerBtn');
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            muteBtn.classList.toggle('active', isMuted);
+            showAlert(isMuted ? 'Muted' : 'Unmuted');
+        }
+
+        function toggleSpeaker() {
+            isSpeakerOn = !isSpeakerOn;
+            speakerBtn.classList.toggle('active', isSpeakerOn);
+            showAlert(isSpeakerOn ? 'Speaker On' : 'Speaker Off');
+        }
+
+        // --- Custom Alert Dialog ---
+        const alertDialog = document.getElementById('customAlertDialog');
+        const alertMessage = document.getElementById('customAlertMessage');
+
+        function showAlert(message) {
+            alertMessage.textContent = message;
+            alertDialog.classList.add('active');
+        }
+
+        function hideCustomAlert() {
+            alertDialog.classList.remove('active');
+        }
+
+        // --- Custom Confirm Dialog ---
+        const confirmDialog = document.getElementById('customConfirmDialog');
+        const confirmMessage = document.getElementById('customConfirmMessage');
+        const confirmOkBtn = document.getElementById('confirmOkBtn');
+        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+        let confirmCallback;
+
+        function showConfirm(message, onConfirm) {
+            confirmMessage.textContent = message;
+            confirmCallback = onConfirm;
+            confirmDialog.classList.add('active');
+        }
+
+        confirmOkBtn.onclick = () => {
+            if (confirmCallback) {
+                confirmCallback();
+            }
+            confirmDialog.classList.remove('active');
+        };
+
+        confirmCancelBtn.onclick = () => {
+            confirmDialog.classList.remove('active');
+        };
+    </script>
+
+
+    <script>
+        // --- Recharge and Wallet ---
+        async function payWithPaystack() {
+            let amount = document.getElementById("rechargeAmount").value;
+            if (!amount || isNaN(amount) || amount < 100) {
+                showAlert("Please enter a valid amount (minimum ₦100)");
+                return;
+            }
+            if (!loggedInUser) {
+                showAlert("You must be logged in to recharge.");
+                return;
+            }
+            
+            showLoader();
+            const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+            hideLoader();
+            
+            if (!userDoc.exists) {
+                showAlert("Could not find user data. Please try again.");
+                return;
+            }
+            const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
+
+            let handler = PaystackPop.setup({
+                key: 'pk_live_1ed27cc7f362095117cd138dc098958dfb03101e',
+                email: userEmail,
+                amount: amount * 100,
+                currency: 'NGN',
+                ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
+                callback: function (response) {
+                    showLoader();
+                    document.getElementById("rechargeStatus").innerText = "Verifying payment...";
+                    updateUserBalanceInDB(parseFloat(amount)).then(() => {
+                        document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
+                        hideLoader();
+                        setTimeout(() => closeOverlay('rechargePage'), 1500);
+                    });
+                },
+                onClose: function () {}
+            });
+            handler.openIframe();
+        }
+
+        async function updateUserBalanceInDB(amount) {
+            if (!loggedInUser) return;
+            const userRef = db.collection('users').doc(loggedInUser.uid);
+
+            return db.runTransaction(transaction => {
+                return transaction.get(userRef).then(doc => {
+                    if (!doc.exists) {
+                        throw "Document does not exist!";
+                    }
+                    const newBalance = (doc.data().balance || 0) + amount;
+                    transaction.update(userRef, {
+                        balance: newBalance
+                    });
+                });
+            }).catch(error => {
+                console.error("Transaction failed: ", error);
+                document.getElementById("rechargeStatus").innerText = "Recharge failed. Please try again.";
+            });
+        }
+
+
+        function updateWalletBalance(balance) {
+            const balanceText = document.getElementById("walletBalance");
+            const balanceInNaira = balance.toFixed(2);
+            const approxMinutes = Math.floor(balance / 28); // Assuming an average rate of ₦28/min
+            balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
+        }
+    </script>
 </body>
 </html>

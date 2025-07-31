@@ -1605,7 +1605,7 @@
         function updateWalletBalance(balance) {
             const balanceText = document.getElementById("walletBalance");
             const balanceInNaira = balance.toFixed(2);
-            const approxMinutes = Math.floor(balance / 28); // Assuming an average rate of ₦28/min
+            const approxMinutes = Math.floor(balance / 13); // Assuming an average rate of ₦13/min
             balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
         }
     </script>

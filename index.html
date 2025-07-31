@@ -284,12 +284,19 @@
             box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
         }
 
+        /* --- Updated Login/Register UI --- */
+        #authPage .auth-logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
 
         /* --- Home Page Specific Styles --- */
         #homePage { justify-content: space-between; }
-        .home-header { padding: 10px; }
+        .home-header { padding: 10px; display: flex; align-items: center; justify-content: flex-start; }
+        .home-logo { width: 50px; margin-right: 15px; }
         /* Updated style for the welcome/balance box */
         .welcome-balance-box {
+            flex-grow: 1;
             background-color: #a29bfe; /* Purplish background */
             border-radius: 15px;
             padding: 20px;
@@ -362,6 +369,8 @@
             cursor: pointer; transition: all 0.2s ease;
         }
         .call-again-btn:hover { background: #2980b9; }
+        .dark-theme .call-again-btn { background: #f6e58d; color: #333; }
+        .dark-theme .call-again-btn:hover { background: #ffeaa7; }
 
         /* --- Hexagonal Bottom Navigation --- */
         .bottom-nav {
@@ -464,8 +473,29 @@
             transition: background-color 0.2s ease;
             cursor: pointer; /* Make contact item clickable */
             color: #333;
+            position: relative;
         }
         .contact-item:hover { background-color: #eee; }
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+        .contact-actions i {
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s ease;
+        }
+        .contact-actions i:hover {
+            color: #3498db;
+        }
+        .contact-actions i.fa-edit:hover { color: #f1c40f; }
+        .contact-actions i.fa-trash:hover { color: #e74c3c; }
+        .dark-theme .contact-actions i { color: #ccc; }
+        .dark-theme .contact-actions i:hover { color: #ffeaa7; }
+        .dark-theme .contact-actions i.fa-edit:hover { color: #f1c40f; }
+        .dark-theme .contact-actions i.fa-trash:hover { color: #e74c3c; }
 
         .contact-avatar {
             width: 45px; height: 45px; border-radius: 50%; background-color: #3498db;
@@ -481,6 +511,18 @@
             color: #333;
         }
         .profile-info strong { color: #3498db; }
+        .profile-edit-btn {
+            background-color: transparent;
+            color: #3498db;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+        .dark-theme .profile-edit-btn {
+            color: #f6e58d;
+        }
+        .profile-edit-btn:hover { text-decoration: underline; }
 
         /* Call Screen Overlay */
         .call-screen {
@@ -655,7 +697,6 @@
 
 <body>
 
-    <!-- LOADER -->
     <div id="loader">
         <div class="spinner"></div>
     </div>
@@ -668,13 +709,12 @@
     <div class="container active-page" id="welcomePage" style="text-align: center;">
     <center><img src="smartcall-logo.png" alt="SmartCall Logo" style="width: 150px; margin-bottom: 20px;"></center>
     <h1 style="display: none;">Welcome to<br> <strong>SmartCall!</strong></h1>
-    <p>Connect with the world  simple, fast, and secured.</p>
-    <button class="btn" onclick="goToAuth()"> Get Started</button>
+    <p>Connect with the world   simple, fast, and secured.</p>
+    <button class="btn" onclick="goToAuth()">  Get Started</button>
 </div>
-    <!-- AUTH PAGE UPDATED FOR EMAIL/PHONE CHOICE -->
     <div class="container hidden" id="authPage">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo" style="width: 100px; margin: 0 auto 20px auto;">
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <i class="fas fa-user-circle" style="font-size: 4rem; color: #3498db; margin-bottom: 10px;"></i>
             <h2 id="formTitle" style="margin-bottom: 10px;">Register or Login</h2>
         </div>
 
@@ -684,7 +724,6 @@
         </div>
 
         <div style="width: 100%;">
-            <!-- Phone Auth Section -->
             <div id="phoneAuthSection">
                 <input id="authFullNamePhone" placeholder="Full Name" type="text" />
                 <div class="phone-input-group">
@@ -703,7 +742,6 @@
                 </div>
             </div>
 
-            <!-- Email Auth Section -->
             <div id="emailAuthSection" class="hidden">
                 <input id="authFullNameEmail" placeholder="Full Name" type="text" />
                 <input id="authEmail" placeholder="Email Address" type="email" />
@@ -723,6 +761,7 @@
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
+            <img src="smartcall-logo.png" alt="SmartCall Logo" class="home-logo">
             <div class="welcome-balance-box">
                 <h2>Welcome Back! <br>
                 <span id="welcomeUserName"><strong>User</strong></span></h2>
@@ -735,7 +774,7 @@
             <div class="scrolling-tagline">
                 Call your family, friends, and loved ones the easy & secure way — at affordable rates!
             </div>
-            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!  </h3>
+            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!   </h3>
             <br>
             <div class="make-call-circle" onclick="openOverlayWithLoader('dialPadPage')">
                 <i class="fas fa-phone"></i>
@@ -768,7 +807,6 @@
         </div>
     </div>
 
-    <!-- All other overlay divs remain the same... -->
     <div class="fullscreen-overlay" id="dialPadPage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Call</h3>
@@ -835,6 +873,20 @@
         </div>
     </div>
 
+    <div class="fullscreen-overlay" id="editContactPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Edit Contact</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeEditContactPage()"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="editContactId" type="hidden" />
+            <input id="editContactName" placeholder="Contact Name" type="text" />
+            <input id="editContactPhone" placeholder="Phone Number" type="tel" />
+            <input id="editContactEmail" placeholder="Email (Optional)" type="email" />
+            <button class="btn" onclick="saveEditedContact()">Save Changes</button>
+        </div>
+    </div>
+
     <div class="fullscreen-overlay" id="messagePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Messages</h3>
@@ -871,12 +923,23 @@
         </div>
         <div class="overlay-content">
             <div class="profile-info">
-                <p><strong>Name:</strong> <span id="profileName"></span></p>
+                <p><strong>Name:</strong> <span id="profileName"></span> <i class="fas fa-edit profile-edit-btn" onclick="openEditProfilePage()"></i></p>
                 <p><strong>Email:</strong> <span id="profileEmail"></span></p>
                 <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
                 <p><strong>Member Since:</strong> <span id="profileMemberSince"></span></p>
             </div>
             <button class="btn" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="editProfilePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Edit Profile</h3>
+            <i class="fas fa-times close-overlay-btn" onclick="closeEditProfilePage()"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="editProfileName" placeholder="New Name" type="text" />
+            <button class="btn" onclick="saveProfileChanges()">Save Changes</button>
         </div>
     </div>
 
@@ -898,7 +961,13 @@
             <h3 class="overlay-title">Referral Program</h3>
             <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('referralPage')"></i>
         </div>
-        <div class="overlay-content"><h2>Invite friends and earn credit! (Coming Soon)</h2></div>
+        <div class="overlay-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <i class="fas fa-gift" style="font-size: 5rem; color: #e67e22; margin-bottom: 20px;"></i>
+            <h2>Invite friends and earn credit!</h2>
+            <p>Share your unique referral link to earn rewards when they sign up and make a call.</p>
+            <input type="text" id="referralLink" value="https://smartcall.app/refer/user123" readonly style="text-align: center; cursor: pointer;" onclick="copyReferralLink()">
+            <button class="btn" onclick="shareReferralLink()"><i class="fas fa-share-alt"></i> Share Link</button>
+        </div>
     </div>
 
     <div class="call-screen" id="callScreen">
@@ -1251,6 +1320,7 @@
                     callItem.innerHTML = `
                         <div>${call.contactName}<br><span style="color:#777;">${call.duration}</span></div>
                         <div style="font-size:0.8rem; color:#aaa; text-align:right;">${formattedDate}</div>
+                        <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactName}')">Call Again</button>
                     `;
                     historyListDiv.appendChild(callItem);
                 });
@@ -1341,7 +1411,6 @@
             list.forEach(contact => {
                 const contactDiv = document.createElement('div');
                 contactDiv.classList.add('contact-item');
-                contactDiv.onclick = () => openCallScreen(contact.name, contact.phone);
                 const nameParts = contact.name.split(' ');
                 const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
                 contactDiv.innerHTML = `
@@ -1349,6 +1418,12 @@
                 <div class="contact-info">
                     <div class="contact-name">${contact.name}</div>
                     <div class="contact-phone">${contact.phone}</div>
+                </div>
+                <div class="contact-actions">
+                    <i class="fas fa-phone" onclick="openCallScreen('${contact.name}', '${contact.phone}')"></i>
+                    <i class="fas fa-comment" onclick="openNewMessagePageWithRecipient('${contact.name}', '${contact.phone}')"></i>
+                    <i class="fas fa-edit" onclick="openEditContactPage('${contact.id}')"></i>
+                    <i class="fas fa-trash" onclick="deleteContact('${contact.id}')"></i>
                 </div>
             `;
                 contactsListDiv.appendChild(contactDiv);
@@ -1392,6 +1467,64 @@
             }
         }
 
+        function openEditContactPage(contactId) {
+            const contact = allContacts.find(c => c.id === contactId);
+            if (!contact) {
+                showAlert("Contact not found.");
+                return;
+            }
+            document.getElementById('editContactId').value = contact.id;
+            document.getElementById('editContactName').value = contact.name;
+            document.getElementById('editContactPhone').value = contact.phone;
+            document.getElementById('editContactEmail').value = contact.email;
+            closeOverlay('contactsPage');
+            openOverlay('editContactPage');
+        }
+
+        function closeEditContactPage() {
+            closeOverlay('editContactPage');
+            openOverlay('contactsPage');
+        }
+
+        function saveEditedContact() {
+            const id = document.getElementById('editContactId').value;
+            const name = document.getElementById('editContactName').value;
+            const phone = document.getElementById('editContactPhone').value;
+            const email = document.getElementById('editContactEmail').value;
+            if (id && name && phone && loggedInUser) {
+                showLoader();
+                const contactRef = db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(id);
+                contactRef.update({
+                    name: name,
+                    phone: phone,
+                    email: email
+                }).then(() => {
+                    hideLoader();
+                    showAlert('Contact updated successfully!');
+                    closeEditContactPage();
+                }).catch(error => {
+                    hideLoader();
+                    showAlert('Error updating contact: ' + error.message);
+                });
+            } else {
+                showAlert('Name and phone number are required.');
+            }
+        }
+
+        function deleteContact(contactId) {
+            showConfirm('Are you sure you want to delete this contact?', () => {
+                showLoader();
+                db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(contactId).delete()
+                    .then(() => {
+                        hideLoader();
+                        showAlert('Contact deleted successfully!');
+                    }).catch(error => {
+                        hideLoader();
+                        showAlert('Error deleting contact: ' + error.message);
+                    });
+            });
+        }
+
         function searchContacts() {
             const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
             const filteredContacts = allContacts.filter(contact =>
@@ -1404,6 +1537,20 @@
         // --- Messages Page (Simplified) ---
         function openNewMessagePage() {
             showAlert("Messaging feature is under development.");
+            // closeOverlay('contactsPage');
+            // openOverlay('newMessagePage');
+        }
+        
+        function openNewMessagePageWithRecipient(name, phone) {
+            showAlert("Messaging feature is under development.");
+            // closeOverlay('contactsPage');
+            // openOverlay('newMessagePage');
+            // document.getElementById('messageRecipient').value = name || phone;
+        }
+
+        function closeNewMessagePage() {
+            closeOverlay('newMessagePage');
+            openOverlay('messagePage');
         }
 
         function searchMessages() {
@@ -1416,16 +1563,47 @@
             if (!loggedInUser) return;
             const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
             if (userDoc.exists) {
-                const userData = doc.data();
+                const userData = userDoc.data();
                 document.getElementById('profileName').textContent = userData.fullName || 'N/A';
                 document.getElementById('profileEmail').textContent = userData.email || 'N/A';
-                document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || 'N/A';
-                const memberSinceDate = userData.memberSince.toDate();
+                document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || userData.phoneNumber || 'N/A';
+                const memberSinceDate = userData.memberSince ? userData.memberSince.toDate() : new Date();
                 document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', {
                     month: 'long',
                     year: 'numeric'
                 });
             }
+        }
+
+        function openEditProfilePage() {
+            const currentName = document.getElementById('profileName').textContent;
+            document.getElementById('editProfileName').value = currentName;
+            closeOverlay('profilePage');
+            openOverlay('editProfilePage');
+        }
+
+        function closeEditProfilePage() {
+            closeOverlay('editProfilePage');
+            openOverlay('profilePage');
+        }
+
+        function saveProfileChanges() {
+            const newName = document.getElementById('editProfileName').value;
+            if (!newName || newName.length < 3) {
+                showAlert('Please enter a valid name.');
+                return;
+            }
+            showLoader();
+            db.collection('users').doc(loggedInUser.uid).update({
+                fullName: newName
+            }).then(() => {
+                hideLoader();
+                showAlert('Profile updated successfully!');
+                closeEditProfilePage();
+            }).catch(error => {
+                hideLoader();
+                showAlert('Error updating profile: ' + error.message);
+            });
         }
 
 
@@ -1447,6 +1625,7 @@
         function openCallScreen(name, number) {
             callingContactName.textContent = name || number;
             callScreen.setAttribute('data-contact-name', name || number);
+            callScreen.setAttribute('data-contact-phone', number);
             callStatus.textContent = 'Calling...';
             callScreen.classList.add('active');
             seconds = 0;
@@ -1471,11 +1650,13 @@
             
             const duration = callTimer.textContent;
             const contactName = callScreen.getAttribute('data-contact-name');
+            const contactPhone = callScreen.getAttribute('data-contact-phone');
             showAlert(`Call with ${contactName} ended after ${duration}`);
             
             if (loggedInUser && seconds > 0) {
                 db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
                     contactName: contactName,
+                    contactPhone: contactPhone,
                     duration: duration,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(err => console.error("Error logging call:", err));
@@ -1535,6 +1716,27 @@
         confirmCancelBtn.onclick = () => {
             confirmDialog.classList.remove('active');
         };
+
+        // --- Referral Page Actions ---
+        function copyReferralLink() {
+            const referralInput = document.getElementById('referralLink');
+            referralInput.select();
+            referralInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            showAlert('Referral link copied to clipboard!');
+        }
+
+        function shareReferralLink() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SmartCall Referral',
+                    text: 'Join me on SmartCall and get free credit!',
+                    url: document.getElementById('referralLink').value,
+                }).catch((error) => console.log('Error sharing', error));
+            } else {
+                showAlert("Web Share API is not supported in this browser. Please use the copy button.");
+            }
+        }
     </script>
 
 

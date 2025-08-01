@@ -150,7 +150,10 @@
         body.dark-theme .contact-item:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-
+        body.dark-theme .contact-name, body.dark-theme .contact-phone {
+            color: #e0e0e0;
+        }
+        
         body.dark-theme .profile-info p {
             background-color: rgba(255, 255, 255, 0.1);
             color: #fff;
@@ -302,36 +305,48 @@
         /* --- Home Page Specific Styles --- */
         #homePage { justify-content: space-between; }
         .home-header { padding: 10px; display: flex; align-items: center; justify-content: flex-start; }
-        .home-logo { width: 50px; margin-right: 15px; }
-        /* Updated style for the welcome/balance box */
+        
+        /* New styling for the logo inside the welcome box */
         .welcome-balance-box {
             flex-grow: 1;
-            background-color: #a29bfe; /* Purplish background */
+            background-color: #a29bfe;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
-            color: #fff; /* Light text for better readability on purple */
-            background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7); /* Sweetened purple gradient */
+            color: #fff;
+            background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
+            
+            /* The new flexbox layout for the logo and text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .welcome-logo {
+            width: 60px;
+        }
+        .welcome-text-content {
+            text-align: left;
         }
         .welcome-balance-box h2 {
             margin-bottom: 5px;
-            color: #fff; /* White color for heading */
-            text-shadow: none; /* Remove text shadow for better clarity */
+            color: #fff;
+            text-shadow: none;
         }
         .welcome-balance-box h2 strong {
-            color: #f0f0f0; /* A slightly lighter color for emphasis */
+            color: #f0f0f0;
         }
         .wallet-balance {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #fff; /* White text for balance */
+            color: #fff;
             margin-top: 10px;
         }
         .wallet-balance span {
             font-size: 0.9rem;
-            color: #eee; /* Slightly lighter white for subtext */
+            color: #eee;
             font-style: italic;
         }
 
@@ -344,7 +359,7 @@
         }
         .make-call-circle {
             width: 180px; height: 180px; border-radius: 50%;
-            background: linear-gradient(135deg, #3498db, #2980b9); /* Updated button color */
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white; display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer;
@@ -380,6 +395,14 @@
         .call-again-btn:hover { background: #2980b9; }
         .dark-theme .call-again-btn { background: #f6e58d; color: #333; }
         .dark-theme .call-again-btn:hover { background: #ffeaa7; }
+        .see-more-link {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+        }
 
         /* --- Hexagonal Bottom Navigation --- */
         .bottom-nav {
@@ -514,6 +537,7 @@
         .contact-info { flex-grow: 1; text-align: left; }
         .contact-name { font-weight: bold; color: #333; }
         .contact-phone { font-size: 0.9rem; color: #777; }
+        .dark-theme .contact-name, .dark-theme .contact-phone { color: #e0e0e0; }
         .profile-info p {
             background-color: #f9f9f9; padding: 15px; border-radius: 10px;
             margin-bottom: 10px; text-align: left; font-size: 1.1rem;
@@ -700,6 +724,13 @@
         .dark-theme #themeToggleButton:hover {
             background-color: #555;
         }
+        .history-item .call-info { text-align: left; }
+        .history-item .call-number { font-weight: bold; color: #333; }
+        .history-item .call-time { font-size: 0.85rem; color: #777; }
+        .dark-theme .history-item .call-number, .dark-theme .history-item .call-time { color: #e0e0e0; }
+
+        .call-again-btn { margin-left: auto; }
+
     </style>
     <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
@@ -784,12 +815,14 @@
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
-            <img src="smartcall-logo.png" alt="SmartCall Logo" class="home-logo">
             <div class="welcome-balance-box">
-                <h2>Welcome Back! <br>
-                <span id="welcomeUserName"><strong>User</strong></span></h2>
-                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦0.00</strong><br>
-                    <span><i>(Approx. 0 Minutes)</i></span></div>
+                <img src="smartcall-logo.png" alt="SmartCall Logo" class="welcome-logo">
+                <div class="welcome-text-content">
+                    <h2>Welcome Back! <br>
+                    <span id="welcomeUserName"><strong>User</strong></span></h2>
+                    <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦0.00</strong><br>
+                        <span><i>(Approx. 0 Minutes)</i></span></div>
+                </div>
             </div>
         </div>
 
@@ -809,6 +842,7 @@
             <div id="recentCallsList">
                 <p style="color: #aaa; margin-top: 15px;">No recent calls.</p>
             </div>
+            <a href="#" class="see-more-link" onclick="openOverlayWithHistory('callHistoryPage')">See Full History</a>
         </div>
 
         <div class="bottom-nav">
@@ -860,8 +894,20 @@
                 <button class="dialpad-call-btn" onclick="startCallFromDialpad()"><i class="fas fa-phone"></i></button>
             </div>
             <div class="dialpad-bottom-actions">
-                <button class="btn" onclick="navigate('contactsPage')"><i class="fas fa-address-book"></i> Contacts</button>
+                <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
                 <button class="btn cancel" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="fullscreen-overlay" id="callHistoryPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Full Call History</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+        </div>
+        <div class="overlay-content">
+            <div id="fullCallHistoryList">
+                 <p style="color: #aaa; margin-top: 15px;">Loading full call history...</p>
             </div>
         </div>
     </div>
@@ -1059,8 +1105,14 @@
 
         // --- LOADER FUNCTIONS ---
         const loader = document.getElementById('loader');
-        function showLoader() { loader.classList.add('show'); }
-        function hideLoader() { loader.classList.remove('show'); }
+        function showLoader() { 
+            loader.classList.add('show'); 
+        }
+        function hideLoader() {
+            setTimeout(() => {
+                loader.classList.remove('show');
+            }, 300);
+        }
 
         // --- Theme Toggle Function ---
         function toggleTheme() {
@@ -1074,6 +1126,7 @@
 
         // --- On Page Load ---
         document.addEventListener('DOMContentLoaded', () => {
+            showLoader();
             document.title = "SmartCall - Your Connection to the World";
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -1087,12 +1140,22 @@
                 themeIcon.classList.add('fa-sun');
                 themeIcon.classList.remove('fa-moon');
             }
+
+            const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
+            const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
+            countryCodeSelects.forEach(select => {
+                countryCodes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code.split(' ')[0];
+                    option.textContent = code;
+                    select.appendChild(option);
+                });
+            });
         });
 
         // --- Utility Functions ---
-        // New navigation function that handles both DOM changes and browser history
         function navigate(pageId) {
-            // Push a new state to the browser's history
+            showLoader();
             history.pushState({ pageId: pageId }, '', `#${pageId}`);
             showPage(pageId);
         }
@@ -1105,36 +1168,40 @@
             const page = document.getElementById(pageId)
             page.classList.remove('hidden');
             page.classList.add('active-page');
+            hideLoader();
         }
         
-        // This function is for overlays, which should also be part of history for back button
         function openOverlayWithHistory(overlayId) {
+            showLoader();
              history.pushState({ overlayId: overlayId }, '', `#${overlayId}`);
              document.getElementById(overlayId).classList.add('active');
-             // Load content specific to the overlay
-             if (overlayId === 'contactsPage') loadContacts();
-             if (overlayId === 'profilePage') populateProfile();
+             if (overlayId === 'contactsPage') {
+                 loadContacts();
+             } else if (overlayId === 'profilePage') {
+                 populateProfile();
+             } else if (overlayId === 'callHistoryPage') {
+                 loadFullCallHistory();
+             } else {
+                 hideLoader();
+             }
         }
 
         function closeOverlay(overlayId) {
             document.getElementById(overlayId).classList.remove('active');
         }
 
-        // Event listener for the back/forward buttons
         window.onpopstate = (event) => {
             const pageId = event.state && event.state.pageId;
             const overlayId = event.state && event.state.overlayId;
 
             if (pageId) {
                 showPage(pageId);
-                // Also close any active overlays when navigating to a main page
                 document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
                     overlay.classList.remove('active');
                 });
             } else if (overlayId) {
                 document.getElementById(overlayId).classList.add('active');
             } else {
-                 // Fallback to welcome page if history state is empty
                  showPage('welcomePage');
                  document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
                     overlay.classList.remove('active');
@@ -1175,12 +1242,12 @@
 
         // --- Phone Auth ---
         function setupRecaptcha() {
-            if (!window.recaptchaVerifier) { // Only set up once
+            if (!window.recaptchaVerifier) {
                 window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                     'size': 'invisible',
                     'callback': (response) => {}
                 });
-                window.recaptchaWidgetId = window.recaptchaVerifier.render(); // Store widget ID for reset
+                window.recaptchaWidgetId = window.recaptchaVerifier.render();
             }
         }
 
@@ -1344,17 +1411,16 @@
 
             if (user) {
                 if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
+                    hideLoader();
                     return;
                 }
                 loggedInUser = user;
                 listenToUserData();
                 listenToCallHistory();
                 navigate('homePage');
-                hideLoader();
             } else {
                 loggedInUser = null;
                 navigate('welcomePage');
-                hideLoader();
             }
         });
 
@@ -1373,11 +1439,16 @@
             }, err => console.error("Error listening to user data:", err));
         }
 
-        function listenToCallHistory() {
+        function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
             if (!loggedInUser) return;
-            const historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc').limit(5);
-            const historyListDiv = document.getElementById('recentCallsList');
+            let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc');
 
+            if (limit) {
+                historyRef = historyRef.limit(limit);
+            }
+
+            const historyListDiv = document.getElementById(targetElementId);
+            
             stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
                 if (snapshot.empty) {
                     historyListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No recent calls.</p>';
@@ -1392,13 +1463,20 @@
                     const callItem = document.createElement('div');
                     callItem.classList.add('history-item');
                     callItem.innerHTML = `
-                        <div>${call.contactName}<br><span style="color:#777;">${call.duration}</span></div>
-                        <div style="font-size:0.8rem; color:#aaa; text-align:right;">${formattedDate}</div>
+                        <div>
+                            <div class="call-number">${call.contactName}</div>
+                            <div class="call-time">${formattedDate} (${call.duration})</div>
+                        </div>
                         <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactName}')">Call Again</button>
                     `;
                     historyListDiv.appendChild(callItem);
                 });
             }, err => console.error("Error listening to call history:", err));
+        }
+
+        function loadFullCallHistory() {
+            showLoader();
+            listenToCallHistory(null, 'fullCallHistoryList');
         }
 
 
@@ -1440,7 +1518,7 @@
                 setTimeout(() => {
                     hideLoader();
                     openCallScreen(currentNumber, currentNumber);
-                    history.back(); // Use back to close the overlay
+                    history.back();
                 }, 500);
             } else {
                 showAlert('Please enter a number to call.');
@@ -1454,7 +1532,11 @@
 
         // --- Contacts Page ---
         function loadContacts() {
-            if (!loggedInUser) return;
+            showLoader();
+            if (!loggedInUser) {
+                hideLoader();
+                return;
+            }
             const contactsListDiv = document.getElementById('contactsList');
             contactsListDiv.innerHTML = '<p style="color:#aaa;">Loading contacts...</p>';
 
@@ -1468,9 +1550,11 @@
                     });
                 });
                 displayContacts(allContacts);
+                hideLoader();
             }, error => {
                 console.error("Error loading contacts: ", error);
                 contactsListDiv.innerHTML = '<p style="color:#e74c3c;">Could not load contacts.</p>';
+                hideLoader();
             });
         }
 
@@ -1510,15 +1594,15 @@
         }
 
         function closeAddContactPage() {
-            history.back(); // Use back button behavior
+            history.back();
         }
 
         function saveNewContact() {
+            showLoader();
             const name = document.getElementById('newContactName').value;
             const phone = document.getElementById('newContactPhone').value;
             const email = document.getElementById('newContactEmail').value;
             if (name && phone && loggedInUser) {
-                showLoader();
                 const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
                 contactsRef.add({
                     name: name,
@@ -1533,6 +1617,7 @@
                     showAlert('Error saving contact: ' + error.message);
                 });
             } else {
+                hideLoader();
                 showAlert('Name and phone number are required.');
             }
         }
@@ -1556,12 +1641,12 @@
         }
 
         function saveEditedContact() {
+            showLoader();
             const id = document.getElementById('editContactId').value;
             const name = document.getElementById('editContactName').value;
             const phone = document.getElementById('editContactPhone').value;
             const email = document.getElementById('editContactEmail').value;
             if (id && name && phone && loggedInUser) {
-                showLoader();
                 const contactRef = db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(id);
                 contactRef.update({
                     name: name,
@@ -1576,6 +1661,7 @@
                     showAlert('Error updating contact: ' + error.message);
                 });
             } else {
+                hideLoader();
                 showAlert('Name and phone number are required.');
             }
         }
@@ -1606,10 +1692,12 @@
         // --- Messages Page (Simplified) ---
         function openNewMessagePage() {
             showAlert("Messaging feature is under development.");
+            hideLoader(); // hide loader for placeholder
         }
         
         function openNewMessagePageWithRecipient(name, phone) {
             showAlert("Messaging feature is under development.");
+            hideLoader(); // hide loader for placeholder
         }
 
         function closeNewMessagePage() {
@@ -1623,7 +1711,11 @@
 
         // --- Profile Page ---
         async function populateProfile() {
-            if (!loggedInUser) return;
+            showLoader();
+            if (!loggedInUser) {
+                hideLoader();
+                return;
+            }
             const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
             if (userDoc.exists) {
                 const userData = userDoc.data();
@@ -1636,6 +1728,7 @@
                     year: 'numeric'
                 });
             }
+            hideLoader();
         }
 
         function openEditProfilePage() {
@@ -1650,12 +1743,13 @@
         }
 
         function saveProfileChanges() {
+            showLoader();
             const newName = document.getElementById('editProfileName').value;
             if (!newName || newName.length < 3) {
                 showAlert('Please enter a valid name.');
+                hideLoader();
                 return;
             }
-            showLoader();
             db.collection('users').doc(loggedInUser.uid).update({
                 fullName: newName
             }).then(() => {
@@ -1707,6 +1801,7 @@
         }
 
         function endCallSimulation() {
+            showLoader();
             clearInterval(callInterval);
             callScreen.classList.remove('active');
             
@@ -1723,6 +1818,7 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(err => console.error("Error logging call:", err));
             }
+            hideLoader();
         }
 
         let isMuted = false;
@@ -1805,22 +1901,24 @@
     <script>
         // --- Recharge and Wallet ---
         async function payWithPaystack() {
+            showLoader();
             let amount = document.getElementById("rechargeAmount").value;
             if (!amount || isNaN(amount) || amount < 100) {
                 showAlert("Please enter a valid amount (minimum ₦100)");
+                hideLoader();
                 return;
             }
             if (!loggedInUser) {
                 showAlert("You must be logged in to recharge.");
+                hideLoader();
                 return;
             }
             
-            showLoader();
             const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-            hideLoader();
             
             if (!userDoc.exists) {
                 showAlert("Could not find user data. Please try again.");
+                hideLoader();
                 return;
             }
             const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
@@ -1840,7 +1938,9 @@
                         setTimeout(() => closeOverlay('rechargePage'), 1500);
                     });
                 },
-                onClose: function () {}
+                onClose: function () {
+                    hideLoader();
+                }
             });
             handler.openIframe();
         }

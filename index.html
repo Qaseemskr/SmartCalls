@@ -719,7 +719,7 @@
     <center><img src="smartcall-logo.png" alt="SmartCall Logo" style="width: 100px; margin-bottom: 20px;"></center>
     <h1 style="display: none;">Welcome to<br> <strong>SmartCall!</strong></h1>
     <p>Connect with the world   simple, fast, and secured.</p>
-    <button class="btn" onclick="goToAuth()">  Get Started</button>
+    <button class="btn" onclick="navigate('authPage')">  Get Started</button>
 </div>
     <div class="container hidden" id="authPage">
         <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
@@ -731,7 +731,7 @@
                 <i class="fas fa-lock"></i> Login
             </button>
             <p style="margin: 15px 0 5px 0; color: #555;">Don't have an account?</p>
-            <button class="btn" onclick="goToRegister()" style="background: #7f8c8d;">
+            <button class="btn" onclick="navigate('registerPage')" style="background: #7f8c8d;">
                 <i class="fas fa-user-plus"></i> Register Now
             </button>
             <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
@@ -774,7 +774,7 @@
                 </button>
             </div>
             <p style="margin: 15px 0 5px 0; color: #555;">Already have an account?</p>
-            <button class="btn" onclick="goToAuth()" style="background: #7f8c8d;">
+            <button class="btn" onclick="navigate('authPage')" style="background: #7f8c8d;">
                 <i class="fas fa-lock"></i> Login
             </button>
             <div id="registerAuthMessage" style="color: #e74c3c; margin-top: 10px;"></div>
@@ -799,7 +799,7 @@
             </div>
             <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!   </h3>
             <br>
-            <div class="make-call-circle" onclick="openOverlayWithLoader('dialPadPage')">
+            <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage')">
                 <i class="fas fa-phone"></i>
                 <span class="button-label">Make a Call</span>
             </div>
@@ -812,19 +812,19 @@
         </div>
 
         <div class="bottom-nav">
-            <div class="hex-btn recharge" onclick="openOverlayWithLoader('rechargePage')">
+            <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')">
                 <i class="fas fa-wallet"></i><span>Recharge</span>
             </div>
-            <div class="hex-btn contacts" onclick="openOverlayWithLoader('contactsPage')">
+            <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')">
                 <i class="fas fa-address-book"></i><span>Contacts</span>
             </div>
-            <div class="hex-btn messages" onclick="openOverlayWithLoader('messagePage')">
+            <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')">
                 <i class="fas fa-comment"></i><span>Messages</span>
             </div>
-            <div class="hex-btn referral" onclick="openOverlayWithLoader('referralPage')">
+            <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')">
                 <i class="fas fa-gift"></i><span>Referral</span>
             </div>
-            <div class="hex-btn profile" onclick="openOverlayWithLoader('profilePage')">
+            <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')">
                 <i class="fas fa-user"></i><span>Profile</span>
             </div>
         </div>
@@ -833,7 +833,7 @@
     <div class="fullscreen-overlay" id="dialPadPage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Call</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('dialPadPage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <div class="dialpad-display-container">
@@ -860,7 +860,7 @@
                 <button class="dialpad-call-btn" onclick="startCallFromDialpad()"><i class="fas fa-phone"></i></button>
             </div>
             <div class="dialpad-bottom-actions">
-                <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
+                <button class="btn" onclick="navigate('contactsPage')"><i class="fas fa-address-book"></i> Contacts</button>
                 <button class="btn cancel" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
             </div>
         </div>
@@ -869,14 +869,14 @@
     <div class="fullscreen-overlay" id="contactsPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Contacts</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('contactsPage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <div class="search-input-container">
                 <input type="text" id="contactSearchInput" placeholder="Search contacts..." onkeyup="searchContacts()">
                 <i class="fas fa-search search-icon"></i>
             </div>
-            <button class="btn" style="margin-bottom: 20px;" onclick="openAddContactPage()"><i class="fas fa-plus"></i> Add New Contact</button>
+            <button class="btn" style="margin-bottom: 20px;" onclick="openOverlayWithHistory('addContactPage')"><i class="fas fa-plus"></i> Add New Contact</button>
             <div id="contactsList">
                  <p style="color: #aaa; margin-top: 15px;">No contacts yet. Add one!</p>
             </div>
@@ -886,7 +886,7 @@
     <div class="fullscreen-overlay" id="addContactPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Add New Contact</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeAddContactPage()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <input id="newContactName" placeholder="Contact Name" type="text" />
@@ -899,7 +899,7 @@
     <div class="fullscreen-overlay" id="editContactPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Edit Contact</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeEditContactPage()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <input id="editContactId" type="hidden" />
@@ -913,7 +913,7 @@
     <div class="fullscreen-overlay" id="messagePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Messages</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('messagePage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <div class="search-input-container">
@@ -930,7 +930,7 @@
     <div class="fullscreen-overlay" id="newMessagePage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Message</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeNewMessagePage()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <input id="messageRecipient" placeholder="Recipient (Name or Phone Number)" type="text" />
@@ -942,7 +942,7 @@
     <div class="fullscreen-overlay" id="profilePage">
         <div class="overlay-header">
             <h3 class="overlay-title">My Profile</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('profilePage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <div class="profile-info">
@@ -958,7 +958,7 @@
     <div class="fullscreen-overlay" id="editProfilePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Edit Profile</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeEditProfilePage()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content">
             <input id="editProfileName" placeholder="New Name" type="text" />
@@ -969,7 +969,7 @@
     <div class="fullscreen-overlay" id="rechargePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Recharge</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('rechargePage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         
         <div style="margin-top: 20px;">
@@ -982,7 +982,7 @@
     <div class="fullscreen-overlay" id="referralPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Referral Program</h3>
-            <i class="fas fa-times close-overlay-btn" onclick="closeOverlay('referralPage')"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
         </div>
         <div class="overlay-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
             <i class="fas fa-gift" style="font-size: 5rem; color: #e67e22; margin-bottom: 20px;"></i>
@@ -1090,6 +1090,13 @@
         });
 
         // --- Utility Functions ---
+        // New navigation function that handles both DOM changes and browser history
+        function navigate(pageId) {
+            // Push a new state to the browser's history
+            history.pushState({ pageId: pageId }, '', `#${pageId}`);
+            showPage(pageId);
+        }
+
         function showPage(pageId) {
             document.querySelectorAll('.container').forEach(page => {
                 page.classList.add('hidden');
@@ -1100,31 +1107,48 @@
             page.classList.add('active-page');
         }
         
-        function openOverlayWithLoader(overlayId) {
-            showLoader();
-            setTimeout(() => {
-                openOverlay(overlayId);
-                hideLoader();
-            }, 300);
-        }
-
-        function openOverlay(overlayId) {
-            document.getElementById(overlayId).classList.add('active');
-            if (overlayId === 'contactsPage') loadContacts();
-            if (overlayId === 'profilePage') populateProfile();
+        // This function is for overlays, which should also be part of history for back button
+        function openOverlayWithHistory(overlayId) {
+             history.pushState({ overlayId: overlayId }, '', `#${overlayId}`);
+             document.getElementById(overlayId).classList.add('active');
+             // Load content specific to the overlay
+             if (overlayId === 'contactsPage') loadContacts();
+             if (overlayId === 'profilePage') populateProfile();
         }
 
         function closeOverlay(overlayId) {
             document.getElementById(overlayId).classList.remove('active');
         }
 
+        // Event listener for the back/forward buttons
+        window.onpopstate = (event) => {
+            const pageId = event.state && event.state.pageId;
+            const overlayId = event.state && event.state.overlayId;
+
+            if (pageId) {
+                showPage(pageId);
+                // Also close any active overlays when navigating to a main page
+                document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
+                    overlay.classList.remove('active');
+                });
+            } else if (overlayId) {
+                document.getElementById(overlayId).classList.add('active');
+            } else {
+                 // Fallback to welcome page if history state is empty
+                 showPage('welcomePage');
+                 document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
+                    overlay.classList.remove('active');
+                });
+            }
+        };
+
         // --- Welcome Page ---
         function goToAuth() {
-            showPage('authPage');
+            navigate('authPage');
         }
 
         function goToRegister() {
-            showPage('registerPage');
+            navigate('registerPage');
             showRegisterForm('phone');
         }
 
@@ -1175,7 +1199,6 @@
 
             const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
             
-            // Re-setup recaptcha on every try to ensure it's fresh
             if (window.recaptchaVerifier) {
                 grecaptcha.reset(window.recaptchaWidgetId);
             }
@@ -1203,7 +1226,6 @@
                     } else if (error.code === 'auth/network-request-failed') {
                         authMessage.textContent = 'Error: Network failed. Please check your internet connection.';
                     } else {
-                        // A more generic error for all other cases
                         authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
                     }
 
@@ -1327,11 +1349,11 @@
                 loggedInUser = user;
                 listenToUserData();
                 listenToCallHistory();
-                showPage('homePage');
+                navigate('homePage');
                 hideLoader();
             } else {
                 loggedInUser = null;
-                showPage('welcomePage');
+                navigate('welcomePage');
                 hideLoader();
             }
         });
@@ -1418,7 +1440,7 @@
                 setTimeout(() => {
                     hideLoader();
                     openCallScreen(currentNumber, currentNumber);
-                    closeOverlay('dialPadPage');
+                    history.back(); // Use back to close the overlay
                 }, 500);
             } else {
                 showAlert('Please enter a number to call.');
@@ -1426,8 +1448,8 @@
         }
 
         function openContactsFromDialpad() {
-            closeOverlay('dialPadPage');
-            openOverlayWithLoader('contactsPage');
+            history.back();
+            openOverlayWithHistory('contactsPage');
         }
 
         // --- Contacts Page ---
@@ -1483,16 +1505,12 @@
         }
 
         function openAddContactPage() {
-            closeOverlay('contactsPage');
-            openOverlay('addContactPage');
+            history.pushState({overlayId: 'addContactPage'}, '', '#addContactPage');
+            document.getElementById('addContactPage').classList.add('active');
         }
 
         function closeAddContactPage() {
-            document.getElementById('newContactName').value = '';
-            document.getElementById('newContactPhone').value = '';
-            document.getElementById('newContactEmail').value = '';
-            closeOverlay('addContactPage');
-            openOverlay('contactsPage');
+            history.back(); // Use back button behavior
         }
 
         function saveNewContact() {
@@ -1509,7 +1527,7 @@
                 }).then(() => {
                     hideLoader();
                     showAlert('Contact saved successfully!');
-                    closeAddContactPage();
+                    history.back();
                 }).catch(error => {
                     hideLoader();
                     showAlert('Error saving contact: ' + error.message);
@@ -1529,13 +1547,12 @@
             document.getElementById('editContactName').value = contact.name;
             document.getElementById('editContactPhone').value = contact.phone;
             document.getElementById('editContactEmail').value = contact.email;
-            closeOverlay('contactsPage');
-            openOverlay('editContactPage');
+            history.pushState({overlayId: 'editContactPage'}, '', '#editContactPage');
+            document.getElementById('editContactPage').classList.add('active');
         }
 
         function closeEditContactPage() {
-            closeOverlay('editContactPage');
-            openOverlay('contactsPage');
+            history.back();
         }
 
         function saveEditedContact() {
@@ -1553,7 +1570,7 @@
                 }).then(() => {
                     hideLoader();
                     showAlert('Contact updated successfully!');
-                    closeEditContactPage();
+                    history.back();
                 }).catch(error => {
                     hideLoader();
                     showAlert('Error updating contact: ' + error.message);
@@ -1596,8 +1613,7 @@
         }
 
         function closeNewMessagePage() {
-            closeOverlay('newMessagePage');
-            openOverlay('messagePage');
+            history.back();
         }
 
         function searchMessages() {
@@ -1625,13 +1641,12 @@
         function openEditProfilePage() {
             const currentName = document.getElementById('profileName').textContent;
             document.getElementById('editProfileName').value = currentName;
-            closeOverlay('profilePage');
-            openOverlay('editProfilePage');
+            history.pushState({overlayId: 'editProfilePage'}, '', '#editProfilePage');
+            document.getElementById('editProfilePage').classList.add('active');
         }
 
         function closeEditProfilePage() {
-            closeOverlay('editProfilePage');
-            openOverlay('profilePage');
+            history.back();
         }
 
         function saveProfileChanges() {
@@ -1646,7 +1661,7 @@
             }).then(() => {
                 hideLoader();
                 showAlert('Profile updated successfully!');
-                closeEditProfilePage();
+                history.back();
             }).catch(error => {
                 hideLoader();
                 showAlert('Error updating profile: ' + error.message);

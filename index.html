@@ -1175,6 +1175,10 @@
 
             const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
             
+            // Re-setup recaptcha on every try to ensure it's fresh
+            if (window.recaptchaVerifier) {
+                grecaptcha.reset(window.recaptchaWidgetId);
+            }
             setupRecaptcha();
             const appVerifier = window.recaptchaVerifier;
 
@@ -1186,8 +1190,23 @@
                     document.getElementById('otpSection').classList.remove('hidden');
                 }).catch((error) => {
                     hideLoader();
-                    console.error("SMS not sent error", error);
-                    authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
+                    console.error("Firebase Auth Error:", error.code, error.message);
+                    
+                    if (error.code === 'auth/invalid-phone-number') {
+                        authMessage.textContent = 'Error: The phone number format is invalid. Please try again.';
+                    } else if (error.code === 'auth/missing-phone-number') {
+                        authMessage.textContent = 'Error: Please enter a phone number.';
+                    } else if (error.code === 'auth/too-many-requests') {
+                        authMessage.textContent = 'Error: You have made too many requests. Please try again later.';
+                    } else if (error.code === 'auth/captcha-check-failed' || error.code === 'auth/web-storage-unsupported') {
+                        authMessage.textContent = 'Error: Security check failed. Please check your browser settings or try from another device.';
+                    } else if (error.code === 'auth/network-request-failed') {
+                        authMessage.textContent = 'Error: Network failed. Please check your internet connection.';
+                    } else {
+                        // A more generic error for all other cases
+                        authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
+                    }
+
                     if (window.recaptchaWidgetId) {
                         grecaptcha.reset(window.recaptchaWidgetId);
                     }

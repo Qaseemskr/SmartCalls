@@ -286,9 +286,17 @@
         }
 
         /* --- Updated Login/Register UI --- */
-        #authPage .auth-logo {
+        #authPage .auth-logo, #registerPage .auth-logo {
             width: 100px;
             margin-bottom: 20px;
+        }
+        .auth-link {
+            display: block;
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
         /* --- Home Page Specific Styles --- */
@@ -714,22 +722,36 @@
     <button class="btn" onclick="goToAuth()">  Get Started</button>
 </div>
     <div class="container hidden" id="authPage">
-        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo" style="width: 100px; margin: 0 auto 20px auto;">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <h2 id="formTitle" style="margin-bottom: 10px;">Register or Login</h2>
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
+        <h2 id="formTitle" style="margin-bottom: 10px;">Login to Your Account</h2>
+        <div style="width: 100%;">
+            <input id="loginEmail" placeholder="Email Address" type="email" />
+            <input id="loginPassword" placeholder="Password" type="password" />
+            <button class="btn" id="loginBtn" onclick="handleEmailLogin()">
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <p style="margin: 15px 0 5px 0; color: #555;">Don't have an account?</p>
+            <button class="btn" onclick="goToRegister()" style="background: #7f8c8d;">
+                <i class="fas fa-user-plus"></i> Register Now
+            </button>
+            <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
+    </div>
 
+    <div class="container hidden" id="registerPage">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
+        <h2 id="formTitle" style="margin-bottom: 10px;">Create a New Account</h2>
         <div class="auth-toggle-container">
-            <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showAuthForm('phone')">Use Phone</button>
-            <button id="showEmailBtn" class="auth-toggle-btn" onclick="showAuthForm('email')">Use Email</button>
+            <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showRegisterForm('phone')">Use Phone</button>
+            <button id="showEmailBtn" class="auth-toggle-btn" onclick="showRegisterForm('email')">Use Email</button>
         </div>
 
         <div style="width: 100%;">
             <div id="phoneAuthSection">
-                <input id="authFullNamePhone" placeholder="Full Name" type="text" />
+                <input id="registerFullNamePhone" placeholder="Full Name" type="text" />
                 <div class="phone-input-group">
-                    <select id="authCountryCode" style="flex: 1;"></select>
-                    <input id="authPhoneNumber" placeholder="Phone Number" type="tel" style="flex: 2;" />
+                    <select id="registerCountryCode" style="flex: 1;"></select>
+                    <input id="registerPhoneNumber" placeholder="Phone Number" type="tel" style="flex: 2;" />
                 </div>
                 <div id="recaptcha-container"></div>
                 <button class="btn" id="sendOtpBtn" onclick="sendOtp()">
@@ -738,27 +760,27 @@
                 <div id="otpSection" class="hidden" style="margin-top: 15px;">
                     <input id="otpInput" placeholder="Enter 6-digit code" type="text" maxlength="6" />
                     <button class="btn" id="verifyOtpBtn" onclick="verifyOtp()">
-                        <i class="fas fa-check-circle"></i> Verify & Sign In
+                        <i class="fas fa-check-circle"></i> Verify & Register
                     </button>
                 </div>
             </div>
 
             <div id="emailAuthSection" class="hidden">
-                <input id="authFullNameEmail" placeholder="Full Name" type="text" />
-                <input id="authEmail" placeholder="Email Address" type="email" />
-                <input id="authPassword" placeholder="Password (min. 6 characters)" type="password" />
+                <input id="registerFullNameEmail" placeholder="Full Name" type="text" />
+                <input id="registerEmail" placeholder="Email Address" type="email" />
+                <input id="registerPassword" placeholder="Password (min. 6 characters)" type="password" />
                 <button class="btn" id="emailRegisterBtn" onclick="handleEmailRegister()">
                     <i class="fas fa-user-plus"></i> Register
                 </button>
-                <p style="margin: 15px 0 5px 0; color: #555;">Already have an account?</p>
-                <button class="btn" id="emailLoginBtn" onclick="handleEmailLogin()" style="background: #7f8c8d;">
-                    <i class="fas fa-lock"></i> Login with Email
-                </button>
             </div>
-
-            <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
+            <p style="margin: 15px 0 5px 0; color: #555;">Already have an account?</p>
+            <button class="btn" onclick="goToAuth()" style="background: #7f8c8d;">
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <div id="registerAuthMessage" style="color: #e74c3c; margin-top: 10px;"></div>
         </div>
     </div>
+
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
@@ -1032,6 +1054,8 @@
         let stopUserListener = () => {};
         let stopCallHistoryListener = () => {};
         window.confirmationResult = null;
+        let paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
+        const callCostPerMinute = 13;
 
         // --- LOADER FUNCTIONS ---
         const loader = document.getElementById('loader');
@@ -1097,16 +1121,20 @@
         // --- Welcome Page ---
         function goToAuth() {
             showPage('authPage');
-            showAuthForm('phone'); // Default to phone
         }
 
-        // --- DUAL AUTHENTICATION LOGIC ---
-        function showAuthForm(type) {
+        function goToRegister() {
+            showPage('registerPage');
+            showRegisterForm('phone');
+        }
+
+        // --- Authentication Logic ---
+        function showRegisterForm(type) {
             const phoneSection = document.getElementById('phoneAuthSection');
             const emailSection = document.getElementById('emailAuthSection');
             const showPhoneBtn = document.getElementById('showPhoneBtn');
             const showEmailBtn = document.getElementById('showEmailBtn');
-            document.getElementById('authMessage').textContent = '';
+            document.getElementById('registerAuthMessage').textContent = '';
 
             if (type === 'phone') {
                 phoneSection.classList.remove('hidden');
@@ -1123,17 +1151,20 @@
 
         // --- Phone Auth ---
         function setupRecaptcha() {
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible',
-                'callback': (response) => {}
-            });
+            if (!window.recaptchaVerifier) { // Only set up once
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {}
+                });
+                window.recaptchaWidgetId = window.recaptchaVerifier.render(); // Store widget ID for reset
+            }
         }
 
         function sendOtp() {
             showLoader();
-            const countryCode = document.getElementById('authCountryCode').value;
-            const phoneNumberInput = document.getElementById('authPhoneNumber').value;
-            const authMessage = document.getElementById('authMessage');
+            const countryCode = document.getElementById('registerCountryCode').value;
+            const phoneNumberInput = document.getElementById('registerPhoneNumber').value;
+            const authMessage = document.getElementById('registerAuthMessage');
             authMessage.textContent = '';
 
             if (!phoneNumberInput) {
@@ -1142,7 +1173,8 @@
                 return;
             }
 
-            const fullPhoneNumber = countryCode + phoneNumberInput;
+            const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
+            
             setupRecaptcha();
             const appVerifier = window.recaptchaVerifier;
 
@@ -1156,15 +1188,17 @@
                     hideLoader();
                     console.error("SMS not sent error", error);
                     authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
-                    grecaptcha.reset(window.recaptchaWidgetId);
+                    if (window.recaptchaWidgetId) {
+                        grecaptcha.reset(window.recaptchaWidgetId);
+                    }
                 });
         }
 
         function verifyOtp() {
             showLoader();
             const otp = document.getElementById('otpInput').value;
-            const fullName = document.getElementById('authFullNamePhone').value;
-            const authMessage = document.getElementById('authMessage');
+            const fullName = document.getElementById('registerFullNamePhone').value;
+            const authMessage = document.getElementById('registerAuthMessage');
             authMessage.textContent = '';
 
             if (!otp || otp.length !== 6) {
@@ -1198,10 +1232,10 @@
         // --- Email Auth ---
         function handleEmailRegister() {
             showLoader();
-            const fullName = document.getElementById('authFullNameEmail').value;
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-            const authMessage = document.getElementById('authMessage');
+            const fullName = document.getElementById('registerFullNameEmail').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const authMessage = document.getElementById('registerAuthMessage');
             authMessage.textContent = '';
 
             if (!fullName || !email || !password) {
@@ -1216,7 +1250,7 @@
             auth.createUserWithEmailAndPassword(email, password)
                 .then(userCredential => {
                     const user = userCredential.user;
-                    user.sendEmailVerification(); // Send verification email
+                    user.sendEmailVerification();
                     return db.collection('users').doc(user.uid).set({
                         fullName: fullName,
                         email: email,
@@ -1237,8 +1271,8 @@
 
         function handleEmailLogin() {
             showLoader();
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             const authMessage = document.getElementById('authMessage');
             authMessage.textContent = '';
 
@@ -1249,12 +1283,11 @@
 
             auth.signInWithEmailAndPassword(email, password)
                 .then(userCredential => {
-                    if (!userCredential.user.emailVerified) {
+                    if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
                         hideLoader();
                         showAlert("Your email is not verified. Please check your inbox for the verification link.");
-                        auth.signOut(); // Log them out until verified
+                        auth.signOut();
                     }
-                    // If verified, onAuthStateChanged will handle the rest
                 })
                 .catch(error => {
                     hideLoader();
@@ -1270,7 +1303,6 @@
 
             if (user) {
                 if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-                    // Don't log in email users if they aren't verified
                     return;
                 }
                 loggedInUser = user;
@@ -1538,15 +1570,10 @@
         // --- Messages Page (Simplified) ---
         function openNewMessagePage() {
             showAlert("Messaging feature is under development.");
-            // closeOverlay('contactsPage');
-            // openOverlay('newMessagePage');
         }
         
         function openNewMessagePageWithRecipient(name, phone) {
             showAlert("Messaging feature is under development.");
-            // closeOverlay('contactsPage');
-            // openOverlay('newMessagePage');
-            // document.getElementById('messageRecipient').value = name || phone;
         }
 
         function closeNewMessagePage() {
@@ -1765,7 +1792,7 @@
             const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
 
             let handler = PaystackPop.setup({
-                key: 'pk_live_1ed27cc7f362095117cd138dc098958dfb03101e',
+                key: paystackPublicKey,
                 email: userEmail,
                 amount: amount * 100,
                 currency: 'NGN',
@@ -1808,7 +1835,7 @@
         function updateWalletBalance(balance) {
             const balanceText = document.getElementById("walletBalance");
             const balanceInNaira = balance.toFixed(2);
-            const approxMinutes = Math.floor(balance / 13); // Assuming an average rate of ₦13/min
+            const approxMinutes = Math.floor(balance / callCostPerMinute); // Assuming an average rate of ₦13/min
             balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
         }
     </script>

@@ -308,7 +308,7 @@ function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
             `;
             historyListDiv.appendChild(callItem);
         });
-    }, err => console.error("Error listening to call history:", err));
+    }, err => console.error("Error logging call:", err));
 }
 function loadFullCallHistory() { showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); }
 // --- Home Page ---

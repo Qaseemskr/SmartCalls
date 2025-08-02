@@ -257,14 +257,38 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
     padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     text-align: center; color: #fff;
     background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
-    display: flex; align-items: center; justify-content: center; gap: 20px;
+    display: flex;
+    flex-direction: column; /* This is the key change to stack items */
+    align-items: center; /* This centers items horizontally in a column layout */
+    justify-content: center;
+    gap: 10px; /* Reduced gap for a tighter look */
 }
-.welcome-logo { width: 60px; display: block; margin: 0 auto; }
-.welcome-text-content { text-align: left; }
-.welcome-balance-box h2 { margin-bottom: 5px; color: #fff; text-shadow: none; }
-.welcome-balance-box h2 strong { color: #f0f0f0; }
-.wallet-balance { font-size: 1.2rem; font-weight: bold; color: #fff; margin-top: 10px; }
-.wallet-balance span { font-size: 0.9rem; color: #eee; font-style: italic; }
+.welcome-logo { 
+    width: 60px;
+    margin-bottom: 10px; /* Add some space below the logo */
+}
+.welcome-text-content { 
+    text-align: center; 
+}
+.welcome-balance-box h2 { 
+    margin-bottom: 5px; 
+    color: #fff; 
+    text-shadow: none; 
+}
+.welcome-balance-box h2 strong { 
+    color: #f0f0f0; 
+}
+.wallet-balance { 
+    font-size: 1.2rem; 
+    font-weight: bold; 
+    color: #fff; 
+    margin-top: 10px; 
+}
+.wallet-balance span { 
+    font-size: 0.9rem; 
+    color: #eee; 
+    font-style: italic; 
+}
 .main-call-button-container {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     margin: 10px 0;

@@ -37,8 +37,11 @@
             <label for="loginPassword" class="sr-only">Password</label>
             <input id="loginPassword" placeholder="Password" type="password" />
             <button class="btn" id="loginBtn" onclick="handleEmailLogin()">
-                <i class="fas fa-lock"></i> Login
-            </button>
+    <i class="fas fa-lock"></i> Login
+</button>
+<p style="margin: 15px 0 5px 0; color: var(--text-color);">Forgot your password?</p>
+<a href="#" onclick="openOverlayWithHistory('passwordResetPage')" style="color: var(--section-title-color); text-decoration: underline;">Reset Password</a>
+<p style="margin: 15px 0 5px 0; color: #555;">Don't have an account?</p>
             <p>Don't have an account?</p>
             <button class="btn secondary-btn" onclick="navigate('registerPage')">
                 <i class="fas fa-user-plus"></i> Register Now

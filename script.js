@@ -227,7 +227,6 @@ function handleEmailLogin() {
             }
         }).catch(error => { hideLoader(); authMessage.textContent = error.message; });
 }
-
 // *** NEW PASSWORD RESET FUNCTION ***
 function sendPasswordResetEmail() {
     showLoader();
@@ -255,7 +254,6 @@ function sendPasswordResetEmail() {
             hideLoader();
         });
 }
-
 auth.onAuthStateChanged(user => {
     if (stopUserListener) stopUserListener();
     if (stopCallHistoryListener) stopCallHistoryListener();
@@ -270,7 +268,6 @@ auth.onAuthStateChanged(user => {
         navigate('welcomePage');
     }
 });
-
 // --- Real-time listeners ---
 function listenToUserData() {
     if (!loggedInUser) return;
@@ -314,7 +311,6 @@ function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
     }, err => console.error("Error listening to call history:", err));
 }
 function loadFullCallHistory() { showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); }
-
 // --- Home Page ---
 document.addEventListener('DOMContentLoaded', () => {
     const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
@@ -328,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-
 // --- Dial Pad ---
 let currentNumber = '';
 const dialPadDisplay = document.getElementById('dialPadDisplay');
@@ -349,7 +344,6 @@ function startCallFromDialpad() {
     }
 }
 function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
-
 // --- Contacts Page ---
 function loadContacts() {
     showLoader();
@@ -443,12 +437,10 @@ function searchContacts() {
     );
     displayContacts(filteredContacts);
 }
-
 // --- Messages Page (Simplified) ---
 function openNewMessagePage() { showAlert("Messaging feature is under development."); hideLoader(); }
 function openNewMessagePageWithRecipient(name, phone) { showAlert("Messaging feature is under development."); hideLoader(); }
 function searchMessages() { showAlert("Messaging feature is under development."); }
-
 // --- Profile Page ---
 async function populateProfile() {
     showLoader();
@@ -480,7 +472,6 @@ function saveProfileChanges() {
 function confirmLogout() {
     showConfirm('Are you sure you want to logout?', () => { showLoader(); auth.signOut(); });
 }
-
 // --- Call Screen (Simulation) & History Logging ---
 const callScreen = document.getElementById('callScreen');
 const callingContactName = document.getElementById('callingContactName');
@@ -536,7 +527,6 @@ function toggleSpeaker() {
     speakerBtn.classList.toggle('active', isSpeakerOn);
     showAlert(isSpeakerOn ? 'Speaker On' : 'Speaker Off');
 }
-
 // --- Custom Alert/Confirm Dialogs ---
 const alertDialog = document.getElementById('customAlertDialog');
 const alertMessage = document.getElementById('customAlertMessage');
@@ -552,7 +542,6 @@ function showConfirm(message, onConfirm) {
 }
 confirmOkBtn.onclick = () => { if (confirmCallback) { confirmCallback(); } confirmDialog.classList.remove('active'); };
 confirmCancelBtn.onclick = () => { confirmDialog.classList.remove('active'); };
-
 // --- Recharge and Wallet ---
 async function payWithPaystack() {
     showLoader();
@@ -596,7 +585,6 @@ function updateWalletBalance(balance) {
     const approxMinutes = Math.floor(balance / callCostPerMinute);
     balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
 }
-
 // --- Referral Page Actions ---
 function generateReferralLink() {
     if (loggedInUser && loggedInUser.uid) {

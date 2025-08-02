@@ -227,6 +227,35 @@ function handleEmailLogin() {
             }
         }).catch(error => { hideLoader(); authMessage.textContent = error.message; });
 }
+
+// *** NEW PASSWORD RESET FUNCTION ***
+function sendPasswordResetEmail() {
+    showLoader();
+    const email = document.getElementById('passwordResetEmail').value;
+    const messageDiv = document.getElementById('passwordResetMessage');
+    messageDiv.textContent = '';
+    if (!email) {
+        messageDiv.textContent = 'Please enter your email address.';
+        messageDiv.classList.remove('success-message');
+        messageDiv.classList.add('error-message');
+        hideLoader();
+        return;
+    }
+    auth.sendPasswordResetEmail(email)
+        .then(() => {
+            messageDiv.textContent = 'Password reset link sent to your email!';
+            messageDiv.classList.remove('error-message');
+            messageDiv.classList.add('success-message');
+            hideLoader();
+        })
+        .catch((error) => {
+            messageDiv.textContent = error.message;
+            messageDiv.classList.remove('success-message');
+            messageDiv.classList.add('error-message');
+            hideLoader();
+        });
+}
+
 auth.onAuthStateChanged(user => {
     if (stopUserListener) stopUserListener();
     if (stopCallHistoryListener) stopCallHistoryListener();

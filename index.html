@@ -304,6 +304,23 @@
         </div>
     </div>
 
+     <div class="fullscreen-overlay" id="passwordResetPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Reset Password</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <p>Enter your email address to receive a password reset link.</p>
+            <label for="passwordResetEmail" class="sr-only">Email Address</label>
+            <input id="passwordResetEmail" placeholder="Email Address" type="email" />
+            <button class="btn" onclick="sendPasswordResetEmail()">Send Reset Link</button>
+            <div id="passwordResetMessage" class="success-message"></div>
+        </div>
+    </div>
+
+    <div class="call-screen" id="callScreen">
+        </div>
+
     <div class="fullscreen-overlay" id="rechargePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Recharge</h3>

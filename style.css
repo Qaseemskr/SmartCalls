@@ -10,6 +10,7 @@
     --input-border: 1px solid #ccc;
     --input-placeholder-color: #777;
     --primary-btn-bg: linear-gradient(to right, #3498db, #2980b9);
+    --primary-btn-color: #fff;
     --secondary-btn-bg: #7f8c8d;
     --secondary-btn-color: #fff;
     --active-toggle-bg: #3498db;
@@ -47,6 +48,7 @@
     --contact-info-color: #333;
     --contact-item-bg: #f9f9f9;
     --contact-item-hover-bg: #eee;
+    --referral-link-bg: #f9f9f9;
 }
 
 /* Dark Theme Overrides */
@@ -60,6 +62,7 @@ body.dark-theme {
     --input-border: 1px solid rgba(255, 255, 255, 0.2);
     --input-placeholder-color: #ccc;
     --primary-btn-bg: linear-gradient(to right, #f6e58d, #ffeaa7);
+    --primary-btn-color: #333;
     --secondary-btn-bg: #333;
     --secondary-btn-color: #fff;
     --active-toggle-bg: #f6e58d;
@@ -80,7 +83,7 @@ body.dark-theme {
     --dialpad-btn-bg: rgba(255, 255, 255, 0.1);
     --dialpad-btn-border: 1px solid rgba(255, 255, 255, 0.2);
     --dialpad-btn-color: #fff;
-    --dialpad-call-btn-bg: #f6e58d;
+    --dialpad-call-btn-bg: #f1c40f;
     --call-status-color: #ccc;
     --call-controls-btn-bg: rgba(255, 255, 255, 0.15);
     --end-call-btn-bg: #e74c3c;
@@ -97,6 +100,28 @@ body.dark-theme {
     --contact-info-color: #e0e0e0;
     --contact-item-bg: rgba(255, 255, 255, 0.1);
     --contact-item-hover-bg: rgba(255, 255, 255, 0.2);
+    --referral-link-bg: rgba(255, 255, 255, 0.15);
+}
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--body-bg);
+    height: 100vh;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* --- LOADER/SPINNER STYLE --- */
@@ -123,27 +148,6 @@ body.dark-theme {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-/* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Body Styling */
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--body-bg);
-    height: 100vh;
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    overflow: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Utility Class for Hiding Elements */
@@ -206,7 +210,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 /* General Button */
 .btn {
     width: 100%; padding: 16px; background: var(--primary-btn-bg);
-    color: #fff; font-weight: bold; border: none; border-radius: 40px;
+    color: var(--primary-btn-color); font-weight: bold; border: none; border-radius: 40px;
     font-size: 1.2rem; cursor: pointer; margin-top: 15px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); transition: all 0.2s ease;
     display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -432,9 +436,9 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 .call-screen.active { transform: scale(1); opacity: 1; visibility: visible; }
 .call-avatar {
     width: 120px; height: 120px; border-radius: 50%;
-    background-color: var(--section-title-color); display: flex;
-    justify-content: center; align-items: center; font-size: 3rem;
-    color: #fff; margin-bottom: 20px;
+    background-color: var(--section-title-color); color: #fff;
+    display: flex; justify-content: center; align-items: center; font-size: 3rem;
+    margin-bottom: 20px;
 }
 .call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: var(--text-color); }
 .call-status { font-size: 1.2rem; color: var(--call-status-color); margin-bottom: 15px; }

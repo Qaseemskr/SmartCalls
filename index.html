@@ -6,733 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="smartcall-logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        /* --- LOADER/SPINNER STYLE --- */
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-        #loader.show {
-            visibility: visible;
-            opacity: 1;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body Styling */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff; /* Default white background */
-            height: 100vh;
-            color: #333; /* Default dark text */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            overflow: hidden; /* Prevent body scroll, container handles it */
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
-        }
-
-        body.dark-theme {
-            background-color: #0a0a1e; /* Dark background */
-            color: #e0e0e0; /* Light text for dark theme */
-        }
-
-        body.dark-theme h1, body.dark-theme h2, body.dark-theme h3 {
-            color: #ffeaa7;
-        }
-
-        body.dark-theme p {
-            color: #ccc;
-        }
-
-        body.dark-theme input,
-        body.dark-theme select,
-        body.dark-theme textarea {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        body.dark-theme input::placeholder,
-        body.dark-theme textarea::placeholder {
-            color: #ccc;
-        }
-
-        body.dark-theme select option {
-            background-color: rgba(10, 10, 30, 0.95);
-            color: #fff;
-        }
-
-        body.dark-theme .container {
-            background-color: #0a0a1e;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-theme .section-title {
-            color: #f6e58d;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        body.dark-theme .history-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #e0e0e0;
-        }
-
-        body.dark-theme .history-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        body.dark-theme .hex-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-theme .hex-btn i, body.dark-theme .hex-btn span {
-            color: #fff;
-        }
-
-        body.dark-theme .fullscreen-overlay {
-            background: rgba(10, 10, 30, 0.98);
-        }
-
-        body.dark-theme .overlay-title {
-            color: #ffeaa7;
-        }
-
-        body.dark-theme .close-overlay-btn {
-            color: #fff;
-        }
-
-        body.dark-theme #dialPadDisplay {
-            color: #fff;
-            border-bottom: 2px solid #ffeaa7;
-        }
-
-        body.dark-theme .dial-btn {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        body.dark-theme .contact-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        body.dark-theme .contact-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        body.dark-theme .contact-name, body.dark-theme .contact-phone {
-            color: #e0e0e0;
-        }
-        
-        body.dark-theme .profile-info p {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        body.dark-theme .call-screen {
-            background: rgba(10, 10, 30, 0.95);
-        }
-
-        body.dark-theme .call-name, body.dark-theme .call-timer {
-            color: #fff;
-        }
-        body.dark-theme .call-status {
-            color: #ccc;
-        }
-        body.dark-theme .call-control-btn {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-        body.dark-theme .custom-alert-content,
-        body.dark-theme .custom-confirm-content {
-            background: rgba(30, 30, 50, 0.95);
-            color: #fff;
-        }
-        body.dark-theme .search-input-container .search-icon {
-            color: #ccc;
-        }
-        body.dark-theme .message-thread-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-        body.dark-theme .message-thread-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Utility Class for Hiding Elements */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Main Container Styling */
-        .container {
-            background-color: #ffffff; /* Default white background for container */
-            padding: 20px;
-            border-radius: 25px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            height: 100%;
-            max-width: 600px;
-            max-height: 900px;
-            backdrop-filter: blur(8px);
-            transition: all 0.5s ease-in-out; /* Smoother page transition */
-            position: relative;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            transform: scale(0.95);
-            visibility: hidden;
-        }
-
-        .container.active-page {
-            opacity: 1;
-            transform: scale(1);
-            visibility: visible;
-        }
-
-        .container::-webkit-scrollbar { display: none; }
-        .container { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Headings & Text */
-        h1, h2, h3 { color: #2c3e50; text-shadow: none; } /* Darker color for headings, removed shadow */
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        h2 { font-size: 2rem; margin-bottom: 15px; }
-        h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: #555; } /* Darker color for paragraphs */
-        .hausa-tagline {
-            font-size: 1.1rem;
-            font-style: italic;
-            color: #e74c3c; /* Changed to a more readable color */
-            margin: 15px 0 5px 0;
-        }
-
-        /* Input Fields & Select */
-        input, select, textarea {
-            width: 100%; padding: 14px; margin: 10px 0;
-            border: 1px solid #ccc; border-radius: 10px;
-            font-size: 1.1rem; background-color: #f9f9f9;
-            color: #333; outline: none; transition: all 0.2s ease;
-        }
-        input::placeholder, textarea::placeholder { color: #777; }
-        input:focus, select:focus, textarea:focus {
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* More subtle focus shadow */
-        }
-        select option { background-color: #f9f9f9; color: #333; }
-
-        /* General Button */
-        .btn {
-            width: 100%; padding: 16px; background: linear-gradient(to right, #3498db, #2980b9); /* More readable button color */
-            color: #fff; font-weight: bold; border: none; border-radius: 40px;
-            font-size: 1.2rem; cursor: pointer; margin-top: 15px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); transition: all 0.2s ease;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); }
-        .btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
-        
-        /* Auth Toggle Buttons */
-        .auth-toggle-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            overflow: hidden;
-        }
-        .auth-toggle-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #777;
-            transition: all 0.3s ease;
-        }
-        .auth-toggle-btn.active {
-            background-color: #3498db;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-
-        /* --- Updated Login/Register UI --- */
-        #authPage .auth-logo, #registerPage .auth-logo {
-            width: 100px;
-            margin-bottom: 20px;
-        }
-        .auth-link {
-            display: block;
-            margin-top: 15px;
-            font-size: 1rem;
-            color: #3498db;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        /* --- Home Page Specific Styles --- */
-        #homePage { justify-content: space-between; }
-        .home-header { padding: 10px; display: flex; align-items: center; justify-content: flex-start; }
-        
-        /* New styling for the logo inside the welcome box */
-        .welcome-balance-box {
-            flex-grow: 1;
-            background-color: #a29bfe;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            color: #fff;
-            background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
-            
-            /* The new flexbox layout for the logo and text */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        .welcome-logo {
-            width: 60px;
-        }
-        .welcome-text-content {
-            text-align: left;
-        }
-        .welcome-balance-box h2 {
-            margin-bottom: 5px;
-            color: #fff;
-            text-shadow: none;
-        }
-        .welcome-balance-box h2 strong {
-            color: #f0f0f0;
-        }
-        .wallet-balance {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            margin-top: 10px;
-        }
-        .wallet-balance span {
-            font-size: 0.9rem;
-            color: #eee;
-            font-style: italic;
-        }
-
-        .main-call-button-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 10px 0;
-        }
-        .make-call-circle {
-            width: 180px; height: 180px; border-radius: 50%;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(52, 152, 219, 0.3);
-            transition: all 0.3s ease;
-        }
-        .make-call-circle:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(52, 152, 219, 0.5);
-        }
-        .make-call-circle i { font-size: 4rem; margin-bottom: 5px; }
-        .make-call-circle .button-label { font-size: 1.1rem; font-weight: bold; }
-
-        /* Call History */
-        .section-title {
-            font-size: 1.3rem; color: #3498db; border-bottom: 1px solid #ddd;
-            padding-bottom: 5px; margin: 20px 0 10px 0;
-        }
-        .history-item {
-            background-color: #f9f9f9; padding: 12px 15px;
-            border-radius: 8px; margin-top: 8px; display: flex;
-            justify-content: space-between; align-items: center;
-            font-size: 0.95rem; transition: background-color 0.2s ease;
-            color: #555;
-        }
-        .history-item:hover { background-color: #eee; }
-        .call-again-btn {
-            background: #3498db; color: #fff;
-            border: none; border-radius: 20px;
-            padding: 6px 12px; font-size: 0.8rem; font-weight: bold;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .call-again-btn:hover { background: #2980b9; }
-        .dark-theme .call-again-btn { background: #f6e58d; color: #333; }
-        .dark-theme .call-again-btn:hover { background: #ffeaa7; }
-        .see-more-link {
-            display: block;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #3498db;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        /* --- Hexagonal Bottom Navigation --- */
-        .bottom-nav {
-            display: flex; justify-content: space-around;
-            align-items: center; padding: 15px 0; margin-top: 20px;
-        }
-        .hex-btn {
-            position: relative; width: 70px; height: 80px;
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: all 0.2s ease;
-            background-color: #f0f0f0; /* Light background for buttons */
-        }
-        .hex-btn:hover { transform: scale(1.1); }
-        .hex-btn i { font-size: 1.5rem; margin-bottom: 5px; color: #555; } /* Darker icons */
-        .hex-btn span { font-size: 0.7rem; font-weight: bold; color: #333; } /* Darker text */
-
-        /* Individual Hex Button Colors */
-        .hex-btn.recharge { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .hex-btn.recharge i { color: #fff; }
-        .hex-btn.contacts { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .hex-btn.contacts i { color: #fff; }
-        .hex-btn.messages { background: linear-gradient(135deg, #f1c40f, #f39c12); } /* New color for messages */
-        .hex-btn.messages i { color: #fff; }
-        .hex-btn.referral { background: linear-gradient(135deg, #e67e22, #d35400); }
-        .hex-btn.referral i { color: #fff; }
-        .hex-btn.profile { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .hex-btn.profile i { color: #fff; }
-
-
-        /* --- Full Screen Overlays (DialPad, Contacts, Profile etc) --- */
-        .fullscreen-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; border-radius: 25px; padding: 20px;
-            display: flex; flex-direction: column;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            transform: translateY(100%); opacity: 0; z-index: 100; visibility: hidden;
-        }
-        .fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
-        .overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .overlay-title { font-size: 1.8rem; color: #3498db; }
-        .close-overlay-btn { font-size: 1.8rem; color: #555; cursor: pointer; transition: color 0.2s ease; }
-        .close-overlay-btn:hover { color: #e74c3c; } /* Highlight close button on hover */
-        .overlay-content { flex-grow: 1; overflow-y: auto; }
-        .overlay-content::-webkit-scrollbar { display: none; }
-        .overlay-content { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* --- Dial Pad Specific Styles --- */
-        #dialPadPage .overlay-content { display: flex; flex-direction: column; justify-content: space-between; }
-        #dialPadDisplay {
-            width: 100%; background: transparent; border: none; border-bottom: 2px solid #3498db;
-            color: #333; font-size: 2.5rem; text-align: center; padding-bottom: 10px; letter-spacing: 2px;
-        }
-        .phone-input-group { display: flex; gap: 5px; margin: 15px 0; }
-        #dialPadCountryCode { flex: 1; }
-        .dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
-        .dial-btn {
-            width: 75px; height: 75px; border-radius: 50%; border: 1px solid #ccc;
-            background: #f0f0f0; color: #333; font-size: 1.8rem; cursor: pointer; margin: auto;
-            display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-        .dial-btn:hover { background: #eee; transform: scale(1.05); }
-        .dial-btn:active { background: #ddd; transform: scale(0.98); }
-
-        .dialpad-actions { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
-        .dialpad-call-btn {
-            width: 80px; height: 80px; border-radius: 50%; background: #2ecc71;
-            color: white; font-size: 2.5rem; border: none; cursor: pointer;
-            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5); transition: all 0.2s ease;
-        }
-        .dialpad-call-btn:hover { background: #27ae60; transform: scale(1.05); box-shadow: 0 0 30px rgba(46, 204, 113, 0.7); }
-        .dialpad-call-btn:active { transform: scale(0.98); }
-
-        .dialpad-bottom-actions {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .dialpad-bottom-actions .btn {
-            width: 48%; /* Adjust width for two buttons */
-            margin-top: 0;
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 25px;
-        }
-        .dialpad-bottom-actions .btn.cancel {
-            background: #f0f0f0;
-            color: #555;
-        }
-        .dialpad-bottom-actions .btn.cancel:hover {
-            background: #eee;
-        }
-
-        /* --- Other Pages Styles (Contacts, Profile, etc.) --- */
-        .contact-item {
-            display: flex; align-items: center; background-color: #f9f9f9;
-            padding: 12px; border-radius: 10px; margin-bottom: 10px;
-            transition: background-color 0.2s ease;
-            cursor: pointer; /* Make contact item clickable */
-            color: #333;
-            position: relative;
-        }
-        .contact-item:hover { background-color: #eee; }
-        .contact-actions {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-        .contact-actions i {
-            font-size: 1.1rem;
-            cursor: pointer;
-            color: #999;
-            transition: color 0.2s ease;
-        }
-        .contact-actions i:hover {
-            color: #3498db;
-        }
-        .contact-actions i.fa-edit:hover { color: #f1c40f; }
-        .contact-actions i.fa-trash:hover { color: #e74c3c; }
-        .dark-theme .contact-actions i { color: #ccc; }
-        .dark-theme .contact-actions i:hover { color: #ffeaa7; }
-        .dark-theme .contact-actions i.fa-edit:hover { color: #f1c40f; }
-        .dark-theme .contact-actions i.fa-trash:hover { color: #e74c3c; }
-
-        .contact-avatar {
-            width: 45px; height: 45px; border-radius: 50%; background-color: #3498db;
-            color: #fff; display: flex; justify-content: center; align-items: center;
-            font-weight: bold; margin-right: 15px; flex-shrink: 0;
-        }
-        .contact-info { flex-grow: 1; text-align: left; }
-        .contact-name { font-weight: bold; color: #333; }
-        .contact-phone { font-size: 0.9rem; color: #777; }
-        .dark-theme .contact-name, .dark-theme .contact-phone { color: #e0e0e0; }
-        .profile-info p {
-            background-color: #f9f9f9; padding: 15px; border-radius: 10px;
-            margin-bottom: 10px; text-align: left; font-size: 1.1rem;
-            color: #333;
-        }
-        .profile-info strong { color: #3498db; }
-        .profile-edit-btn {
-            background-color: transparent;
-            color: #3498db;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            margin-left: 10px;
-        }
-        .dark-theme .profile-edit-btn {
-            color: #f6e58d;
-        }
-        .profile-edit-btn:hover { text-decoration: underline; }
-
-        /* Call Screen Overlay */
-        .call-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; border-radius: 25px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; transition: all 0.3s ease-in-out;
-            transform: scale(0.9); opacity: 0; z-index: 200; visibility: hidden;
-        }
-        .call-screen.active { transform: scale(1); opacity: 1; visibility: visible; }
-        .call-avatar { width: 120px; height: 120px; border-radius: 50%; background-color: #3498db; display: flex; justify-content: center; align-items: center; font-size: 3rem; color: #fff; margin-bottom: 20px; }
-        .call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #333; }
-        .call-status { font-size: 1.2rem; color: #777; margin-bottom: 15px; }
-        .call-timer { font-size: 1.8rem; font-weight: bold; color: #333; margin-bottom: 30px; }
-        .call-controls { display: flex; gap: 20px; margin-bottom: 30px; }
-        .call-control-btn {
-            background-color: #f0f0f0; color: #555;
-            width: 60px; height: 60px; border-radius: 50%; border: none;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s ease;
-        }
-        .call-control-btn:hover { background-color: #eee; }
-        .call-control-btn.active { background-color: #3498db; color: #fff; } /* For active mute/speaker */
-
-        .end-call-btn { background-color: #e74c3c; color: #fff; padding: 15px 30px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; border: none; cursor: pointer; transition: all 0.2s ease; }
-        .end-call-btn:hover { background-color: #c0392b; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5); }
-
-
-        /* Custom Alert Dialog */
-        #customAlertDialog, #customConfirmDialog {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease;
-        }
-        #customAlertDialog.active, #customConfirmDialog.active { opacity: 1; visibility: visible; }
-        .custom-alert-content, .custom-confirm-content {
-            background: #fff; padding: 30px; border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.2); color: #333; text-align: center;
-            width: 80%; max-width: 400px;
-        }
-        #customAlertMessage, #customConfirmMessage { margin-bottom: 20px; font-size: 1.1rem; }
-        .custom-confirm-buttons {
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
-        }
-        .custom-confirm-buttons .btn {
-            width: 48%;
-            margin-top: 0;
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 25px;
-        }
-        .custom-confirm-buttons .btn.cancel {
-            background: #f0f0f0;
-            color: #555;
-        }
-        .custom-confirm-buttons .btn.cancel:hover {
-            background: #eee;
-        }
-
-        /* Search input for contacts */
-        .search-input-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-        .search-input-container input {
-            padding-right: 40px; /* Make space for the icon */
-        }
-        .search-input-container .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #777;
-            pointer-events: none; /* Allow clicks to pass through to the input */
-        }
-
-        .scrolling-tagline {
-            color: #3498db;
-            font-size: 1.3rem;
-            font-weight: bold;
-            padding: 10px 0;
-            text-align: center;
-            animation: glow 1.5s infinite alternate; /* Added glow animation */
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 5px #3498db; }
-            to { text-shadow: 0 0 15px #3498db, 0 0 20px #2980b9; }
-        }
-
-        /* Message Page Specific Styles */
-        .message-thread-item {
-            background-color: #f9f9f9;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            color: #555;
-        }
-        .message-thread-item:hover {
-            background-color: #eee;
-        }
-        .message-thread-info {
-            text-align: left;
-        }
-        .message-thread-name {
-            font-weight: bold;
-            color: #333;
-        }
-        .message-thread-last-msg {
-            font-size: 0.85rem;
-            color: #777;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 80%;
-        }
-        .message-thread-time {
-            font-size: 0.75rem;
-            color: #aaa;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-        #messageInput {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        /* Theme Toggle Button */
-        #themeToggleButton {
-            position: fixed;
-            bottom: 20px; /* Moved to the bottom */
-            right: 20px; /* Kept on the right */
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            color: #555;
-            z-index: 101; /* Ensure it's above other elements */
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        #themeToggleButton:hover {
-            background-color: #eee;
-        }
-
-        .dark-theme #themeToggleButton {
-            background-color: #333;
-            color: #f0f0f0;
-            border: 1px solid #555;
-        }
-
-        .dark-theme #themeToggleButton:hover {
-            background-color: #555;
-        }
-        .history-item .call-info { text-align: left; }
-        .history-item .call-number { font-weight: bold; color: #333; }
-        .history-item .call-time { font-size: 0.85rem; color: #777; }
-        .dark-theme .history-item .call-number, .dark-theme .history-item .call-time { color: #e0e0e0; }
-
-        .call-again-btn { margin-left: auto; }
-
-    </style>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -741,74 +15,83 @@
         <div class="spinner"></div>
     </div>
 
-
-    <div id="themeToggleButton" onclick="toggleTheme()">
+    <button id="themeToggleButton" aria-label="Toggle Theme">
         <i class="fas fa-sun"></i>
-    </div>
+    </button>
 
     <div class="container active-page" id="welcomePage" style="text-align: center;">
-    <center><img src="smartcall-logo.png" alt="SmartCall Logo" style="width: 100px; margin-bottom: 20px;"></center>
-    <h1 style="display: none;">Welcome to<br> <strong>SmartCall!</strong></h1>
-    <p>Connect with the world   simple, fast, and secured.</p>
-    <button class="btn" onclick="navigate('authPage')">  Get Started</button>
-</div>
+        <center><img src="smartcall-logo.png" alt="SmartCall Logo" style="width: 100px; margin-bottom: 20px;"></center>
+        <h1>Welcome to SmartCall!</h1>
+        <p>Connect with the world - simple, fast, and secured.</p>
+        <button class="btn" onclick="navigate('authPage')">
+            Get Started
+        </button>
+    </div>
+
     <div class="container hidden" id="authPage">
         <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
-        <h2 id="formTitle" style="margin-bottom: 10px;">Login to Your Account</h2>
+        <h2 id="formTitle">Login to Your Account</h2>
         <div style="width: 100%;">
+            <label for="loginEmail" class="sr-only">Email Address</label>
             <input id="loginEmail" placeholder="Email Address" type="email" />
+            <label for="loginPassword" class="sr-only">Password</label>
             <input id="loginPassword" placeholder="Password" type="password" />
             <button class="btn" id="loginBtn" onclick="handleEmailLogin()">
                 <i class="fas fa-lock"></i> Login
             </button>
-            <p style="margin: 15px 0 5px 0; color: #555;">Don't have an account?</p>
-            <button class="btn" onclick="navigate('registerPage')" style="background: #7f8c8d;">
+            <p>Don't have an account?</p>
+            <button class="btn secondary-btn" onclick="navigate('registerPage')">
                 <i class="fas fa-user-plus"></i> Register Now
             </button>
-            <div id="authMessage" style="color: #e74c3c; margin-top: 10px;"></div>
+            <div id="authMessage" class="error-message"></div>
         </div>
     </div>
 
     <div class="container hidden" id="registerPage">
         <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
-        <h2 id="formTitle" style="margin-bottom: 10px;">Create a New Account</h2>
+        <h2 id="formTitle">Create a New Account</h2>
         <div class="auth-toggle-container">
             <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showRegisterForm('phone')">Use Phone</button>
             <button id="showEmailBtn" class="auth-toggle-btn" onclick="showRegisterForm('email')">Use Email</button>
         </div>
-
         <div style="width: 100%;">
             <div id="phoneAuthSection">
+                <label for="registerFullNamePhone" class="sr-only">Full Name</label>
                 <input id="registerFullNamePhone" placeholder="Full Name" type="text" />
                 <div class="phone-input-group">
-                    <select id="registerCountryCode" style="flex: 1;"></select>
-                    <input id="registerPhoneNumber" placeholder="Phone Number" type="tel" style="flex: 2;" />
+                    <label for="registerCountryCode" class="sr-only">Country Code</label>
+                    <select id="registerCountryCode"></select>
+                    <label for="registerPhoneNumber" class="sr-only">Phone Number</label>
+                    <input id="registerPhoneNumber" placeholder="Phone Number" type="tel" />
                 </div>
                 <div id="recaptcha-container"></div>
                 <button class="btn" id="sendOtpBtn" onclick="sendOtp()">
                     <i class="fas fa-paper-plane"></i> Send Code
                 </button>
-                <div id="otpSection" class="hidden" style="margin-top: 15px;">
+                <div id="otpSection" class="hidden">
+                    <label for="otpInput" class="sr-only">Verification Code</label>
                     <input id="otpInput" placeholder="Enter 6-digit code" type="text" maxlength="6" />
                     <button class="btn" id="verifyOtpBtn" onclick="verifyOtp()">
                         <i class="fas fa-check-circle"></i> Verify & Register
                     </button>
                 </div>
             </div>
-
             <div id="emailAuthSection" class="hidden">
+                <label for="registerFullNameEmail" class="sr-only">Full Name</label>
                 <input id="registerFullNameEmail" placeholder="Full Name" type="text" />
+                <label for="registerEmail" class="sr-only">Email Address</label>
                 <input id="registerEmail" placeholder="Email Address" type="email" />
+                <label for="registerPassword" class="sr-only">Password</label>
                 <input id="registerPassword" placeholder="Password (min. 6 characters)" type="password" />
                 <button class="btn" id="emailRegisterBtn" onclick="handleEmailRegister()">
                     <i class="fas fa-user-plus"></i> Register
                 </button>
             </div>
-            <p style="margin: 15px 0 5px 0; color: #555;">Already have an account?</p>
-            <button class="btn" onclick="navigate('authPage')" style="background: #7f8c8d;">
+            <p>Already have an account?</p>
+            <button class="btn secondary-btn" onclick="navigate('authPage')">
                 <i class="fas fa-lock"></i> Login
             </button>
-            <div id="registerAuthMessage" style="color: #e74c3c; margin-top: 10px;"></div>
+            <div id="registerAuthMessage" class="error-message"></div>
         </div>
     </div>
 
@@ -825,13 +108,11 @@
                 </div>
             </div>
         </div>
-
         <div class="main-call-button-container">
             <div class="scrolling-tagline">
                 Call your family, friends, and loved ones the easy & secure way — at affordable rates!
             </div>
-            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!   </h3>
-            <br>
+            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!</h3>
             <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage')">
                 <i class="fas fa-phone"></i>
                 <span class="button-label">Make a Call</span>
@@ -840,25 +121,24 @@
         <div class="call-history-container">
             <div class="section-title">🕓 Recent Calls</div>
             <div id="recentCallsList">
-                <p style="color: #aaa; margin-top: 15px;">No recent calls.</p>
+                <p class="placeholder-text">No recent calls.</p>
             </div>
             <a href="#" class="see-more-link" onclick="openOverlayWithHistory('callHistoryPage')">See Full History</a>
         </div>
-
         <div class="bottom-nav">
-            <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')">
+            <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')" aria-label="Recharge">
                 <i class="fas fa-wallet"></i><span>Recharge</span>
             </div>
-            <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')">
+            <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')" aria-label="Contacts">
                 <i class="fas fa-address-book"></i><span>Contacts</span>
             </div>
-            <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')">
+            <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')" aria-label="Messages">
                 <i class="fas fa-comment"></i><span>Messages</span>
             </div>
-            <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')">
+            <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')" aria-label="Referral">
                 <i class="fas fa-gift"></i><span>Referral</span>
             </div>
-            <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')">
+            <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')" aria-label="Profile">
                 <i class="fas fa-user"></i><span>Profile</span>
             </div>
         </div>
@@ -867,12 +147,13 @@
     <div class="fullscreen-overlay" id="dialPadPage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Call</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <div class="dialpad-display-container">
                 <input type="text" id="dialPadDisplay" placeholder="Enter number" readonly>
                 <div class="phone-input-group">
+                     <label for="dialPadCountryCode" class="sr-only">Country Code</label>
                      <select id="dialPadCountryCode"></select>
                 </div>
             </div>
@@ -888,26 +169,26 @@
                 <button class="dial-btn" onclick="dialInput('9')">9</button>
                 <button class="dial-btn" onclick="dialInput('*')">*</button>
                 <button class="dial-btn" onclick="dialInput('0')">0</button>
-                <button class="dial-btn" onclick="dialInput('backspace')"><i class="fas fa-backspace"></i></button>
+                <button class="dial-btn" onclick="dialInput('backspace')" aria-label="Backspace"><i class="fas fa-backspace"></i></button>
             </div>
             <div class="dialpad-actions">
-                <button class="dialpad-call-btn" onclick="startCallFromDialpad()"><i class="fas fa-phone"></i></button>
+                <button class="dialpad-call-btn" onclick="startCallFromDialpad()" aria-label="Start Call"><i class="fas fa-phone"></i></button>
             </div>
             <div class="dialpad-bottom-actions">
                 <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
-                <button class="btn cancel" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
+                <button class="btn secondary-btn" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
             </div>
         </div>
     </div>
-    
+
     <div class="fullscreen-overlay" id="callHistoryPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Full Call History</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <div id="fullCallHistoryList">
-                 <p style="color: #aaa; margin-top: 15px;">Loading full call history...</p>
+                 <p class="placeholder-text">Loading full call history...</p>
             </div>
         </div>
     </div>
@@ -915,16 +196,17 @@
     <div class="fullscreen-overlay" id="contactsPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Contacts</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <div class="search-input-container">
+                <label for="contactSearchInput" class="sr-only">Search contacts</label>
                 <input type="text" id="contactSearchInput" placeholder="Search contacts..." onkeyup="searchContacts()">
                 <i class="fas fa-search search-icon"></i>
             </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openOverlayWithHistory('addContactPage')"><i class="fas fa-plus"></i> Add New Contact</button>
             <div id="contactsList">
-                 <p style="color: #aaa; margin-top: 15px;">No contacts yet. Add one!</p>
+                 <p class="placeholder-text">No contacts yet. Add one!</p>
             </div>
         </div>
     </div>
@@ -932,11 +214,14 @@
     <div class="fullscreen-overlay" id="addContactPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Add New Contact</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
+            <label for="newContactName" class="sr-only">Contact Name</label>
             <input id="newContactName" placeholder="Contact Name" type="text" />
+            <label for="newContactPhone" class="sr-only">Phone Number</label>
             <input id="newContactPhone" placeholder="Phone Number" type="tel" />
+            <label for="newContactEmail" class="sr-only">Email (Optional)</label>
             <input id="newContactEmail" placeholder="Email (Optional)" type="email" />
             <button class="btn" onclick="saveNewContact()">Save Contact</button>
         </div>
@@ -945,12 +230,15 @@
     <div class="fullscreen-overlay" id="editContactPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Edit Contact</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <input id="editContactId" type="hidden" />
+            <label for="editContactName" class="sr-only">Contact Name</label>
             <input id="editContactName" placeholder="Contact Name" type="text" />
+            <label for="editContactPhone" class="sr-only">Phone Number</label>
             <input id="editContactPhone" placeholder="Phone Number" type="tel" />
+            <label for="editContactEmail" class="sr-only">Email (Optional)</label>
             <input id="editContactEmail" placeholder="Email (Optional)" type="email" />
             <button class="btn" onclick="saveEditedContact()">Save Changes</button>
         </div>
@@ -959,16 +247,17 @@
     <div class="fullscreen-overlay" id="messagePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Messages</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <div class="search-input-container">
+                <label for="messageSearchInput" class="sr-only">Search messages</label>
                 <input type="text" id="messageSearchInput" placeholder="Search messages or contacts..." onkeyup="searchMessages()">
                 <i class="fas fa-search search-icon"></i>
             </div>
             <button class="btn" style="margin-bottom: 20px;" onclick="openNewMessagePage()"><i class="fas fa-plus"></i> New Message</button>
             <div id="messageThreadsList">
-                <p style="color: #aaa; margin-top: 15px;">No messages yet.</p>
+                <p class="placeholder-text">No messages yet.</p>
             </div>
         </div>
     </div>
@@ -976,10 +265,12 @@
     <div class="fullscreen-overlay" id="newMessagePage">
         <div class="overlay-header">
             <h3 class="overlay-title">New Message</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
+            <label for="messageRecipient" class="sr-only">Recipient</label>
             <input id="messageRecipient" placeholder="Recipient (Name or Phone Number)" type="text" />
+            <label for="messageInput" class="sr-only">Message Content</label>
             <textarea id="messageInput" placeholder="Type your message here..."></textarea>
             <button class="btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
         </div>
@@ -988,11 +279,11 @@
     <div class="fullscreen-overlay" id="profilePage">
         <div class="overlay-header">
             <h3 class="overlay-title">My Profile</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
             <div class="profile-info">
-                <p><strong>Name:</strong> <span id="profileName"></span> <i class="fas fa-edit profile-edit-btn" onclick="openEditProfilePage()"></i></p>
+                <p><strong>Name:</strong> <span id="profileName"></span> <i class="fas fa-edit profile-edit-btn" onclick="openEditProfilePage()" aria-label="Edit Name"></i></p>
                 <p><strong>Email:</strong> <span id="profileEmail"></span></p>
                 <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
                 <p><strong>Member Since:</strong> <span id="profileMemberSince"></span></p>
@@ -1004,9 +295,10 @@
     <div class="fullscreen-overlay" id="editProfilePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Edit Profile</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
+            <label for="editProfileName" class="sr-only">New Name</label>
             <input id="editProfileName" placeholder="New Name" type="text" />
             <button class="btn" onclick="saveProfileChanges()">Save Changes</button>
         </div>
@@ -1015,26 +307,27 @@
     <div class="fullscreen-overlay" id="rechargePage">
         <div class="overlay-header">
             <h3 class="overlay-title">Recharge</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
-        
         <div style="margin-top: 20px;">
+            <label for="rechargeAmount" class="sr-only">Amount to Recharge</label>
             <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
             <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
         </div>
-        <div id="rechargeStatus" style="margin-top: 15px; color: #2ecc71;"></div>
+        <div id="rechargeStatus" class="success-message"></div>
     </div>
 
     <div class="fullscreen-overlay" id="referralPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Referral Program</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()"></i>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
-        <div class="overlay-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <i class="fas fa-gift" style="font-size: 5rem; color: #e67e22; margin-bottom: 20px;"></i>
+        <div class="overlay-content">
+            <i class="fas fa-gift"></i>
             <h2>Invite friends and earn credit!</h2>
             <p>Share your unique referral link to earn rewards when they sign up and make a call.</p>
-            <input type="text" id="referralLink" value="https://smartcall.app/refer/user123" readonly style="text-align: center; cursor: pointer;" onclick="copyReferralLink()">
+            <label for="referralLink" class="sr-only">Your Referral Link</label>
+            <input type="text" id="referralLink" value="https://smartcall.app/refer/" readonly onclick="copyReferralLink()">
             <button class="btn" onclick="shareReferralLink()"><i class="fas fa-share-alt"></i> Share Link</button>
         </div>
     </div>
@@ -1045,9 +338,9 @@
         <div class="call-status" id="callStatus">Dialing...</div>
         <div class="call-timer" id="callTimer">00:00</div>
         <div class="call-controls">
-            <button class="call-control-btn" id="muteBtn" onclick="toggleMute()"><i class="fas fa-microphone"></i></button>
-            <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()"><i class="fas fa-volume-up"></i></button>
-            <button class="call-control-btn" onclick="dialInput('keypad')"><i class="fas fa-th-large"></i></button>
+            <button class="call-control-btn" id="muteBtn" onclick="toggleMute()" aria-label="Mute Call"><i class="fas fa-microphone"></i></button>
+            <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()" aria-label="Toggle Speaker"><i class="fas fa-volume-up"></i></button>
+            <button class="call-control-btn" onclick="dialInput('keypad')" aria-label="Show Keypad"><i class="fas fa-th-large"></i></button>
         </div>
         <button class="end-call-btn" onclick="endCallSimulation()">End Call</button>
     </div>
@@ -1063,915 +356,17 @@
         <div class="custom-confirm-content">
             <p id="customConfirmMessage"></p>
             <div class="custom-confirm-buttons">
-                <button class="btn cancel" id="confirmCancelBtn">Cancel</button>
+                <button class="btn secondary-btn" id="confirmCancelBtn">Cancel</button>
                 <button class="btn" id="confirmOkBtn">OK</button>
             </div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="script.js"></script>
 
-    <script>
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-            apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-            authDomain: "smartcalls-d49f5.firebaseapp.com",
-            projectId: "smartcalls-d49f5",
-            storageBucket: "smartcalls-d49f5.appspot.com",
-            messagingSenderId: "854255870421",
-            appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-            measurementId: "G-JKKWJEJK0B"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-    </script>
-
-
-    <script>
-        // --- Global State & Config ---
-        let isDarkTheme = false;
-        let loggedInUser = null;
-        let allContacts = [];
-        let stopUserListener = () => {};
-        let stopCallHistoryListener = () => {};
-        window.confirmationResult = null;
-        let paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
-        const callCostPerMinute = 13;
-
-        // --- LOADER FUNCTIONS ---
-        const loader = document.getElementById('loader');
-        function showLoader() { 
-            loader.classList.add('show'); 
-        }
-        function hideLoader() {
-            setTimeout(() => {
-                loader.classList.remove('show');
-            }, 300);
-        }
-
-        // --- Theme Toggle Function ---
-        function toggleTheme() {
-            isDarkTheme = !isDarkTheme;
-            document.body.classList.toggle('dark-theme', isDarkTheme);
-            const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.toggle('fa-sun', !isDarkTheme);
-            themeIcon.classList.toggle('fa-moon', isDarkTheme);
-            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-        }
-
-        // --- On Page Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            showLoader();
-            document.title = "SmartCall - Your Connection to the World";
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                isDarkTheme = true;
-                document.body.classList.add('dark-theme');
-                const themeIcon = document.querySelector('#themeToggleButton i');
-                themeIcon.classList.add('fa-moon');
-                themeIcon.classList.remove('fa-sun');
-            } else {
-                const themeIcon = document.querySelector('#themeToggleButton i');
-                themeIcon.classList.add('fa-sun');
-                themeIcon.classList.remove('fa-moon');
-            }
-
-            const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-            const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-            countryCodeSelects.forEach(select => {
-                countryCodes.forEach(code => {
-                    const option = document.createElement('option');
-                    option.value = code.split(' ')[0];
-                    option.textContent = code;
-                    select.appendChild(option);
-                });
-            });
-        });
-
-        // --- Utility Functions ---
-        function navigate(pageId) {
-            showLoader();
-            history.pushState({ pageId: pageId }, '', `#${pageId}`);
-            showPage(pageId);
-        }
-
-        function showPage(pageId) {
-            document.querySelectorAll('.container').forEach(page => {
-                page.classList.add('hidden');
-                page.classList.remove('active-page');
-            });
-            const page = document.getElementById(pageId)
-            page.classList.remove('hidden');
-            page.classList.add('active-page');
-            hideLoader();
-        }
-        
-        function openOverlayWithHistory(overlayId) {
-            showLoader();
-             history.pushState({ overlayId: overlayId }, '', `#${overlayId}`);
-             document.getElementById(overlayId).classList.add('active');
-             if (overlayId === 'contactsPage') {
-                 loadContacts();
-             } else if (overlayId === 'profilePage') {
-                 populateProfile();
-             } else if (overlayId === 'callHistoryPage') {
-                 loadFullCallHistory();
-             } else {
-                 hideLoader();
-             }
-        }
-
-        function closeOverlay(overlayId) {
-            document.getElementById(overlayId).classList.remove('active');
-        }
-
-        window.onpopstate = (event) => {
-            const pageId = event.state && event.state.pageId;
-            const overlayId = event.state && event.state.overlayId;
-
-            if (pageId) {
-                showPage(pageId);
-                document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
-                    overlay.classList.remove('active');
-                });
-            } else if (overlayId) {
-                document.getElementById(overlayId).classList.add('active');
-            } else {
-                 showPage('welcomePage');
-                 document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
-                    overlay.classList.remove('active');
-                });
-            }
-        };
-
-        // --- Welcome Page ---
-        function goToAuth() {
-            navigate('authPage');
-        }
-
-        function goToRegister() {
-            navigate('registerPage');
-            showRegisterForm('phone');
-        }
-
-        // --- Authentication Logic ---
-        function showRegisterForm(type) {
-            const phoneSection = document.getElementById('phoneAuthSection');
-            const emailSection = document.getElementById('emailAuthSection');
-            const showPhoneBtn = document.getElementById('showPhoneBtn');
-            const showEmailBtn = document.getElementById('showEmailBtn');
-            document.getElementById('registerAuthMessage').textContent = '';
-
-            if (type === 'phone') {
-                phoneSection.classList.remove('hidden');
-                emailSection.classList.add('hidden');
-                showPhoneBtn.classList.add('active');
-                showEmailBtn.classList.remove('active');
-            } else {
-                phoneSection.classList.add('hidden');
-                emailSection.classList.remove('hidden');
-                showPhoneBtn.classList.remove('active');
-                showEmailBtn.classList.add('active');
-            }
-        }
-
-        // --- Phone Auth ---
-        function setupRecaptcha() {
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': (response) => {}
-                });
-                window.recaptchaWidgetId = window.recaptchaVerifier.render();
-            }
-        }
-
-        function sendOtp() {
-            showLoader();
-            const countryCode = document.getElementById('registerCountryCode').value;
-            const phoneNumberInput = document.getElementById('registerPhoneNumber').value;
-            const authMessage = document.getElementById('registerAuthMessage');
-            authMessage.textContent = '';
-
-            if (!phoneNumberInput) {
-                authMessage.textContent = 'Please enter a phone number.';
-                hideLoader();
-                return;
-            }
-
-            const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
-            
-            if (window.recaptchaVerifier) {
-                grecaptcha.reset(window.recaptchaWidgetId);
-            }
-            setupRecaptcha();
-            const appVerifier = window.recaptchaVerifier;
-
-            auth.signInWithPhoneNumber(fullPhoneNumber, appVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    hideLoader();
-                    showAlert('Verification code has been sent!');
-                    document.getElementById('otpSection').classList.remove('hidden');
-                }).catch((error) => {
-                    hideLoader();
-                    console.error("Firebase Auth Error:", error.code, error.message);
-                    
-                    if (error.code === 'auth/invalid-phone-number') {
-                        authMessage.textContent = 'Error: The phone number format is invalid. Please try again.';
-                    } else if (error.code === 'auth/missing-phone-number') {
-                        authMessage.textContent = 'Error: Please enter a phone number.';
-                    } else if (error.code === 'auth/too-many-requests') {
-                        authMessage.textContent = 'Error: You have made too many requests. Please try again later.';
-                    } else if (error.code === 'auth/captcha-check-failed' || error.code === 'auth/web-storage-unsupported') {
-                        authMessage.textContent = 'Error: Security check failed. Please check your browser settings or try from another device.';
-                    } else if (error.code === 'auth/network-request-failed') {
-                        authMessage.textContent = 'Error: Network failed. Please check your internet connection.';
-                    } else {
-                        authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
-                    }
-
-                    if (window.recaptchaWidgetId) {
-                        grecaptcha.reset(window.recaptchaWidgetId);
-                    }
-                });
-        }
-
-        function verifyOtp() {
-            showLoader();
-            const otp = document.getElementById('otpInput').value;
-            const fullName = document.getElementById('registerFullNamePhone').value;
-            const authMessage = document.getElementById('registerAuthMessage');
-            authMessage.textContent = '';
-
-            if (!otp || otp.length !== 6) {
-                authMessage.textContent = 'Please enter a valid 6-digit code.';
-                hideLoader(); return;
-            }
-            if (!fullName) {
-                authMessage.textContent = 'Please enter your full name.';
-                hideLoader(); return;
-            }
-
-            window.confirmationResult.confirm(otp).then((result) => {
-                const user = result.user;
-                const userRef = db.collection('users').doc(user.uid);
-                return userRef.get().then(doc => {
-                    if (!doc.exists) {
-                        return userRef.set({
-                            fullName: fullName,
-                            phoneNumber: user.phoneNumber,
-                            memberSince: new Date(),
-                            balance: 0
-                        });
-                    }
-                });
-            }).catch((error) => {
-                hideLoader();
-                authMessage.textContent = "Invalid code. Please try again.";
-            });
-        }
-
-        // --- Email Auth ---
-        function handleEmailRegister() {
-            showLoader();
-            const fullName = document.getElementById('registerFullNameEmail').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const authMessage = document.getElementById('registerAuthMessage');
-            authMessage.textContent = '';
-
-            if (!fullName || !email || !password) {
-                authMessage.textContent = 'All fields are required.';
-                hideLoader(); return;
-            }
-            if (password.length < 6) {
-                authMessage.textContent = 'Password must be at least 6 characters.';
-                hideLoader(); return;
-            }
-            
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    const user = userCredential.user;
-                    user.sendEmailVerification();
-                    return db.collection('users').doc(user.uid).set({
-                        fullName: fullName,
-                        email: email,
-                        memberSince: new Date(),
-                        balance: 0,
-                        emailVerified: false
-                    });
-                })
-                .then(() => {
-                    hideLoader();
-                    showAlert("Registration successful! Please check your email to verify your account before logging in.");
-                })
-                .catch(error => {
-                    hideLoader();
-                    authMessage.textContent = error.message;
-                });
-        }
-
-        function handleEmailLogin() {
-            showLoader();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const authMessage = document.getElementById('authMessage');
-            authMessage.textContent = '';
-
-            if (!email || !password) {
-                authMessage.textContent = 'Please enter email and password.';
-                hideLoader(); return;
-            }
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
-                        hideLoader();
-                        showAlert("Your email is not verified. Please check your inbox for the verification link.");
-                        auth.signOut();
-                    }
-                })
-                .catch(error => {
-                    hideLoader();
-                    authMessage.textContent = error.message;
-                });
-        }
-
-
-        // --- Firebase Auth State Listener ---
-        auth.onAuthStateChanged(user => {
-            if (stopUserListener) stopUserListener();
-            if (stopCallHistoryListener) stopCallHistoryListener();
-
-            if (user) {
-                if (user.providerData[0].providerId === 'password' && !user.emailVerified) {
-                    hideLoader();
-                    return;
-                }
-                loggedInUser = user;
-                listenToUserData();
-                listenToCallHistory();
-                navigate('homePage');
-            } else {
-                loggedInUser = null;
-                navigate('welcomePage');
-            }
-        });
-
-        // --- Real-time listeners ---
-        function listenToUserData() {
-            if (!loggedInUser) return;
-            const userRef = db.collection('users').doc(loggedInUser.uid);
-            stopUserListener = userRef.onSnapshot(doc => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById('welcomeUserName').textContent = userData.fullName;
-                    updateWalletBalance(userData.balance);
-                } else {
-                    console.log("User document doesn't exist yet, likely during registration.");
-                }
-            }, err => console.error("Error listening to user data:", err));
-        }
-
-        function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
-            if (!loggedInUser) return;
-            let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc');
-
-            if (limit) {
-                historyRef = historyRef.limit(limit);
-            }
-
-            const historyListDiv = document.getElementById(targetElementId);
-            
-            stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
-                if (snapshot.empty) {
-                    historyListDiv.innerHTML = '<p style="color: #aaa; margin-top: 15px;">No recent calls.</p>';
-                    return;
-                }
-                historyListDiv.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const call = doc.data();
-                    const callDate = call.timestamp.toDate();
-                    const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
-
-                    const callItem = document.createElement('div');
-                    callItem.classList.add('history-item');
-                    callItem.innerHTML = `
-                        <div>
-                            <div class="call-number">${call.contactName}</div>
-                            <div class="call-time">${formattedDate} (${call.duration})</div>
-                        </div>
-                        <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactName}')">Call Again</button>
-                    `;
-                    historyListDiv.appendChild(callItem);
-                });
-            }, err => console.error("Error listening to call history:", err));
-        }
-
-        function loadFullCallHistory() {
-            showLoader();
-            listenToCallHistory(null, 'fullCallHistoryList');
-        }
-
-
-        // --- Home Page ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-            const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-            countryCodeSelects.forEach(select => {
-                countryCodes.forEach(code => {
-                    const option = document.createElement('option');
-                    option.value = code.split(' ')[0];
-                    option.textContent = code;
-                    select.appendChild(option);
-                });
-            });
-        });
-
-        // --- Dial Pad ---
-        let currentNumber = '';
-        const dialPadDisplay = document.getElementById('dialPadDisplay');
-
-        function dialInput(value) {
-            if (value === 'backspace' && currentNumber.length > 0) {
-                currentNumber = currentNumber.slice(0, -1);
-            } else if (value !== 'backspace') {
-                currentNumber += value;
-            }
-            dialPadDisplay.value = currentNumber;
-        }
-
-        function clearDialPad() {
-            currentNumber = '';
-            dialPadDisplay.value = '';
-        }
-
-        function startCallFromDialpad() {
-            if (currentNumber) {
-                showLoader();
-                setTimeout(() => {
-                    hideLoader();
-                    openCallScreen(currentNumber, currentNumber);
-                    history.back();
-                }, 500);
-            } else {
-                showAlert('Please enter a number to call.');
-            }
-        }
-
-        function openContactsFromDialpad() {
-            history.back();
-            openOverlayWithHistory('contactsPage');
-        }
-
-        // --- Contacts Page ---
-        function loadContacts() {
-            showLoader();
-            if (!loggedInUser) {
-                hideLoader();
-                return;
-            }
-            const contactsListDiv = document.getElementById('contactsList');
-            contactsListDiv.innerHTML = '<p style="color:#aaa;">Loading contacts...</p>';
-
-            const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-            contactsRef.orderBy('name').onSnapshot(snapshot => {
-                allContacts = [];
-                snapshot.forEach(doc => {
-                    allContacts.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                displayContacts(allContacts);
-                hideLoader();
-            }, error => {
-                console.error("Error loading contacts: ", error);
-                contactsListDiv.innerHTML = '<p style="color:#e74c3c;">Could not load contacts.</p>';
-                hideLoader();
-            });
-        }
-
-
-        function displayContacts(list) {
-            const contactsListDiv = document.getElementById('contactsList');
-            contactsListDiv.innerHTML = '';
-            if (list.length === 0) {
-                contactsListDiv.innerHTML = '<p style="color:#aaa;">No contacts found. Add one!</p>';
-                return;
-            }
-            list.forEach(contact => {
-                const contactDiv = document.createElement('div');
-                contactDiv.classList.add('contact-item');
-                const nameParts = contact.name.split(' ');
-                const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
-                contactDiv.innerHTML = `
-                <div class="contact-avatar">${initials}</div>
-                <div class="contact-info">
-                    <div class="contact-name">${contact.name}</div>
-                    <div class="contact-phone">${contact.phone}</div>
-                </div>
-                <div class="contact-actions">
-                    <i class="fas fa-phone" onclick="openCallScreen('${contact.name}', '${contact.phone}')"></i>
-                    <i class="fas fa-comment" onclick="openNewMessagePageWithRecipient('${contact.name}', '${contact.phone}')"></i>
-                    <i class="fas fa-edit" onclick="openEditContactPage('${contact.id}')"></i>
-                    <i class="fas fa-trash" onclick="deleteContact('${contact.id}')"></i>
-                </div>
-            `;
-                contactsListDiv.appendChild(contactDiv);
-            });
-        }
-
-        function openAddContactPage() {
-            history.pushState({overlayId: 'addContactPage'}, '', '#addContactPage');
-            document.getElementById('addContactPage').classList.add('active');
-        }
-
-        function closeAddContactPage() {
-            history.back();
-        }
-
-        function saveNewContact() {
-            showLoader();
-            const name = document.getElementById('newContactName').value;
-            const phone = document.getElementById('newContactPhone').value;
-            const email = document.getElementById('newContactEmail').value;
-            if (name && phone && loggedInUser) {
-                const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-                contactsRef.add({
-                    name: name,
-                    phone: phone,
-                    email: email
-                }).then(() => {
-                    hideLoader();
-                    showAlert('Contact saved successfully!');
-                    history.back();
-                }).catch(error => {
-                    hideLoader();
-                    showAlert('Error saving contact: ' + error.message);
-                });
-            } else {
-                hideLoader();
-                showAlert('Name and phone number are required.');
-            }
-        }
-
-        function openEditContactPage(contactId) {
-            const contact = allContacts.find(c => c.id === contactId);
-            if (!contact) {
-                showAlert("Contact not found.");
-                return;
-            }
-            document.getElementById('editContactId').value = contact.id;
-            document.getElementById('editContactName').value = contact.name;
-            document.getElementById('editContactPhone').value = contact.phone;
-            document.getElementById('editContactEmail').value = contact.email;
-            history.pushState({overlayId: 'editContactPage'}, '', '#editContactPage');
-            document.getElementById('editContactPage').classList.add('active');
-        }
-
-        function closeEditContactPage() {
-            history.back();
-        }
-
-        function saveEditedContact() {
-            showLoader();
-            const id = document.getElementById('editContactId').value;
-            const name = document.getElementById('editContactName').value;
-            const phone = document.getElementById('editContactPhone').value;
-            const email = document.getElementById('editContactEmail').value;
-            if (id && name && phone && loggedInUser) {
-                const contactRef = db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(id);
-                contactRef.update({
-                    name: name,
-                    phone: phone,
-                    email: email
-                }).then(() => {
-                    hideLoader();
-                    showAlert('Contact updated successfully!');
-                    history.back();
-                }).catch(error => {
-                    hideLoader();
-                    showAlert('Error updating contact: ' + error.message);
-                });
-            } else {
-                hideLoader();
-                showAlert('Name and phone number are required.');
-            }
-        }
-
-        function deleteContact(contactId) {
-            showConfirm('Are you sure you want to delete this contact?', () => {
-                showLoader();
-                db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(contactId).delete()
-                    .then(() => {
-                        hideLoader();
-                        showAlert('Contact deleted successfully!');
-                    }).catch(error => {
-                        hideLoader();
-                        showAlert('Error deleting contact: ' + error.message);
-                    });
-            });
-        }
-
-        function searchContacts() {
-            const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
-            const filteredContacts = allContacts.filter(contact =>
-                contact.name.toLowerCase().includes(searchTerm) ||
-                contact.phone.includes(searchTerm)
-            );
-            displayContacts(filteredContacts);
-        }
-
-        // --- Messages Page (Simplified) ---
-        function openNewMessagePage() {
-            showAlert("Messaging feature is under development.");
-            hideLoader(); // hide loader for placeholder
-        }
-        
-        function openNewMessagePageWithRecipient(name, phone) {
-            showAlert("Messaging feature is under development.");
-            hideLoader(); // hide loader for placeholder
-        }
-
-        function closeNewMessagePage() {
-            history.back();
-        }
-
-        function searchMessages() {
-            showAlert("Messaging feature is under development.");
-        }
-
-
-        // --- Profile Page ---
-        async function populateProfile() {
-            showLoader();
-            if (!loggedInUser) {
-                hideLoader();
-                return;
-            }
-            const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-            if (userDoc.exists) {
-                const userData = userDoc.data();
-                document.getElementById('profileName').textContent = userData.fullName || 'N/A';
-                document.getElementById('profileEmail').textContent = userData.email || 'N/A';
-                document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || userData.phoneNumber || 'N/A';
-                const memberSinceDate = userData.memberSince ? userData.memberSince.toDate() : new Date();
-                document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric'
-                });
-            }
-            hideLoader();
-        }
-
-        function openEditProfilePage() {
-            const currentName = document.getElementById('profileName').textContent;
-            document.getElementById('editProfileName').value = currentName;
-            history.pushState({overlayId: 'editProfilePage'}, '', '#editProfilePage');
-            document.getElementById('editProfilePage').classList.add('active');
-        }
-
-        function closeEditProfilePage() {
-            history.back();
-        }
-
-        function saveProfileChanges() {
-            showLoader();
-            const newName = document.getElementById('editProfileName').value;
-            if (!newName || newName.length < 3) {
-                showAlert('Please enter a valid name.');
-                hideLoader();
-                return;
-            }
-            db.collection('users').doc(loggedInUser.uid).update({
-                fullName: newName
-            }).then(() => {
-                hideLoader();
-                showAlert('Profile updated successfully!');
-                history.back();
-            }).catch(error => {
-                hideLoader();
-                showAlert('Error updating profile: ' + error.message);
-            });
-        }
-
-
-        function confirmLogout() {
-            showConfirm('Are you sure you want to logout?', () => {
-                showLoader();
-                auth.signOut();
-            });
-        }
-
-        // --- Call Screen (Simulation) & History Logging ---
-        const callScreen = document.getElementById('callScreen');
-        const callingContactName = document.getElementById('callingContactName');
-        const callStatus = document.getElementById('callStatus');
-        const callTimer = document.getElementById('callTimer');
-        let callInterval;
-        let seconds = 0;
-
-        function openCallScreen(name, number) {
-            callingContactName.textContent = name || number;
-            callScreen.setAttribute('data-contact-name', name || number);
-            callScreen.setAttribute('data-contact-phone', number);
-            callStatus.textContent = 'Calling...';
-            callScreen.classList.add('active');
-            seconds = 0;
-            callTimer.textContent = '00:00';
-            
-            setTimeout(() => {
-                callStatus.textContent = 'Connected';
-                callInterval = setInterval(updateCallTimer, 1000);
-            }, 3000);
-        }
-
-        function updateCallTimer() {
-            seconds++;
-            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
-            callTimer.textContent = `${minutes}:${remainingSeconds}`;
-        }
-
-        function endCallSimulation() {
-            showLoader();
-            clearInterval(callInterval);
-            callScreen.classList.remove('active');
-            
-            const duration = callTimer.textContent;
-            const contactName = callScreen.getAttribute('data-contact-name');
-            const contactPhone = callScreen.getAttribute('data-contact-phone');
-            showAlert(`Call with ${contactName} ended after ${duration}`);
-            
-            if (loggedInUser && seconds > 0) {
-                db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
-                    contactName: contactName,
-                    contactPhone: contactPhone,
-                    duration: duration,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(err => console.error("Error logging call:", err));
-            }
-            hideLoader();
-        }
-
-        let isMuted = false;
-        let isSpeakerOn = false;
-        const muteBtn = document.getElementById('muteBtn');
-        const speakerBtn = document.getElementById('speakerBtn');
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            muteBtn.classList.toggle('active', isMuted);
-            showAlert(isMuted ? 'Muted' : 'Unmuted');
-        }
-
-        function toggleSpeaker() {
-            isSpeakerOn = !isSpeakerOn;
-            speakerBtn.classList.toggle('active', isSpeakerOn);
-            showAlert(isSpeakerOn ? 'Speaker On' : 'Speaker Off');
-        }
-
-        // --- Custom Alert Dialog ---
-        const alertDialog = document.getElementById('customAlertDialog');
-        const alertMessage = document.getElementById('customAlertMessage');
-
-        function showAlert(message) {
-            alertMessage.textContent = message;
-            alertDialog.classList.add('active');
-        }
-
-        function hideCustomAlert() {
-            alertDialog.classList.remove('active');
-        }
-
-        // --- Custom Confirm Dialog ---
-        const confirmDialog = document.getElementById('customConfirmDialog');
-        const confirmMessage = document.getElementById('customConfirmMessage');
-        const confirmOkBtn = document.getElementById('confirmOkBtn');
-        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-        let confirmCallback;
-
-        function showConfirm(message, onConfirm) {
-            confirmMessage.textContent = message;
-            confirmCallback = onConfirm;
-            confirmDialog.classList.add('active');
-        }
-
-        confirmOkBtn.onclick = () => {
-            if (confirmCallback) {
-                confirmCallback();
-            }
-            confirmDialog.classList.remove('active');
-        };
-
-        confirmCancelBtn.onclick = () => {
-            confirmDialog.classList.remove('active');
-        };
-
-        // --- Referral Page Actions ---
-        function copyReferralLink() {
-            const referralInput = document.getElementById('referralLink');
-            referralInput.select();
-            referralInput.setSelectionRange(0, 99999);
-            document.execCommand('copy');
-            showAlert('Referral link copied to clipboard!');
-        }
-
-        function shareReferralLink() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'SmartCall Referral',
-                    text: 'Join me on SmartCall and get free credit!',
-                    url: document.getElementById('referralLink').value,
-                }).catch((error) => console.log('Error sharing', error));
-            } else {
-                showAlert("Web Share API is not supported in this browser. Please use the copy button.");
-            }
-        }
-    </script>
-
-
-    <script>
-        // --- Recharge and Wallet ---
-        async function payWithPaystack() {
-            showLoader();
-            let amount = document.getElementById("rechargeAmount").value;
-            if (!amount || isNaN(amount) || amount < 100) {
-                showAlert("Please enter a valid amount (minimum ₦100)");
-                hideLoader();
-                return;
-            }
-            if (!loggedInUser) {
-                showAlert("You must be logged in to recharge.");
-                hideLoader();
-                return;
-            }
-            
-            const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-            
-            if (!userDoc.exists) {
-                showAlert("Could not find user data. Please try again.");
-                hideLoader();
-                return;
-            }
-            const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
-
-            let handler = PaystackPop.setup({
-                key: paystackPublicKey,
-                email: userEmail,
-                amount: amount * 100,
-                currency: 'NGN',
-                ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
-                callback: function (response) {
-                    showLoader();
-                    document.getElementById("rechargeStatus").innerText = "Verifying payment...";
-                    updateUserBalanceInDB(parseFloat(amount)).then(() => {
-                        document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-                        hideLoader();
-                        setTimeout(() => closeOverlay('rechargePage'), 1500);
-                    });
-                },
-                onClose: function () {
-                    hideLoader();
-                }
-            });
-            handler.openIframe();
-        }
-
-        async function updateUserBalanceInDB(amount) {
-            if (!loggedInUser) return;
-            const userRef = db.collection('users').doc(loggedInUser.uid);
-
-            return db.runTransaction(transaction => {
-                return transaction.get(userRef).then(doc => {
-                    if (!doc.exists) {
-                        throw "Document does not exist!";
-                    }
-                    const newBalance = (doc.data().balance || 0) + amount;
-                    transaction.update(userRef, {
-                        balance: newBalance
-                    });
-                });
-            }).catch(error => {
-                console.error("Transaction failed: ", error);
-                document.getElementById("rechargeStatus").innerText = "Recharge failed. Please try again.";
-            });
-        }
-
-
-        function updateWalletBalance(balance) {
-            const balanceText = document.getElementById("walletBalance");
-            const balanceInNaira = balance.toFixed(2);
-            const approxMinutes = Math.floor(balance / callCostPerMinute); // Assuming an average rate of ₦13/min
-            balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
-        }
-    </script>
 </body>
 </html>

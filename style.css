@@ -1,0 +1,524 @@
+/* --- CSS Custom Properties for Theming --- */
+:root {
+    /* Light Theme Colors */
+    --body-bg: #ffffff;
+    --text-color: #333;
+    --heading-color: #2c3e50;
+    --container-bg: #ffffff;
+    --container-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+    --input-bg: #f9f9f9;
+    --input-border: 1px solid #ccc;
+    --input-placeholder-color: #777;
+    --primary-btn-bg: linear-gradient(to right, #3498db, #2980b9);
+    --secondary-btn-bg: #7f8c8d;
+    --secondary-btn-color: #fff;
+    --active-toggle-bg: #3498db;
+    --active-toggle-color: #fff;
+    --section-title-color: #3498db;
+    --section-title-border: 1px solid #ddd;
+    --history-item-bg: #f9f9f9;
+    --history-item-hover-bg: #eee;
+    --call-again-btn-bg: #3498db;
+    --call-again-btn-color: #fff;
+    --call-again-btn-hover-bg: #2980b9;
+    --hex-btn-bg: #f0f0f0;
+    --hex-btn-icon-color: #555;
+    --hex-btn-text-color: #333;
+    --overlay-bg: #fff;
+    --overlay-title-color: #3498db;
+    --close-overlay-btn-color: #555;
+    --dialpad-btn-bg: #f0f0f0;
+    --dialpad-btn-border: 1px solid #ccc;
+    --dialpad-btn-color: #333;
+    --dialpad-call-btn-bg: #2ecc71;
+    --call-status-color: #777;
+    --call-controls-btn-bg: #f0f0f0;
+    --end-call-btn-bg: #e74c3c;
+    --end-call-btn-hover-bg: #c0392b;
+    --message-item-bg: #f9f9f9;
+    --message-item-hover-bg: #eee;
+    --custom-alert-bg: #fff;
+    --custom-alert-color: #333;
+    --placeholder-color: #aaa;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --profile-info-bg: #f9f9f9;
+    --profile-edit-btn-color: #3498db;
+    --contact-info-color: #333;
+    --contact-item-bg: #f9f9f9;
+    --contact-item-hover-bg: #eee;
+}
+
+/* Dark Theme Overrides */
+body.dark-theme {
+    --body-bg: #0a0a1e;
+    --text-color: #e0e0e0;
+    --heading-color: #ffeaa7;
+    --container-bg: #0a0a1e;
+    --container-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 80px rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(255, 255, 255, 0.15);
+    --input-border: 1px solid rgba(255, 255, 255, 0.2);
+    --input-placeholder-color: #ccc;
+    --primary-btn-bg: linear-gradient(to right, #f6e58d, #ffeaa7);
+    --secondary-btn-bg: #333;
+    --secondary-btn-color: #fff;
+    --active-toggle-bg: #f6e58d;
+    --active-toggle-color: #333;
+    --section-title-color: #f6e58d;
+    --section-title-border: 1px solid rgba(255, 255, 255, 0.2);
+    --history-item-bg: rgba(255, 255, 255, 0.1);
+    --history-item-hover-bg: rgba(255, 255, 255, 0.2);
+    --call-again-btn-bg: #f6e58d;
+    --call-again-btn-color: #333;
+    --call-again-btn-hover-bg: #ffeaa7;
+    --hex-btn-bg: rgba(255, 255, 255, 0.1);
+    --hex-btn-icon-color: #fff;
+    --hex-btn-text-color: #fff;
+    --overlay-bg: #0a0a1e;
+    --overlay-title-color: #ffeaa7;
+    --close-overlay-btn-color: #fff;
+    --dialpad-btn-bg: rgba(255, 255, 255, 0.1);
+    --dialpad-btn-border: 1px solid rgba(255, 255, 255, 0.2);
+    --dialpad-btn-color: #fff;
+    --dialpad-call-btn-bg: #f6e58d;
+    --call-status-color: #ccc;
+    --call-controls-btn-bg: rgba(255, 255, 255, 0.15);
+    --end-call-btn-bg: #e74c3c;
+    --end-call-btn-hover-bg: #c0392b;
+    --message-item-bg: rgba(255, 255, 255, 0.1);
+    --message-item-hover-bg: rgba(255, 255, 255, 0.2);
+    --custom-alert-bg: rgba(30, 30, 50, 0.95);
+    --custom-alert-color: #fff;
+    --placeholder-color: #ccc;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --profile-info-bg: rgba(255, 255, 255, 0.1);
+    --profile-edit-btn-color: #f6e58d;
+    --contact-info-color: #e0e0e0;
+    --contact-item-bg: rgba(255, 255, 255, 0.1);
+    --contact-item-hover-bg: rgba(255, 255, 255, 0.2);
+}
+
+/* --- LOADER/SPINNER STYLE --- */
+#loader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+    visibility: hidden; opacity: 0;
+    transition: opacity 0.2s ease;
+}
+#loader.show {
+    visibility: visible;
+    opacity: 1;
+}
+.spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--section-title-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--body-bg);
+    height: 100vh;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Utility Class for Hiding Elements */
+.hidden { display: none !important; }
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); border: 0;
+}
+
+/* Main Container Styling */
+.container {
+    background-color: var(--container-bg);
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: var(--container-shadow);
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 900px;
+    backdrop-filter: blur(8px);
+    transition: all 0.5s ease-in-out;
+    position: relative;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: scale(0.95);
+    visibility: hidden;
+}
+.container.active-page {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+}
+.container::-webkit-scrollbar { display: none; }
+.container { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Headings & Text */
+h1, h2, h3 { color: var(--heading-color); text-shadow: none; }
+h1 { font-size: 2.5rem; margin-bottom: 10px; }
+h2 { font-size: 2rem; margin-bottom: 15px; }
+h3 { font-size: 1.5rem; margin-bottom: 10px; }
+p { font-size: 1rem; margin-bottom: 20px; line-height: 1.6; color: var(--text-color); }
+.hausa-tagline { font-size: 1.1rem; font-style: italic; color: var(--section-title-color); margin: 15px 0 5px 0; }
+
+/* Input Fields & Select */
+input, select, textarea {
+    width: 100%; padding: 14px; margin: 10px 0;
+    border: var(--input-border); border-radius: 10px;
+    font-size: 1.1rem; background-color: var(--input-bg);
+    color: var(--text-color); outline: none; transition: all 0.2s ease;
+}
+input::placeholder, textarea::placeholder { color: var(--input-placeholder-color); }
+input:focus, select:focus, textarea:focus {
+    background-color: var(--container-bg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+select option { background-color: var(--input-bg); color: var(--text-color); }
+
+/* General Button */
+.btn {
+    width: 100%; padding: 16px; background: var(--primary-btn-bg);
+    color: #fff; font-weight: bold; border: none; border-radius: 40px;
+    font-size: 1.2rem; cursor: pointer; margin-top: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn.secondary-btn {
+    background: var(--secondary-btn-bg);
+    color: var(--secondary-btn-color);
+    box-shadow: none;
+}
+.btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); }
+.btn:active { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Auth Toggle Buttons */
+.auth-toggle-container {
+    display: flex; justify-content: center; margin-bottom: 15px;
+    border: 1px solid var(--input-border); border-radius: 25px; overflow: hidden;
+}
+.auth-toggle-btn {
+    flex: 1; padding: 10px; border: none; background-color: transparent;
+    cursor: pointer; font-size: 0.9rem; font-weight: bold;
+    color: var(--input-placeholder-color); transition: all 0.3s ease;
+}
+.auth-toggle-btn.active {
+    background-color: var(--active-toggle-bg);
+    color: var(--active-toggle-color);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+/* --- Updated Login/Register UI --- */
+.auth-logo { width: 100px; margin-bottom: 20px; }
+.auth-link { display: block; margin-top: 15px; font-size: 1rem; color: var(--section-title-color); cursor: pointer; text-decoration: underline; }
+.error-message, .success-message { margin-top: 10px; font-weight: bold; }
+.error-message { color: var(--error-color); }
+.success-message { color: var(--success-color); }
+
+/* --- Home Page Specific Styles --- */
+#homePage { justify-content: space-between; }
+.home-header { padding: 10px; display: flex; align-items: center; justify-content: flex-start; }
+.welcome-balance-box {
+    flex-grow: 1; background-color: #a29bfe; border-radius: 15px;
+    padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center; color: #fff;
+    background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
+    display: flex; align-items: center; justify-content: center; gap: 20px;
+}
+.welcome-logo { width: 60px; }
+.welcome-text-content { text-align: left; }
+.welcome-balance-box h2 { margin-bottom: 5px; color: #fff; text-shadow: none; }
+.welcome-balance-box h2 strong { color: #f0f0f0; }
+.wallet-balance { font-size: 1.2rem; font-weight: bold; color: #fff; margin-top: 10px; }
+.wallet-balance span { font-size: 0.9rem; color: #eee; font-style: italic; }
+.main-call-button-container {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    margin: 10px 0;
+}
+.make-call-circle {
+    width: 180px; height: 180px; border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2980b9); color: white;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(52, 152, 219, 0.3);
+    transition: all 0.3s ease;
+}
+.make-call-circle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(52, 152, 219, 0.5);
+}
+.make-call-circle i { font-size: 4rem; margin-bottom: 5px; }
+.make-call-circle .button-label { font-size: 1.1rem; font-weight: bold; }
+
+/* Call History */
+.section-title {
+    font-size: 1.3rem; color: var(--section-title-color);
+    border-bottom: var(--section-title-border);
+    padding-bottom: 5px; margin: 20px 0 10px 0;
+}
+.history-item {
+    background-color: var(--history-item-bg); padding: 12px 15px;
+    border-radius: 8px; margin-top: 8px; display: flex;
+    justify-content: space-between; align-items: center;
+    font-size: 0.95rem; transition: background-color 0.2s ease;
+    color: var(--text-color);
+}
+.history-item:hover { background-color: var(--history-item-hover-bg); }
+.call-again-btn {
+    background: var(--call-again-btn-bg); color: var(--call-again-btn-color);
+    border: none; border-radius: 20px; padding: 6px 12px;
+    font-size: 0.8rem; font-weight: bold; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.call-again-btn:hover { background: var(--call-again-btn-hover-bg); }
+.see-more-link {
+    display: block; margin-top: 10px; font-size: 0.9rem;
+    color: var(--section-title-color); text-decoration: underline;
+    cursor: pointer;
+}
+.history-item .call-info { text-align: left; }
+.history-item .call-number { font-weight: bold; color: var(--contact-info-color); }
+.history-item .call-time { font-size: 0.85rem; color: var(--call-status-color); }
+.call-again-btn { margin-left: auto; }
+.placeholder-text { color: var(--placeholder-color); margin-top: 15px; }
+
+
+/* --- Hexagonal Bottom Navigation --- */
+.bottom-nav { display: flex; justify-content: space-around; align-items: center; padding: 15px 0; margin-top: 20px; }
+.hex-btn {
+    position: relative; width: 70px; height: 80px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    cursor: pointer; transition: all 0.2s ease;
+    background-color: var(--hex-btn-bg);
+}
+.hex-btn:hover { transform: scale(1.1); }
+.hex-btn i { font-size: 1.5rem; margin-bottom: 5px; color: var(--hex-btn-icon-color); }
+.hex-btn span { font-size: 0.7rem; font-weight: bold; color: var(--hex-btn-text-color); }
+/* Individual Hex Button Colors */
+.hex-btn.recharge { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+.hex-btn.contacts { background: linear-gradient(135deg, #3498db, #2980b9); }
+.hex-btn.messages { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+.hex-btn.referral { background: linear-gradient(135deg, #e67e22, #d35400); }
+.hex-btn.profile { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.hex-btn.recharge i, .hex-btn.contacts i, .hex-btn.messages i, .hex-btn.referral i, .hex-btn.profile i { color: #fff; }
+.hex-btn.recharge span, .hex-btn.contacts span, .hex-btn.messages span, .hex-btn.referral span, .hex-btn.profile span { color: #fff; }
+
+/* --- Full Screen Overlays (DialPad, Contacts, Profile etc) --- */
+.fullscreen-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--overlay-bg); border-radius: 25px; padding: 20px;
+    display: flex; flex-direction: column;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(100%); opacity: 0; z-index: 100; visibility: hidden;
+}
+.fullscreen-overlay.active { transform: translateY(0); opacity: 1; visibility: visible; }
+.overlay-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.overlay-title { font-size: 1.8rem; color: var(--overlay-title-color); }
+.close-overlay-btn { font-size: 1.8rem; color: var(--close-overlay-btn-color); cursor: pointer; transition: color 0.2s ease; }
+.close-overlay-btn:hover { color: var(--error-color); }
+.overlay-content { flex-grow: 1; overflow-y: auto; }
+.overlay-content::-webkit-scrollbar { display: none; }
+.overlay-content { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- Dial Pad Specific Styles --- */
+#dialPadPage .overlay-content { display: flex; flex-direction: column; justify-content: space-between; }
+#dialPadDisplay {
+    width: 100%; background: transparent; border: none;
+    border-bottom: 2px solid var(--section-title-color);
+    color: var(--text-color); font-size: 2.5rem; text-align: center;
+    padding-bottom: 10px; letter-spacing: 2px;
+}
+.phone-input-group { display: flex; gap: 5px; margin: 15px 0; }
+#dialPadCountryCode { flex: 1; }
+.dialpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px; }
+.dial-btn {
+    width: 75px; height: 75px; border-radius: 50%;
+    border: var(--dialpad-btn-border);
+    background: var(--dialpad-btn-bg); color: var(--dialpad-btn-color);
+    font-size: 1.8rem; cursor: pointer; margin: auto;
+    display: flex; justify-content: center; align-items: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.dial-btn:hover { background: var(--history-item-hover-bg); transform: scale(1.05); }
+.dial-btn:active { background: #ddd; transform: scale(0.98); }
+.dialpad-actions { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
+.dialpad-call-btn {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--dialpad-call-btn-bg); color: white;
+    font-size: 2.5rem; border: none; cursor: pointer;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.5); transition: all 0.2s ease;
+}
+.dialpad-call-btn:hover { background: #27ae60; transform: scale(1.05); box-shadow: 0 0 30px rgba(46, 204, 113, 0.7); }
+.dialpad-call-btn:active { transform: scale(0.98); }
+.dialpad-bottom-actions {
+    display: flex; justify-content: space-around; align-items: center;
+    width: 100%; margin-top: 20px;
+}
+
+/* --- Other Pages Styles (Contacts, Profile, etc.) --- */
+.contact-item {
+    display: flex; align-items: center; background-color: var(--contact-item-bg);
+    padding: 12px; border-radius: 10px; margin-bottom: 10px;
+    transition: background-color 0.2s ease; cursor: pointer;
+    color: var(--contact-info-color); position: relative;
+}
+.contact-item:hover { background-color: var(--contact-item-hover-bg); }
+.contact-actions { display: flex; gap: 10px; margin-left: auto; }
+.contact-actions i {
+    font-size: 1.1rem; cursor: pointer; color: var(--placeholder-color);
+    transition: color 0.2s ease;
+}
+.contact-actions i:hover { color: var(--section-title-color); }
+.contact-actions i.fa-edit:hover { color: #f1c40f; }
+.contact-actions i.fa-trash:hover { color: var(--error-color); }
+.contact-avatar {
+    width: 45px; height: 45px; border-radius: 50%;
+    background-color: var(--section-title-color); color: #fff;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: bold; margin-right: 15px; flex-shrink: 0;
+}
+.contact-info { flex-grow: 1; text-align: left; }
+.contact-name { font-weight: bold; color: var(--contact-info-color); }
+.contact-phone { font-size: 0.9rem; color: var(--call-status-color); }
+.profile-info p {
+    background-color: var(--profile-info-bg); padding: 15px;
+    border-radius: 10px; margin-bottom: 10px; text-align: left;
+    font-size: 1.1rem; color: var(--text-color);
+}
+.profile-info strong { color: var(--section-title-color); }
+.profile-edit-btn {
+    background-color: transparent; color: var(--profile-edit-btn-color);
+    border: none; cursor: pointer; font-size: 1.2rem; margin-left: 10px;
+}
+.profile-edit-btn:hover { text-decoration: underline; }
+
+/* Call Screen Overlay */
+.call-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--overlay-bg); border-radius: 25px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 20px; transition: all 0.3s ease-in-out;
+    transform: scale(0.9); opacity: 0; z-index: 200; visibility: hidden;
+}
+.call-screen.active { transform: scale(1); opacity: 1; visibility: visible; }
+.call-avatar {
+    width: 120px; height: 120px; border-radius: 50%;
+    background-color: var(--section-title-color); display: flex;
+    justify-content: center; align-items: center; font-size: 3rem;
+    color: #fff; margin-bottom: 20px;
+}
+.call-name { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: var(--text-color); }
+.call-status { font-size: 1.2rem; color: var(--call-status-color); margin-bottom: 15px; }
+.call-timer { font-size: 1.8rem; font-weight: bold; color: var(--text-color); margin-bottom: 30px; }
+.call-controls { display: flex; gap: 20px; margin-bottom: 30px; }
+.call-control-btn {
+    background-color: var(--call-controls-btn-bg); color: var(--close-overlay-btn-color);
+    width: 60px; height: 60px; border-radius: 50%; border: none;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.5rem; cursor: pointer; transition: background-color 0.2s ease;
+}
+.call-control-btn:hover { background-color: var(--history-item-hover-bg); }
+.call-control-btn.active { background-color: var(--section-title-color); color: #fff; }
+.end-call-btn {
+    background-color: var(--end-call-btn-bg); color: #fff;
+    padding: 15px 30px; border-radius: 30px; font-size: 1.3rem;
+    font-weight: bold; border: none; cursor: pointer; transition: all 0.2s ease;
+}
+.end-call-btn:hover { background-color: var(--end-call-btn-hover-bg); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5); }
+
+
+/* Custom Alert Dialog */
+#customAlertDialog, #customConfirmDialog {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center;
+    z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s ease;
+}
+#customAlertDialog.active, #customConfirmDialog.active { opacity: 1; visibility: visible; }
+.custom-alert-content, .custom-confirm-content {
+    background: var(--custom-alert-bg); padding: 30px; border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.2); color: var(--custom-alert-color);
+    text-align: center; width: 80%; max-width: 400px;
+}
+#customAlertMessage, #customConfirmMessage { margin-bottom: 20px; font-size: 1.1rem; }
+.custom-confirm-buttons { display: flex; justify-content: space-around; gap: 10px; }
+.custom-confirm-buttons .btn {
+    width: 48%; margin-top: 0; padding: 10px; font-size: 1rem; border-radius: 25px;
+}
+
+/* Search input for contacts */
+.search-input-container { position: relative; margin-bottom: 15px; }
+.search-input-container input { padding-right: 40px; }
+.search-input-container .search-icon {
+    position: absolute; right: 15px; top: 50%;
+    transform: translateY(-50%); color: var(--input-placeholder-color);
+    pointer-events: none;
+}
+
+.scrolling-tagline {
+    color: var(--section-title-color); font-size: 1.3rem; font-weight: bold;
+    padding: 10px 0; text-align: center; animation: glow 1.5s infinite alternate;
+}
+@keyframes glow {
+    from { text-shadow: 0 0 5px var(--section-title-color); }
+    to { text-shadow: 0 0 15px var(--section-title-color), 0 0 20px #2980b9; }
+}
+
+/* Message Page Specific Styles */
+.message-thread-item {
+    background-color: var(--message-item-bg); padding: 12px 15px;
+    border-radius: 8px; margin-bottom: 8px; display: flex;
+    justify-content: space-between; align-items: center;
+    font-size: 0.95rem; transition: background-color 0.2s ease;
+    cursor: pointer; color: var(--text-color);
+}
+.message-thread-item:hover { background-color: var(--message-item-hover-bg); }
+.message-thread-info { text-align: left; }
+.message-thread-name { font-weight: bold; color: var(--contact-info-color); }
+.message-thread-last-msg {
+    font-size: 0.85rem; color: var(--call-status-color); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 80%;
+}
+.message-thread-time { font-size: 0.75rem; color: var(--placeholder-color); flex-shrink: 0; margin-left: 10px; }
+#messageInput { min-height: 80px; resize: vertical; }
+
+/* Theme Toggle Button */
+#themeToggleButton {
+    position: fixed; bottom: 20px; right: 20px;
+    width: 40px; height: 40px; border-radius: 50%;
+    background-color: var(--input-bg); border: var(--input-border);
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    font-size: 1.2rem; color: var(--close-overlay-btn-color);
+    z-index: 101; transition: background-color 0.3s ease, color 0.3s ease;
+}
+#themeToggleButton:hover { background-color: var(--history-item-hover-bg); }
+.dark-theme #themeToggleButton { background-color: #333; color: #f0f0f0; border: 1px solid #555; }
+.dark-theme #themeToggleButton:hover { background-color: #555; }

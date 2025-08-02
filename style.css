@@ -242,10 +242,12 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 /* --- Updated Login/Register UI --- */
 .auth-logo { width: 100px; margin-bottom: 20px; }
-.auth-link { display: block; margin-top: 15px; font-size: 1rem; color: var(--section-title-color); cursor: pointer; text-decoration: underline; }
+.auth-link { display: block; margin-top: 5px; font-size: 1rem; color: var(--section-title-color); cursor: pointer; text-decoration: underline; }
+.auth-link-text { margin: 15px 0 5px 0; color: var(--text-color); }
 .error-message, .success-message { margin-top: 10px; font-weight: bold; }
 .error-message { color: var(--error-color); }
 .success-message { color: var(--success-color); }
+.centered-logo { display: block; margin-left: auto; margin-right: auto; }
 
 /* --- Home Page Specific Styles --- */
 #homePage { justify-content: space-between; }
@@ -257,7 +259,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
     background-image: linear-gradient(to right bottom, #a29bfe, #6c5ce7);
     display: flex; align-items: center; justify-content: center; gap: 20px;
 }
-.welcome-logo { width: 60px; }
+.welcome-logo { width: 60px; display: block; margin: 0 auto; }
 .welcome-text-content { text-align: left; }
 .welcome-balance-box h2 { margin-bottom: 5px; color: #fff; text-shadow: none; }
 .welcome-balance-box h2 strong { color: #f0f0f0; }
@@ -377,7 +379,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 .dialpad-actions { display: flex; justify-content: center; align-items: center; padding: 20px 0; }
 .dialpad-call-btn {
     width: 80px; height: 80px; border-radius: 50%;
-    background: var(--dialpad-call-btn-bg); color: white;
+    background: var(--dialpad-call-btn-bg); color: var(--primary-btn-color);
     font-size: 2.5rem; border: none; cursor: pointer;
     box-shadow: 0 0 20px rgba(46, 204, 113, 0.5); transition: all 0.2s ease;
 }

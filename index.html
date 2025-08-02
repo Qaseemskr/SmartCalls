@@ -15,12 +15,12 @@
         <div class="spinner"></div>
     </div>
 
-    <button id="themeToggleButton" aria-label="Toggle Theme">
+    <button id="themeToggleButton" aria-label="Toggle Theme" onclick="toggleTheme()">
         <i class="fas fa-sun"></i>
     </button>
 
-    <div class="container active-page" id="welcomePage" style="text-align: center;">
-        <center><img src="smartcall-logo.png" alt="SmartCall Logo" style="width: 100px; margin-bottom: 20px;"></center>
+    <div class="container active-page" id="welcomePage">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
         <h1>Welcome to SmartCall!</h1>
         <p>Connect with the world - simple, fast, and secured.</p>
         <button class="btn" onclick="navigate('authPage')">
@@ -29,7 +29,7 @@
     </div>
 
     <div class="container hidden" id="authPage">
-        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
         <h2 id="formTitle">Login to Your Account</h2>
         <div style="width: 100%;">
             <label for="loginEmail" class="sr-only">Email Address</label>
@@ -37,12 +37,11 @@
             <label for="loginPassword" class="sr-only">Password</label>
             <input id="loginPassword" placeholder="Password" type="password" />
             <button class="btn" id="loginBtn" onclick="handleEmailLogin()">
-    <i class="fas fa-lock"></i> Login
-</button>
-<p style="margin: 15px 0 5px 0; color: var(--text-color);">Forgot your password?</p>
-<a href="#" onclick="openOverlayWithHistory('passwordResetPage')" style="color: var(--section-title-color); text-decoration: underline;">Reset Password</a>
-<p style="margin: 15px 0 5px 0; color: #555;">Don't have an account?</p>
-            <p>Don't have an account?</p>
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <p class="auth-link-text">Forgot your password?</p>
+            <a href="#" onclick="openOverlayWithHistory('passwordResetPage')" class="auth-link">Reset Password</a>
+            <p class="auth-link-text">Don't have an account?</p>
             <button class="btn secondary-btn" onclick="navigate('registerPage')">
                 <i class="fas fa-user-plus"></i> Register Now
             </button>
@@ -51,7 +50,7 @@
     </div>
 
     <div class="container hidden" id="registerPage">
-        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
         <h2 id="formTitle">Create a New Account</h2>
         <div class="auth-toggle-container">
             <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showRegisterForm('phone')">Use Phone</button>
@@ -90,14 +89,13 @@
                     <i class="fas fa-user-plus"></i> Register
                 </button>
             </div>
-            <p>Already have an account?</p>
+            <p class="auth-link-text">Already have an account?</p>
             <button class="btn secondary-btn" onclick="navigate('authPage')">
                 <i class="fas fa-lock"></i> Login
             </button>
             <div id="registerAuthMessage" class="error-message"></div>
         </div>
     </div>
-
 
     <div class="container hidden" id="homePage">
         <div class="home-header">
@@ -301,13 +299,14 @@
             <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
         </div>
         <div class="overlay-content">
+            <input id="editProfileId" type="hidden" />
             <label for="editProfileName" class="sr-only">New Name</label>
             <input id="editProfileName" placeholder="New Name" type="text" />
             <button class="btn" onclick="saveProfileChanges()">Save Changes</button>
         </div>
     </div>
 
-     <div class="fullscreen-overlay" id="passwordResetPage">
+    <div class="fullscreen-overlay" id="passwordResetPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Reset Password</h3>
             <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
@@ -320,9 +319,6 @@
             <div id="passwordResetMessage" class="success-message"></div>
         </div>
     </div>
-
-    <div class="call-screen" id="callScreen">
-        </div>
 
     <div class="fullscreen-overlay" id="rechargePage">
         <div class="overlay-header">

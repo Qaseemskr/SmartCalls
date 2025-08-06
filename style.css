@@ -552,3 +552,15 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 #themeToggleButton:hover { background-color: var(--history-item-hover-bg); }
 .dark-theme #themeToggleButton { background-color: #333; color: #f0f0f0; border: 1px solid #555; }
 .dark-theme #themeToggleButton:hover { background-color: #555; }
+
+/* --- New Styles for Call History Actions --- */
+.call-history-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+.call-history-actions .btn {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 1rem;
+}

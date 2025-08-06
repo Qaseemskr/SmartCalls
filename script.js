@@ -611,3 +611,30 @@ function shareReferralLink() {
         showAlert("Web Share API is not supported in this browser. Please use the copy button.");
     }
 }
+// --- New Function to Clear All Call History ---
+function clearRecentCalls() {
+    showConfirm('Are you sure you want to clear your entire call history? This cannot be undone.', () => {
+        showLoader();
+        if (!loggedInUser) {
+            showAlert("You must be logged in to clear history.");
+            hideLoader();
+            return;
+        }
+
+        const callHistoryRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory');
+        callHistoryRef.get().then(snapshot => {
+            const batch = db.batch();
+            snapshot.docs.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            return batch.commit();
+        }).then(() => {
+            hideLoader();
+            showAlert('Call history cleared successfully!');
+        }).catch(error => {
+            console.error("Error clearing call history: ", error);
+            hideLoader();
+            showAlert('Error clearing call history: ' + error.message);
+        });
+    });
+}

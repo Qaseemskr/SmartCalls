@@ -242,6 +242,14 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 /* --- Updated Login/Register UI --- */
 .auth-logo { width: 100px; margin-bottom: 20px; }
+.welcome-copyright {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.6;
+}
 .auth-link { display: block; margin-top: 5px; font-size: 1rem; color: var(--section-title-color); cursor: pointer; text-decoration: underline; }
 .auth-link-text { margin: 15px 0 5px 0; color: var(--text-color); }
 .error-message, .success-message { margin-top: 10px; font-weight: bold; }

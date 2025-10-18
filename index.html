@@ -115,78 +115,109 @@
                 Make your Call the easy & secure way — at affordable rates!
             </div>
 
-            <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage'); startCallFromDialpad();">
+            <!-- === MAIN CALL + HISTORY SECTION === -->
+<div class="main-call-button-container">
+  <div class="scrolling-tagline">
+    Make your Call the easy & secure way — at affordable rates!
+  </div>
+
+  <!-- MAIN CALL BUTTON -->
+  <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage');">
     <i class="fas fa-phone"></i>
     <span class="button-label">Make a Call</span>
+  </div>
 </div>
 
-        </div>
-        <div class="call-history-container">
-            <div class="section-title">🕓 Recent Calls</div>
-            <div id="recentCallsList">
-                <p class="placeholder-text">No recent calls.</p>
-            </div>
-            <a href="#" class="see-more-link" onclick="openOverlayWithHistory('callHistoryPage')">See Full History</a>
-        <div class="call-history-actions">
-    <button class="btn secondary-btn" onclick="clearRecentCalls()"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-        </div>
-        <div class="bottom-nav">
-            <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')" aria-label="Recharge">
-                <i class="fas fa-wallet"></i><span>Recharge</span>
-            </div>
-            <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')" aria-label="Contacts">
-                <i class="fas fa-address-book"></i><span>Contacts</span>
-            </div>
-            <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')" aria-label="Messages">
-                <i class="fas fa-comment"></i><span>Messages</span>
-            </div>
-            <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')" aria-label="Referral">
-                <i class="fas fa-gift"></i><span>Referral</span>
-            </div>
-            <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')" aria-label="Profile">
-                <i class="fas fa-user"></i><span>Profile</span>
-            </div>
-        </div>
+<!-- CALL HISTORY -->
+<div class="call-history-container">
+  <div class="section-title">🕓 Recent Calls</div>
+  <div id="recentCallsList">
+    <p class="placeholder-text">No recent calls.</p>
+  </div>
+
+  <a href="#" class="see-more-link" onclick="openOverlayWithHistory('callHistoryPage')">
+    See Full History
+  </a>
+
+  <div class="call-history-actions">
+    <button class="btn secondary-btn" onclick="clearRecentCalls()">
+      <i class="fas fa-trash"></i> Clear
+    </button>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+  <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')" aria-label="Recharge">
+    <i class="fas fa-wallet"></i><span>Recharge</span>
+  </div>
+  <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')" aria-label="Contacts">
+    <i class="fas fa-address-book"></i><span>Contacts</span>
+  </div>
+  <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')" aria-label="Messages">
+    <i class="fas fa-comment"></i><span>Messages</span>
+  </div>
+  <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')" aria-label="Referral">
+    <i class="fas fa-gift"></i><span>Referral</span>
+  </div>
+  <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')" aria-label="Profile">
+    <i class="fas fa-user"></i><span>Profile</span>
+  </div>
+</div>
+
+<!-- === DIAL PAD OVERLAY === -->
+<div class="fullscreen-overlay" id="dialPadPage">
+  <div class="overlay-header">
+    <h3 class="overlay-title">New Call</h3>
+    <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+  </div>
+
+  <div class="overlay-content">
+    <div class="dialpad-display-container">
+      <!-- use same ID that your script reads -->
+      <input type="text" id="dialpad-input" placeholder="Enter number" readonly>
+      <div class="phone-input-group">
+        <label for="dialPadCountryCode" class="sr-only">Country Code</label>
+        <select id="dialPadCountryCode"></select>
+      </div>
     </div>
 
-    <div class="fullscreen-overlay" id="dialPadPage">
-        <div class="overlay-header">
-            <h3 class="overlay-title">New Call</h3>
-            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
-        </div>
-        <div class="overlay-content">
-            <div class="dialpad-display-container">
-                <input type="text" id="dialPadDisplay" placeholder="Enter number" readonly>
-                <div class="phone-input-group">
-                     <label for="dialPadCountryCode" class="sr-only">Country Code</label>
-                     <select id="dialPadCountryCode"></select>
-                </div>
-            </div>
-            <div class="dialpad-grid">
-                <button class="dial-btn" onclick="dialInput('1')">1</button>
-                <button class="dial-btn" onclick="dialInput('2')">2</button>
-                <button class="dial-btn" onclick="dialInput('3')">3</button>
-                <button class="dial-btn" onclick="dialInput('4')">4</button>
-                <button class="dial-btn" onclick="dialInput('5')">5</button>
-                <button class="dial-btn" onclick="dialInput('6')">6</button>
-                <button class="dial-btn" onclick="dialInput('7')">7</button>
-                <button class="dial-btn" onclick="dialInput('8')">8</button>
-                <button class="dial-btn" onclick="dialInput('9')">9</button>
-                <button class="dial-btn" onclick="dialInput('*')">*</button>
-                <button class="dial-btn" onclick="dialInput('0')">0</button>
-                <button class="dial-btn" onclick="dialInput('backspace')" aria-label="Backspace"><i class="fas fa-backspace"></i></button>
-            </div>
-            <div class="dialpad-actions">
-                <button class="dialpad-call-btn" onclick="startCallFromDialpad()" aria-label="Start Call"><i class="fas fa-phone"></i></button>
-            </div>
-            <div class="dialpad-bottom-actions">
-                <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
-                <button class="btn secondary-btn" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
-            </div>
-        </div>
+    <!-- Dial Buttons -->
+    <div class="dialpad-grid">
+      <button class="dial-btn" onclick="dialInput('1')">1</button>
+      <button class="dial-btn" onclick="dialInput('2')">2</button>
+      <button class="dial-btn" onclick="dialInput('3')">3</button>
+      <button class="dial-btn" onclick="dialInput('4')">4</button>
+      <button class="dial-btn" onclick="dialInput('5')">5</button>
+      <button class="dial-btn" onclick="dialInput('6')">6</button>
+      <button class="dial-btn" onclick="dialInput('7')">7</button>
+      <button class="dial-btn" onclick="dialInput('8')">8</button>
+      <button class="dial-btn" onclick="dialInput('9')">9</button>
+      <button class="dial-btn" onclick="dialInput('*')">*</button>
+      <button class="dial-btn" onclick="dialInput('0')">0</button>
+      <button class="dial-btn" onclick="dialInput('backspace')" aria-label="Backspace">
+        <i class="fas fa-backspace"></i>
+      </button>
     </div>
 
+    <!-- CALL ACTION -->
+    <div class="dialpad-actions">
+      <!-- this is the real call trigger -->
+      <button class="dialpad-call-btn" onclick="startCallFromDialpad()" aria-label="Start Call">
+        <i class="fas fa-phone"></i>
+      </button>
+    </div>
+
+    <div class="dialpad-bottom-actions">
+      <button class="btn" onclick="openContactsFromDialpad()">
+        <i class="fas fa-address-book"></i> Contacts
+      </button>
+      <button class="btn secondary-btn" onclick="clearDialPad()">
+        <i class="fas fa-eraser"></i> Clear
+      </button>
+    </div>
+  </div>
+</div>
     <div class="fullscreen-overlay" id="callHistoryPage">
         <div class="overlay-header">
             <h3 class="overlay-title">Full Call History</h3>

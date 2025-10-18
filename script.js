@@ -334,15 +334,36 @@ function dialInput(value) {
 }
 function clearDialPad() { currentNumber = ''; dialPadDisplay.value = ''; }
 function startCallFromDialpad() {
-    if (currentNumber) {
-        showLoader();
-        setTimeout(() => {
-            hideLoader(); openCallScreen(currentNumber, currentNumber); history.back();
-        }, 500);
-    } else {
-        showAlert('Please enter a number to call.');
-    }
+    const toNumber = currentNumber;
+    if (!toNumber) return showAlert('Please enter a number to call.');
+
+    showLoader();
+
+    // ✅ your deployed backend link (from Render or Glitch)
+    const backendURL = "https://smartcall-backend-7cm9.onrender.com/startCall";
+
+
+    fetch(backendURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: toNumber })
+    })
+        .then(res => res.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                openCallScreen(toNumber, toNumber);
+                callStatus.textContent = "Calling...";
+            } else {
+                showAlert("Call failed: " + data.error);
+            }
+        })
+        .catch(err => {
+            hideLoader();
+            showAlert("Error: " + err.message);
+        });
 }
+
 function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
 // --- Contacts Page ---
 function loadContacts() {

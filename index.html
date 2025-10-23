@@ -176,6 +176,7 @@
     <div class="dialpad-display-container">
       <!-- use same ID that your script reads -->
       <input type="text" id="dialpad-input" placeholder="Enter number" readonly>
+
       <div class="phone-input-group">
         <label for="dialPadCountryCode" class="sr-only">Country Code</label>
         <select id="dialPadCountryCode"></select>
@@ -204,8 +205,9 @@
     <div class="dialpad-actions">
       <!-- this is the real call trigger -->
       <button class="dialpad-call-btn" onclick="startCallFromDialpad()" aria-label="Start Call">
-        <i class="fas fa-phone"></i>
-      </button>
+  <i class="fas fa-phone"></i>
+</button>
+
     </div>
 
     <div class="dialpad-bottom-actions">

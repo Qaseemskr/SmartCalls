@@ -4,241 +4,13 @@
     <meta charset="UTF-8" />
     <title>SmartCall - Your Connection to the World</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="smartcall-logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        /* Base Styling & Theming (Merged from style.css, improved for responsiveness) */
-        :root {
-            --body-bg: #ffffff;
-            --text-color: #333;
-            --heading-color: #2c3e50;
-            --container-bg: #ffffff;
-            --container-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            --primary-btn-bg: linear-gradient(to right, #3498db, #2980b9);
-            --primary-btn-color: #fff;
-            --call-btn-bg: #2ecc71;
-            --call-btn-hover: #27ae60;
-            --end-call-btn-bg: #e74c3c;
-            --end-call-btn-hover: #c0392b;
-        }
-
-        .dark-theme {
-            --body-bg: #2c3e50;
-            --text-color: #ecf0f1;
-            --heading-color: #ecf0f1;
-            --container-bg: #34495e;
-            --container-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-            --primary-btn-bg: linear-gradient(to right, #1abc9c, #16a085);
-            --call-btn-bg: #1abc9c;
-            --call-btn-hover: #16a085;
-        }
-        
-        body {
-            background-color: var(--body-bg);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-            min-height: 100vh;
-        }
-        
-        h1, h2, h3 { color: var(--heading-color); }
-
-        .container {
-            max-width: 420px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: var(--container-bg);
-            box-shadow: var(--container-shadow);
-            border-radius: 12px;
-            min-height: 100vh; /* Full height on mobile */
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        /* Utility classes for Call Screen */
-        .call-screen-active {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 100;
-            background-color: var(--body-bg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.3s, transform 0.1s;
-            background: var(--primary-btn-bg);
-            color: var(--primary-btn-color);
-            border: none;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn:active { transform: scale(0.98); }
-
-        /* Dialpad Specific Styling */
-        #dialpadOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 90;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end; /* Align to the bottom for better mobile UX */
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0.3s, opacity 0.3s;
-        }
-        #dialpadOverlay.show {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .dialpad-content {
-            background-color: var(--container-bg);
-            width: 100%;
-            max-width: 420px;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            padding: 20px 10px 40px 10px; /* More padding at bottom for call button */
-            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-        }
-        #dialpadOverlay.show .dialpad-content {
-            transform: translateY(0);
-        }
-
-        .dialpad-key {
-            width: 70px;
-            height: 70px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            margin: 10px;
-        }
-        .dark-theme .dialpad-key {
-            background-color: #444;
-            color: #fff;
-        }
-        .dialpad-key:hover { background-color: #ccc; }
-        .dark-theme .dialpad-key:hover { background-color: #555; }
-        .dialpad-key:active { transform: scale(0.95); }
-        .key-text { font-size: 0.7rem; line-height: 1; }
-
-        .call-icon-btn {
-            background-color: var(--call-btn-bg);
-            color: white;
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .call-icon-btn:hover { background-color: var(--call-btn-hover); }
-
-        /* Other UI elements (Contact/History Items) */
-        .contact-item, .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid rgba(179, 179, 179, 0.2);
-        }
-        .call-action-btn {
-            background-color: var(--call-btn-bg);
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-        }
-        .call-action-btn:hover { background-color: var(--call-btn-hover); }
-
-        /* General layout adjustments */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .nav-links { display: flex; justify-content: space-around; margin-top: 20px; border-top: 1px solid var(--body-bg); padding-top: 10px;}
-        .nav-link { 
-            color: var(--text-color); 
-            text-align: center;
-            padding: 8px 15px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        .nav-link.active {
-            background-color: var(--call-btn-bg);
-            color: white;
-        }
-        .nav-link:hover { opacity: 0.8; }
-        
-        /* Loader and Alert Styling */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.7); z-index: 200; 
-            display: flex; justify-content: center; align-items: center; 
-            visibility: hidden; opacity: 0; transition: opacity 0.3s;
-        }
-        #loader.show { visibility: visible; opacity: 1; }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #fff;
-            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        #customAlertDialog {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.5); z-index: 300; 
-            display: none; justify-content: center; align-items: center;
-        }
-        .custom-alert-content {
-            background: var(--container-bg); padding: 20px; border-radius: 8px; 
-            box-shadow: var(--container-shadow); max-width: 300px; text-align: center;
-        }
-        /* Theme Toggle Button */
-        #themeToggleButton {
-            position: fixed; bottom: 20px; right: 20px;
-            width: 40px; height: 40px; border-radius: 50%;
-            background-color: var(--container-bg); border: 1px solid var(--heading-color);
-            cursor: pointer; display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; color: var(--heading-color);
-            z-index: 101; transition: background-color 0.3s ease, color 0.3s ease;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    
+
     <div id="loader">
         <div class="spinner"></div>
     </div>
@@ -247,453 +19,374 @@
         <i class="fas fa-sun"></i>
     </button>
 
-    <!-- Main App Container (Simulating Mobile View) -->
-    <div class="container active-page" id="mainAppPage">
+    <div class="container active-page" id="welcomePage">
+    <div class="welcome-copyright">
+        &copy; Qaseem and Ibrahim
+    </div>
+    <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
+    <h1>Welcome to SmartCall!</h1>
+    <p>Connect with the world - simple, fast, and secured.</p>
+    <button class="btn" onclick="navigate('authPage')">
+        Get Started
+    </button>
+</div>
 
-        <header class="header">
-            <h2 class="text-2xl font-bold">SmartCall</h2>
-            <div class="flex space-x-3">
-                <button class="text-xl text-gray-600 dark:text-gray-300" onclick="navigate('profilePage')" aria-label="Profile">
-                    <i class="fas fa-user-circle"></i>
-                </button>
-            </div>
-        </header>
+    <div class="container hidden" id="authPage">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
+        <h2 id="formTitle">Login to Your Account</h2>
+        <div style="width: 100%;">
+            <label for="loginEmail" class="sr-only">Email Address</label>
+            <input id="loginEmail" placeholder="Email Address" type="email" />
+            <label for="loginPassword" class="sr-only">Password</label>
+            <input id="loginPassword" placeholder="Password" type="password" />
+            <button class="btn" id="loginBtn" onclick="handleEmailLogin()">
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <p class="auth-link-text">Forgot your password?</p>
+            <a href="#" onclick="openOverlayWithHistory('passwordResetPage')" class="auth-link">Reset Password</a>
+            <p class="auth-link-text">Don't have an account?</p>
+            <button class="btn secondary-btn" onclick="navigate('registerPage')">
+                <i class="fas fa-user-plus"></i> Register Now
+            </button>
+            <div id="authMessage" class="error-message"></div>
+        </div>
+    </div>
 
-        <!-- Dynamic Content Area -->
-        <div id="contentArea" class="flex-grow overflow-y-auto">
-            
-            <!-- Home/Dialer Button -->
-            <div id="homePage">
-                <h3 class="text-xl font-semibold mb-4">Make a New Call</h3>
-                <button class="btn w-full mb-6" onclick="showDialpad()">
-                    <i class="fas fa-phone mr-2"></i> Make a Call
+    <div class="container hidden" id="registerPage">
+        <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
+        <h2 id="formTitle">Create a New Account</h2>
+        <div class="auth-toggle-container">
+            <button id="showPhoneBtn" class="auth-toggle-btn active" onclick="showRegisterForm('phone')">Use Phone</button>
+            <button id="showEmailBtn" class="auth-toggle-btn" onclick="showRegisterForm('email')">Use Email</button>
+        </div>
+        <div style="width: 100%;">
+            <div id="phoneAuthSection">
+                <label for="registerFullNamePhone" class="sr-only">Full Name</label>
+                <input id="registerFullNamePhone" placeholder="Full Name" type="text" />
+                <div class="phone-input-group">
+                    <label for="registerCountryCode" class="sr-only">Country Code</label>
+                    <select id="registerCountryCode"></select>
+                    <label for="registerPhoneNumber" class="sr-only">Phone Number</label>
+                    <input id="registerPhoneNumber" placeholder="Phone Number" type="tel" />
+                </div>
+                <div id="recaptcha-container"></div>
+                <button class="btn" id="sendOtpBtn" onclick="sendOtp()">
+                    <i class="fas fa-paper-plane"></i> Send Code
                 </button>
-                <h3 class="text-xl font-semibold mb-4 border-b pb-2">Recent Calls</h3>
-                <div id="recentCallsList" class="space-y-2">
-                    <!-- Recent calls will be dynamically injected here -->
-                    <p class="text-sm text-gray-500">No recent calls yet.</p>
+                <div id="otpSection" class="hidden">
+                    <label for="otpInput" class="sr-only">Verification Code</label>
+                    <input id="otpInput" placeholder="Enter 6-digit code" type="text" maxlength="6" />
+                    <button class="btn" id="verifyOtpBtn" onclick="verifyOtp()">
+                        <i class="fas fa-check-circle"></i> Verify & Register
+                    </button>
                 </div>
             </div>
+            <div id="emailAuthSection" class="hidden">
+                <label for="registerFullNameEmail" class="sr-only">Full Name</label>
+                <input id="registerFullNameEmail" placeholder="Full Name" type="text" />
+                <label for="registerEmail" class="sr-only">Email Address</label>
+                <input id="registerEmail" placeholder="Email Address" type="email" />
+                <label for="registerPassword" class="sr-only">Password</label>
+                <input id="registerPassword" placeholder="Password (min. 6 characters)" type="password" />
+                <button class="btn" id="emailRegisterBtn" onclick="handleEmailRegister()">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </div>
+            <p class="auth-link-text">Already have an account?</p>
+            <button class="btn secondary-btn" onclick="navigate('authPage')">
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <div id="registerAuthMessage" class="error-message"></div>
+        </div>
+    </div>
 
-            <!-- Contacts Page (Static Placeholder for demo) -->
-            <div id="contactsPage" class="hidden">
-                <h3 class="text-xl font-semibold mb-4 border-b pb-2">My Contacts</h3>
-                <div id="contactList" class="space-y-2">
-                    <!-- Contact 1 -->
-                    <div class="contact-item">
-                        <div>
-                            <p class="font-semibold">Jane Doe</p>
-                            <p class="text-sm text-gray-500">+12345678901</p>
-                        </div>
-                        <button class="call-action-btn" onclick="makeRealCall('+12345678901', 'Jane Doe')" aria-label="Call Jane Doe">
-                            <i class="fas fa-phone"></i>
-                        </button>
-                    </div>
-                    <!-- Contact 2 -->
-                    <div class="contact-item">
-                        <div>
-                            <p class="font-semibold">John Smith</p>
-                            <p class="text-sm text-gray-500">+449876543210</p>
-                        </div>
-                        <button class="call-action-btn" onclick="makeRealCall('+449876543210', 'John Smith')" aria-label="Call John Smith">
-                            <i class="fas fa-phone"></i>
-                        </button>
-                    </div>
+    <div class="container hidden" id="homePage">
+        <div class="home-header">
+            <div class="welcome-balance-box">
+                <img src="smartcall-logo.png" alt="SmartCall Logo" class="welcome-logo">
+                <h2>Welcome Back! <br>
+                <span id="welcomeUserName"><strong>User</strong></span></h2>
+                <div class="wallet-balance" id="walletBalance">Your Wallet Balance: <strong>₦0.00</strong><br>
+                    <span><i>(Approx. 0 Minutes)</i></span></div>
+            </div>
+        </div>
+        <div class="main-call-button-container">
+            <div class="scrolling-tagline">
+                Make your Call the easy & secure way — at affordable rates!
+            </div>
+
+            <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage')">
+                <i class="fas fa-phone"></i>
+                <span class="button-label">Make a Call</span>
+            </div>
+        </div>
+        <div class="call-history-container">
+            <div class="section-title">🕓 Recent Calls</div>
+            <div id="recentCallsList">
+                <p class="placeholder-text">No recent calls.</p>
+            </div>
+            <a href="#" class="see-more-link" onclick="openOverlayWithHistory('callHistoryPage')">See Full History</a>
+        <div class="call-history-actions">
+    <button class="btn secondary-btn" onclick="clearRecentCalls()"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+        </div>
+        <div class="bottom-nav">
+            <div class="hex-btn recharge" onclick="openOverlayWithHistory('rechargePage')" aria-label="Recharge">
+                <i class="fas fa-wallet"></i><span>Recharge</span>
+            </div>
+            <div class="hex-btn contacts" onclick="openOverlayWithHistory('contactsPage')" aria-label="Contacts">
+                <i class="fas fa-address-book"></i><span>Contacts</span>
+            </div>
+            <div class="hex-btn messages" onclick="openOverlayWithHistory('messagePage')" aria-label="Messages">
+                <i class="fas fa-comment"></i><span>Messages</span>
+            </div>
+            <div class="hex-btn referral" onclick="openOverlayWithHistory('referralPage')" aria-label="Referral">
+                <i class="fas fa-gift"></i><span>Referral</span>
+            </div>
+            <div class="hex-btn profile" onclick="openOverlayWithHistory('profilePage')" aria-label="Profile">
+                <i class="fas fa-user"></i><span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="dialPadPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">New Call</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="dialpad-display-container">
+                <input type="text" id="dialPadDisplay" placeholder="Enter number" readonly>
+                <div class="phone-input-group">
+                     <label for="dialPadCountryCode" class="sr-only">Country Code</label>
+                     <select id="dialPadCountryCode"></select>
                 </div>
             </div>
-
-            <!-- Profile Page (Hidden for demo simplicity) -->
-            <div id="profilePage" class="hidden">
-                <h3 class="text-2xl font-bold mb-4">My Profile</h3>
-                <p id="profileCredit" class="text-lg mb-4">Credit: $0.00</p>
-                <p class="text-sm text-gray-500 mb-6">Note: Login/Sign-up functions removed for single-file demo. Credit is placeholder.</p>
-                <button class="btn w-full" onclick="navigate('homePage')">Back to Home</button>
+            <div class="dialpad-grid">
+                <button class="dial-btn" onclick="dialInput('1')">1</button>
+                <button class="dial-btn" onclick="dialInput('2')">2</button>
+                <button class="dial-btn" onclick="dialInput('3')">3</button>
+                <button class="dial-btn" onclick="dialInput('4')">4</button>
+                <button class="dial-btn" onclick="dialInput('5')">5</button>
+                <button class="dial-btn" onclick="dialInput('6')">6</button>
+                <button class="dial-btn" onclick="dialInput('7')">7</button>
+                <button class="dial-btn" onclick="dialInput('8')">8</button>
+                <button class="dial-btn" onclick="dialInput('9')">9</button>
+                <button class="dial-btn" onclick="dialInput('*')">*</button>
+                <button class="dial-btn" onclick="dialInput('0')">0</button>
+                <button class="dial-btn" onclick="dialInput('backspace')" aria-label="Backspace"><i class="fas fa-backspace"></i></button>
             </div>
-        </div>
-
-        <!-- Navigation Bar -->
-        <div class="nav-links">
-            <button id="navHome" class="nav-link active" onclick="navigate('homePage')">
-                <i class="fas fa-home block text-lg mb-1"></i>
-                <span class="text-xs">Home</span>
-            </button>
-            <button id="navContacts" class="nav-link" onclick="navigate('contactsPage')">
-                <i class="fas fa-address-book block text-lg mb-1"></i>
-                <span class="text-xs">Contacts</span>
-            </button>
-            <button id="navSettings" class="nav-link" onclick="showAlert('Settings features removed for this demo. See original files.')">
-                <i class="fas fa-cog block text-lg mb-1"></i>
-                <span class="text-xs">Settings</span>
-            </button>
-        </div>
-
-    </div>
-
-    <!-- Call Screen (Overlay) -->
-    <div id="callScreen" class="hidden">
-        <div class="call-screen-active">
-            <h2 id="callStatus" class="text-3xl font-light mb-2">Connecting...</h2>
-            <p id="calleeName" class="text-xl font-bold mb-10"></p>
-            
-            <div class="flex space-x-6 mb-12">
-                <button class="call-control-btn w-16 h-16 rounded-full bg-gray-600 text-white text-2xl transition hover:opacity-80" id="muteBtn" onclick="toggleMute()" aria-label="Mute Call">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="call-control-btn w-16 h-16 rounded-full bg-gray-600 text-white text-2xl transition hover:opacity-80" id="speakerBtn" onclick="toggleSpeaker()" aria-label="Toggle Speaker">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-                <button class="call-control-btn w-16 h-16 rounded-full bg-gray-600 text-white text-2xl transition hover:opacity-80" onclick="showDialpad('call')" aria-label="Show Keypad">
-                    <i class="fas fa-th-large"></i>
-                </button>
+            <div class="dialpad-actions">
+                <button class="dialpad-call-btn" onclick="startCallFromDialpad()" aria-label="Start Call"><i class="fas fa-phone"></i></button>
             </div>
-            
-            <button class="w-24 h-24 rounded-full bg-red-600 text-white text-3xl font-bold transition hover:bg-red-700" onclick="endCall()" aria-label="End Call">
-                <i class="fas fa-phone-slash"></i>
-            </button>
-            <p class="mt-2 text-sm text-red-300">End Call</p>
-        </div>
-    </div>
-
-    <!-- Dialpad Overlay -->
-    <div id="dialpadOverlay">
-        <div class="dialpad-content">
-            <div class="flex justify-end p-2">
-                <button class="text-xl text-gray-500 dark:text-gray-400" onclick="hideDialpad()" aria-label="Close Dialpad">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="text-center mb-6">
-                <input type="tel" id="dialedNumber" class="text-center text-3xl w-full p-2 bg-transparent border-b-2 border-gray-300 dark:border-gray-600 focus:outline-none" value="+234" placeholder="+ Country Code and Number" readonly>
-            </div>
-            <div class="grid grid-cols-3 gap-2">
-                <div class="dialpad-key" onclick="dialInput('1')">1</div>
-                <div class="dialpad-key" onclick="dialInput('2')">2<span class="key-text">ABC</span></div>
-                <div class="dialpad-key" onclick="dialInput('3')">3<span class="key-text">DEF</span></div>
-                <div class="dialpad-key" onclick="dialInput('4')">4<span class="key-text">GHI</span></div>
-                <div class="dialpad-key" onclick="dialInput('5')">5<span class="key-text">JKL</span></div>
-                <div class="dialpad-key" onclick="dialInput('6')">6<span class="key-text">MNO</span></div>
-                <div class="dialpad-key" onclick="dialInput('7')">7<span class="key-text">PQRS</span></div>
-                <div class="dialpad-key" onclick="dialInput('8')">8<span class="key-text">TUV</span></div>
-                <div class="dialpad-key" onclick="dialInput('9')">9<span class="key-text">WXYZ</span></div>
-                <div class="dialpad-key" onclick="dialInput('+')" style="font-size: 2rem;">+</div>
-                <div class="dialpad-key" onclick="dialInput('0')">0</div>
-                <div class="dialpad-key" onclick="dialInput('#')">#</div>
-            </div>
-            
-            <div class="flex justify-center items-center mt-6 space-x-8">
-                <!-- Real Call Button -->
-                <button class="call-icon-btn" onclick="makeCallFromDialpad()" aria-label="Call Number">
-                    <i class="fas fa-phone"></i>
-                </button>
-                <!-- Backspace Button -->
-                <button class="w-16 h-16 text-3xl text-gray-500 dark:text-gray-400" onclick="deleteDialInput()" aria-label="Delete last digit">
-                    <i class="fas fa-backspace"></i>
-                </button>
+            <div class="dialpad-bottom-actions">
+                <button class="btn" onclick="openContactsFromDialpad()"><i class="fas fa-address-book"></i> Contacts</button>
+                <button class="btn secondary-btn" onclick="clearDialPad()"><i class="fas fa-eraser"></i> Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- Custom Alert/Confirm Dialogs -->
-    <div id="customAlertDialog" class="hidden">
+    <div class="fullscreen-overlay" id="callHistoryPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Full Call History</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <div id="fullCallHistoryList">
+                 <p class="placeholder-text">Loading full call history...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="contactsPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Contacts</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="search-input-container">
+                <label for="contactSearchInput" class="sr-only">Search contacts</label>
+                <input type="text" id="contactSearchInput" placeholder="Search contacts..." onkeyup="searchContacts()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button class="btn" style="margin-bottom: 20px;" onclick="openOverlayWithHistory('addContactPage')"><i class="fas fa-plus"></i> Add New Contact</button>
+            <div id="contactsList">
+                 <p class="placeholder-text">No contacts yet. Add one!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="addContactPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Add New Contact</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <label for="newContactName" class="sr-only">Contact Name</label>
+            <input id="newContactName" placeholder="Contact Name" type="text" />
+            <label for="newContactPhone" class="sr-only">Phone Number</label>
+            <input id="newContactPhone" placeholder="Phone Number" type="tel" />
+            <label for="newContactEmail" class="sr-only">Email (Optional)</label>
+            <input id="newContactEmail" placeholder="Email (Optional)" type="email" />
+            <button class="btn" onclick="saveNewContact()">Save Contact</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="editContactPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Edit Contact</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="editContactId" type="hidden" />
+            <label for="editContactName" class="sr-only">Contact Name</label>
+            <input id="editContactName" placeholder="Contact Name" type="text" />
+            <label for="editContactPhone" class="sr-only">Phone Number</label>
+            <input id="editContactPhone" placeholder="Phone Number" type="tel" />
+            <label for="editContactEmail" class="sr-only">Email (Optional)</label>
+            <input id="editContactEmail" placeholder="Email (Optional)" type="email" />
+            <button class="btn" onclick="saveEditedContact()">Save Changes</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="messagePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Messages</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="search-input-container">
+                <label for="messageSearchInput" class="sr-only">Search messages</label>
+                <input type="text" id="messageSearchInput" placeholder="Search messages or contacts..." onkeyup="searchMessages()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button class="btn" style="margin-bottom: 20px;" onclick="openNewMessagePage()"><i class="fas fa-plus"></i> New Message</button>
+            <div id="messageThreadsList">
+                <p class="placeholder-text">No messages yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="newMessagePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">New Message</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <label for="messageRecipient" class="sr-only">Recipient</label>
+            <input id="messageRecipient" placeholder="Recipient (Name or Phone Number)" type="text" />
+            <label for="messageInput" class="sr-only">Message Content</label>
+            <textarea id="messageInput" placeholder="Type your message here..."></textarea>
+            <button class="btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send Message</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="profilePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">My Profile</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <div class="profile-info">
+                <p><strong>Name:</strong> <span id="profileName"></span> <i class="fas fa-edit profile-edit-btn" onclick="openEditProfilePage()" aria-label="Edit Name"></i></p>
+                <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+                <p><strong>Member Since:</strong> <span id="profileMemberSince"></span></p>
+            </div>
+            <button class="btn" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="editProfilePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Edit Profile</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <input id="editProfileId" type="hidden" />
+            <label for="editProfileName" class="sr-only">New Name</label>
+            <input id="editProfileName" placeholder="New Name" type="text" />
+            <button class="btn" onclick="saveProfileChanges()">Save Changes</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="passwordResetPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Reset Password</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <p>Enter your email address to receive a password reset link.</p>
+            <label for="passwordResetEmail" class="sr-only">Email Address</label>
+            <input id="passwordResetEmail" placeholder="Email Address" type="email" />
+            <button class="btn" onclick="sendPasswordResetEmail()">Send Reset Link</button>
+            <div id="passwordResetMessage" class="success-message"></div>
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="rechargePage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Recharge</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div style="margin-top: 20px;">
+            <label for="rechargeAmount" class="sr-only">Amount to Recharge</label>
+            <input id="rechargeAmount" type="number" placeholder="Enter amount (₦)" />
+            <button class="btn" onclick="payWithPaystack()">Recharge Now</button>
+        </div>
+        <div id="rechargeStatus" class="success-message"></div>
+    </div>
+
+    <div class="fullscreen-overlay" id="referralPage">
+        <div class="overlay-header">
+            <h3 class="overlay-title">Referral Program</h3>
+            <i class="fas fa-arrow-left close-overlay-btn" onclick="history.back()" aria-label="Go Back"></i>
+        </div>
+        <div class="overlay-content">
+            <i class="fas fa-gift"></i>
+            <h2>Invite friends and earn credit!</h2>
+            <p>Share your unique referral link to earn rewards when they sign up and make a call.</p>
+            <label for="referralLink" class="sr-only">Your Referral Link</label>
+            <input type="text" id="referralLink" value="https://smartcall.app/refer/" readonly onclick="copyReferralLink()">
+            <button class="btn" onclick="shareReferralLink()"><i class="fas fa-share-alt"></i> Share Link</button>
+        </div>
+    </div>
+
+    <div class="call-screen" id="callScreen">
+        <div class="call-avatar"><i class="fas fa-user"></i></div>
+        <div class="call-name" id="callingContactName"></div>
+        <div class="call-status" id="callStatus">Dialing...</div>
+        <div class="call-timer" id="callTimer">00:00</div>
+        <div class="call-controls">
+            <button class="call-control-btn" id="muteBtn" onclick="toggleMute()" aria-label="Mute Call"><i class="fas fa-microphone"></i></button>
+            <button class="call-control-btn" id="speakerBtn" onclick="toggleSpeaker()" aria-label="Toggle Speaker"><i class="fas fa-volume-up"></i></button>
+            <button class="call-control-btn" onclick="dialInput('keypad')" aria-label="Show Keypad"><i class="fas fa-th-large"></i></button>
+        </div>
+        <button class="end-call-btn" onclick="endCallSimulation()">End Call</button>
+    </div>
+
+    <div id="customAlertDialog">
         <div class="custom-alert-content">
             <p id="customAlertMessage"></p>
-            <button class="btn mt-4" onclick="hideCustomAlert()">OK</button>
+            <button class="btn" onclick="hideCustomAlert()">OK</button>
         </div>
     </div>
-    
-    <div id="customConfirmDialog" class="hidden">
+
+    <div id="customConfirmDialog">
         <div class="custom-confirm-content">
             <p id="customConfirmMessage"></p>
-            <div class="custom-confirm-buttons flex justify-center space-x-4 mt-4">
-                <button class="btn bg-gray-500 hover:bg-gray-600" id="confirmCancelBtn">Cancel</button>
+            <div class="custom-confirm-buttons">
+                <button class="btn secondary-btn" id="confirmCancelBtn">Cancel</button>
                 <button class="btn" id="confirmOkBtn">OK</button>
             </div>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="script.js"></script>
 
-    <script>
-        // --- GLOBAL CONFIGURATION (MUST UPDATE) ---
-        // REPLACE THIS WITH YOUR DEPLOYED RENDER BACKEND URL!
-        const BACKEND_URL = "https://your-smartcall-backend.onrender.com"; 
-
-        // --- Global State ---
-        let isDarkTheme = false;
-        let currentPage = 'homePage';
-        let currentCallData = null; // Stores data for the active call
-        let callActive = false;
-        
-        // --- UI Element References ---
-        const loader = document.getElementById('loader');
-        const mainAppPage = document.getElementById('mainAppPage');
-        const callScreen = document.getElementById('callScreen');
-        const dialpadOverlay = document.getElementById('dialpadOverlay');
-        const dialedNumberInput = document.getElementById('dialedNumber');
-        const callStatus = document.getElementById('callStatus');
-        const calleeNameDisplay = document.getElementById('calleeName');
-        const recentCallsList = document.getElementById('recentCallsList');
-
-        // --- LOADER & ALERT FUNCTIONS ---
-        function showLoader() { loader.classList.add('show'); }
-        function hideLoader() {
-            setTimeout(() => {
-                loader.classList.remove('show');
-            }, 300);
-        }
-
-        function showAlert(message) {
-            const dialog = document.getElementById('customAlertDialog');
-            document.getElementById('customAlertMessage').textContent = message;
-            dialog.style.display = 'flex';
-        }
-
-        function hideCustomAlert() {
-            document.getElementById('customAlertDialog').style.display = 'none';
-        }
-
-        // --- Theme Toggle Function ---
-        function toggleTheme() {
-            isDarkTheme = !isDarkTheme;
-            document.body.classList.toggle('dark-theme', isDarkTheme);
-            const themeIcon = document.querySelector('#themeToggleButton i');
-            themeIcon.classList.toggle('fa-sun', !isDarkTheme);
-            themeIcon.classList.toggle('fa-moon', isDarkTheme);
-            localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-        }
-
-        // --- Navigation ---
-        function navigate(pageId) {
-            if (callActive) {
-                showAlert("Please end the current call before navigating.");
-                return;
-            }
-
-            // Hide all pages
-            ['homePage', 'contactsPage', 'profilePage'].forEach(id => {
-                const page = document.getElementById(id);
-                if (page) page.classList.add('hidden');
-            });
-
-            // Show target page
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-                currentPage = pageId;
-            }
-
-            // Update navigation bar active state
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            if (pageId === 'homePage') document.getElementById('navHome').classList.add('active');
-            if (pageId === 'contactsPage') document.getElementById('navContacts').classList.add('active');
-            
-            // Clean up when leaving pages (e.g., dialpad number)
-            dialedNumberInput.value = '+';
-        }
-
-
-        // --- DIALPAD LOGIC ---
-        function showDialpad() {
-            dialpadOverlay.classList.add('show');
-        }
-
-        function hideDialpad() {
-            dialpadOverlay.classList.remove('show');
-        }
-
-        function dialInput(key) {
-            let currentValue = dialedNumberInput.value.trim();
-
-            if (key === '+' && currentValue.includes('+')) {
-                // Only allow one leading '+'
-                return;
-            }
-            if (key === '+') {
-                // Ensure '+' is at the start
-                dialedNumberInput.value = '+' + currentValue.replace('+', '').trim();
-                return;
-            }
-
-            // Ensure '+' is only entered once, and only at the start
-            if (currentValue === '+' && key.match(/[a-zA-Z]/)) {
-                // Ignore text input if only '+' is present
-                return;
-            }
-            
-            // Allow numbers and '#'
-            if (key.match(/^[0-9#]$/)) {
-                dialedNumberInput.value += key;
-            }
-        }
-
-        function deleteDialInput() {
-            let currentValue = dialedNumberInput.value;
-            dialedNumberInput.value = currentValue.substring(0, currentValue.length - 1);
-        }
-
-        // --- CALLING LOGIC (REAL IMPLEMENTATION) ---
-        
-        // Helper to format the number
-        function formatNumberForCall(number) {
-            // Remove spaces, ensure it starts with '+'
-            let cleaned = number.replace(/\s/g, '');
-            if (!cleaned.startsWith('+')) {
-                // Assuming it's a local number if no plus is provided, prepend a default country code if needed, 
-                // but for international apps, forcing '+' is safer.
-                return cleaned; // Let the backend handle validation
-            }
-            return cleaned;
-        }
-
-        function makeCallFromDialpad() {
-            const number = dialedNumberInput.value.trim();
-            makeRealCall(number, number); // Use the number as the name for the dialpad call
-        }
-
-        // This is the core function to call your Render backend
-        async function makeRealCall(number, name) {
-            const formattedNumber = formatNumberForCall(number);
-            
-            if (formattedNumber.length < 5) {
-                showAlert("Please enter a valid number (including country code) to call.");
-                return;
-            }
-
-            showLoader();
-            hideDialpad(); // Hide dialpad immediately upon call attempt
-
-            try {
-                // 1. Show Call Screen UI
-                currentCallData = { number: formattedNumber, name: name };
-                callActive = true;
-                mainAppPage.classList.add('hidden');
-                callScreen.classList.remove('hidden');
-                calleeNameDisplay.textContent = name;
-                callStatus.textContent = "Initiating Call...";
-
-                // 2. Call Backend API
-                const response = await fetch(`${BACKEND_URL}/startCall`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ to: formattedNumber })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    callStatus.textContent = "Calling...";
-                    showAlert(`Call successfully initiated to ${name} (${formattedNumber}). The Africa's Talking service is handling the connection.`);
-                    // NOTE: Since the AT API only initiates the call, the UI will need manual end/status update.
-                    // In a production app, you would use AT Webhooks to update the call status in real-time.
-                } else {
-                    // Call failed at the backend/AT level
-                    throw new Error(data.details || data.error || "Unknown API error.");
-                }
-
-            } catch (error) {
-                console.error("Real Call Error:", error);
-                callStatus.textContent = "Call Failed!";
-                showAlert(`Failed to start call to ${name}. Error: ${error.message}. Please check your number and the backend URL/status.`);
-                
-                // Immediately end the simulated call UI on error
-                endCall(true); 
-
-            } finally {
-                hideLoader();
-                // Add to recent calls (even if failed)
-                addToRecentCalls(formattedNumber, name, callStatus.textContent);
-            }
-        }
-
-        function endCall(isError = false) {
-            if (!callActive) return;
-
-            // In a real app, you would send a request to AT to hang up the call
-            // For now, we update the UI status and clear data
-            
-            if (!isError) {
-                showAlert(`Call with ${currentCallData.name} ended.`);
-            }
-
-            callActive = false;
-            currentCallData = null;
-            
-            // Reset UI
-            callScreen.classList.add('hidden');
-            mainAppPage.classList.remove('hidden');
-            callStatus.textContent = "Connecting..."; // Reset status
-            calleeNameDisplay.textContent = "";
-
-            // Navigate back to the page that was active before the call (e.g. home)
-            navigate(currentPage);
-        }
-
-        function toggleMute() {
-            const btn = document.getElementById('muteBtn');
-            btn.classList.toggle('bg-red-600');
-            btn.classList.toggle('bg-gray-600');
-            btn.querySelector('i').classList.toggle('fa-microphone-slash');
-            btn.querySelector('i').classList.toggle('fa-microphone');
-            showAlert(`Mute is now ${btn.classList.contains('bg-red-600') ? 'ON' : 'OFF'}. (Simulation)`);
-        }
-
-        function toggleSpeaker() {
-            const btn = document.getElementById('speakerBtn');
-            btn.classList.toggle('bg-green-600');
-            btn.classList.toggle('bg-gray-600');
-            showAlert(`Speaker is now ${btn.classList.contains('bg-green-600') ? 'ON' : 'OFF'}. (Simulation)`);
-        }
-        
-        // --- RECENT CALLS LOGIC ---
-        function addToRecentCalls(number, name, status) {
-            const time = new Date().toLocaleTimeString();
-            const date = new Date().toLocaleDateString();
-
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item contact-item';
-            
-            historyItem.innerHTML = `
-                <div>
-                    <p class="font-semibold">${name}</p>
-                    <p class="text-sm text-gray-500">${number} - <span class="${status.includes('Failed') ? 'text-red-500' : 'text-green-500'}">${status}</span></p>
-                    <p class="text-xs text-gray-400">${date} at ${time}</p>
-                </div>
-                <button class="call-action-btn" onclick="makeRealCall('${number}', '${name}')" aria-label="Call Again">
-                    <i class="fas fa-phone"></i>
-                </button>
-            `;
-            
-            // Remove placeholder if present
-            const placeholder = recentCallsList.querySelector('p.text-sm');
-            if(placeholder) {
-                placeholder.remove();
-            }
-
-            // Add the new item to the top of the list
-            recentCallsList.prepend(historyItem);
-        }
-
-
-        // --- ON PAGE LOAD ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Apply saved theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                toggleTheme(); // will set isDarkTheme = true
-            }
-
-            // Set initial page
-            navigate('homePage');
-            
-            // Initial focus for responsive design (optional)
-            window.addEventListener('resize', () => {
-                 // Nothing needed here currently, as tailwind handles most of the layout
-            });
-
-            hideLoader();
-        });
-
-    </script>
 </body>
 </html>

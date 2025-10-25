@@ -29,13 +29,6 @@ function hideLoader() {
 }
 
 // --- LOADER FUNCTIONS ---
-const loader = document.getElementById('loader');
-function showLoader() { loader.classList.add('show'); }
-function hideLoader() {
-    setTimeout(() => {
-        loader.classList.remove('show');
-    }, 300);
-}
 
 // --- Theme Toggle Function ---
 function toggleTheme() {
@@ -430,5 +423,6 @@ window.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 });
+
 
 

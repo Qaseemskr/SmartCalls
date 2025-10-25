@@ -7,6 +7,12 @@ const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com"; // your backe
 const CALLER_ID = "+2342017001172"; // your Africa's Talking virtual number
 const PAYSTACK_PUBLIC_KEY = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e"; // replace with your real Paystack key
 
+function openOverlayWithHistory(id) {
+  document.querySelectorAll('.fullscreen-overlay').forEach(o => o.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  history.pushState({ page: id }, "", "");
+}
+
 /* ---------- HELPERS ---------- */
 function showAlert(msg) {
   alert(msg);
@@ -107,3 +113,4 @@ window.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 });
+

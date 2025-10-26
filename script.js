@@ -334,55 +334,15 @@ function dialInput(value) {
 }
 function clearDialPad() { currentNumber = ''; dialPadDisplay.value = ''; }
 function startCallFromDialpad() {
-  let toNumber = document.getElementById("dialpad-input").value.trim();
-  if (!toNumber) return showAlert("Please enter a number to call.");
-
-  // ✅ Detect country code automatically
-  if (!toNumber.startsWith("+")) {
-    if (toNumber.startsWith("0")) toNumber = toNumber.substring(1);
-
-    // Choose prefix based on first digit (simple logic)
-    if (toNumber.startsWith("8") || toNumber.startsWith("7")) {
-      toNumber = "+234" + toNumber; // Nigeria
-    } else if (toNumber.startsWith("2")) {
-      toNumber = "+233" + toNumber; // Ghana
-    } else if (toNumber.startsWith("9")) {
-      toNumber = "+227" + toNumber; // Niger
-    } else if (toNumber.startsWith("1")) {
-      toNumber = "+254" + toNumber; // Kenya
-    } else if (toNumber.startsWith("6")) {
-      toNumber = "+27" + toNumber; // South Africa
+    if (currentNumber) {
+        showLoader();
+        setTimeout(() => {
+            hideLoader(); openCallScreen(currentNumber, currentNumber); history.back();
+        }, 500);
     } else {
-      toNumber = "+234" + toNumber; // default fallback
+        showAlert('Please enter a number to call.');
     }
-  }
-
-  showLoader();
-
-  const backendURL = "https://smartcall-backend-7cm9.onrender.com/startCall";
-
-  fetch(backendURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ to: toNumber }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      hideLoader();
-      if (data.success) {
-        openCallScreen(toNumber, toNumber);
-        callStatus.textContent = "Calling...";
-      } else {
-        showAlert("Call failed: " + data.error);
-      }
-    })
-    .catch((err) => {
-      hideLoader();
-      showAlert("Error: " + err.message);
-    });
 }
-
-
 function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
 // --- Contacts Page ---
 function loadContacts() {

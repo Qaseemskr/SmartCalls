@@ -44,6 +44,15 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 firebase.firestore.setLogLevel('debug'); // Enable Firestore logging
+auth.onAuthStateChanged(user => {
+  if (user) {
+    // user logged in, go to home page
+    openOverlayWithHistory("homePage");
+  } else {
+    // stay on auth page
+    openOverlayWithHistory("authPage");
+  }
+});
 
 // --- LOADER & ALERT FUNCTIONS ---
 const loader = document.getElementById('loader');
@@ -676,4 +685,5 @@ function topUpCredit() {
         }
     });
 }
+
 

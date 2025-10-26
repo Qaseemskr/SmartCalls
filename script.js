@@ -8,10 +8,16 @@ const firebaseConfig = {
   appId: "1:854255870421:web:177c38dc6de653a86edd5c",
   measurementId: "G-JKKWJEJK0B"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+// --- Page Navigation ---
+function navigate(pageId) {
+  document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
+  document.getElementById(pageId).classList.remove('hidden');
+  window.location.hash = pageId; // optional for back/forward navigation
+}
 
 // --- Global Config ---
 let loggedInUser = null;
@@ -50,19 +56,6 @@ function openOverlayWithHistory(id) {
   document.getElementById(id).classList.add("active");
   if (id === "contactsPage") loadContacts();
 }
-
-// --- Firebase ---
-const firebaseConfig = {
-  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-  authDomain: "smartcalls-d49f5.firebaseapp.com",
-  projectId: "smartcalls-d49f5",
-  storageBucket: "smartcalls-d49f5.appspot.com",
-  messagingSenderId: "854255870421",
-  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
 
 document.addEventListener("DOMContentLoaded", () => {
    // your main startup code here
@@ -241,6 +234,17 @@ async function makeRealCall(toNumber) {
   }
 }
 
+// --- Theme Toggle ---
+function toggleTheme() {
+  document.body.classList.toggle("dark-theme");
+  const icon = document.querySelector("#themeToggleButton i");
+  if (document.body.classList.contains("dark-theme")) {
+    icon.classList.replace("fa-sun", "fa-moon");
+  } else {
+    icon.classList.replace("fa-moon", "fa-sun");
+  }
+}
+
 // --- Contacts ---
 function loadContacts() {
   if (!loggedInUser) return;
@@ -272,4 +276,5 @@ function loadContacts() {
       div.innerHTML = `<p class="error-message">Error loading contacts: ${err.message}</p>`;
     });
 }
+
 

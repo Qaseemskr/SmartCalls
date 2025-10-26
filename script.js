@@ -1,27 +1,50 @@
-/* ===============================
-   FIREBASE INITIALIZATION
-   =============================== */
 const firebaseConfig = {
-  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-  authDomain: "smartcalls-d49f5.firebaseapp.com",
-  projectId: "smartcalls-d49f5",
-  storageBucket: "smartcalls-d49f5.appspot.com",
-  messagingSenderId: "854255870421",
-  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-  measurementId: "G-JKKWJEJK0B"
+    apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+    authDomain: "smartcalls-d49f5.firebaseapp.com",
+    projectId: "smartcalls-d49f5",
+    storageBucket: "smartcalls-d49f5.appspot.com",
+    messagingSenderId: "854255870421",
+    appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+    measurementId: "G-JKKWJEJK0B"
 };
-
-// Make sure Firebase SDK scripts are loaded in index.html
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* --- Continue with your SmartCall backend and call logic below --- */
+// --- Authentication Logic ---
+function showRegisterForm(type) {
+    const phoneSection = document.getElementById('phoneAuthSection');
+    const emailSection = document.getElementById('emailAuthSection');
+    const showPhoneBtn = document.getElementById('showPhoneBtn');
+    const showEmailBtn = document.getElementById('showEmailBtn');
+    document.getElementById('registerAuthMessage').textContent = '';
+    if (type === 'phone') {
+        phoneSection.classList.remove('hidden');
+        emailSection.classList.add('hidden');
+        showPhoneBtn.classList.add('active');
+        showEmailBtn.classList.remove('active');
+    } else {
+        phoneSection.classList.add('hidden');
+        emailSection.classList.remove('hidden');
+        showPhoneBtn.classList.remove('active');
+        showEmailBtn.classList.add('active');
+    }
+}
 
+function handleEmailLogin() {
+    showLoader();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const authMessage = document.getElementById('authMessage');
+    authMessage.textContent = '';
+    if (!email || !password) { authMessage.textContent = 'Please enter email and password.'; hideLoader(); return; }
+    auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+            if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
+                hideLoader(); showAlert("Your email is not verified. Please check your inbox for the verification link."); auth.signOut();
+            }
+        }).catch(error => { hideLoader(); authMessage.textContent = error.message; });
+}
 
 /* ===============================
    SMARTCALL FRONTEND SCRIPT.JS
@@ -132,3 +155,4 @@ window.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 });
+

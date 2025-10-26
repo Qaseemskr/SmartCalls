@@ -1,3 +1,17 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+  authDomain: "smartcalls-d49f5.firebaseapp.com",
+  projectId: "smartcalls-d49f5",
+  storageBucket: "smartcalls-d49f5.appspot.com",
+  messagingSenderId: "854255870421",
+  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+  measurementId: "G-JKKWJEJK0B"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 // --- Global State & Config ---
 let isDarkTheme = false;
 let loggedInUser = null;
@@ -662,3 +676,4 @@ function topUpCredit() {
         }
     });
 }
+

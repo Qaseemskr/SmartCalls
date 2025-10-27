@@ -379,7 +379,10 @@ function displayContacts(list) {
             <div class="contact-phone">${contact.phone}</div>
         </div>
         <div class="contact-actions">
-            <button class="icon-btn" onclick="openCallScreen('${contact.name}', '${contact.phone}')" aria-label="Call ${contact.name}"><i class="fas fa-phone"></i></button>
+            <button class="icon-btn" onclick="makeRealCall('${contact.phone}')" aria-label="Call ${contact.name}">
+  <i class="fas fa-phone"></i>
+</button>
+
             <button class="icon-btn" onclick="openNewMessagePageWithRecipient('${contact.name}', '${contact.phone}')" aria-label="Message ${contact.name}"><i class="fas fa-comment"></i></button>
             <button class="icon-btn" onclick="openEditContactPage('${contact.id}')" aria-label="Edit ${contact.name}"><i class="fas fa-edit"></i></button>
             <button class="icon-btn" onclick="deleteContact('${contact.id}')" aria-label="Delete ${contact.name}"><i class="fas fa-trash"></i></button>
@@ -473,93 +476,100 @@ function confirmLogout() {
     showConfirm('Are you sure you want to logout?', () => { showLoader(); auth.signOut(); });
 }
 // --- Call Screen (Simulation) & History Logging ---
-// --- Real Call Integration (Connected to Render Backend) ---
-const callScreen = document.getElementById('callScreen');
-const callingContactName = document.getElementById('callingContactName');
-const callStatus = document.getElementById('callStatus');
-const callTimer = document.getElementById('callTimer');
+// --- Call Screen (Real Call Integration) ---
+const callScreen = document.getElementById("callScreen");
+const callingContactName = document.getElementById("callingContactName");
+const callStatus = document.getElementById("callStatus");
+const callTimer = document.getElementById("callTimer");
 
 let callInterval;
 let seconds = 0;
+
 const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
-const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
+const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/api/end";
 
-// --- Open Call Screen and Start Call ---
-async function openCallScreen(name, number) {
-  callingContactName.textContent = name || number;
-  callScreen.setAttribute("data-contact-name", name || number);
-  callScreen.setAttribute("data-contact-phone", number);
-  callScreen.classList.add("active");
-  callStatus.textContent = "Connecting...";
-
-  // normalize number (add + if missing)
-  let toNumber = number.startsWith("+") ? number : "+234" + number.replace(/^0+/, "");
+// --- Make Real Call ---
+async function makeRealCall(toNumber) {
+  if (!toNumber) {
+    showAlert("Please select a valid number to call.");
+    return;
+  }
 
   showLoader();
   try {
-    const res = await fetch(BACKEND_URL, {
+    const response = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: toNumber
-      }),
+      body: JSON.stringify({ to: toNumber }),
     });
-    const data = await res.json();
+
+    const data = await response.json();
     hideLoader();
 
-    if (res.ok && data.success) {
-      callStatus.textContent = "Connected";
-      seconds = 0;
-      callTimer.textContent = "00:00";
-      callInterval = setInterval(updateCallTimer, 1000);
+    if (response.ok && data.success) {
+      openCallScreenUI(toNumber);
+      console.log("📞 Call started:", data.result);
     } else {
-      callStatus.textContent = "Call Failed";
-      showAlert(data.error || "Could not start call.");
-      setTimeout(() => callScreen.classList.remove("active"), 2000);
+      showAlert(`Call failed: ${data.error || "Unknown error"}`);
     }
   } catch (err) {
     hideLoader();
-    callStatus.textContent = "Network Error";
     showAlert("Network error: " + err.message);
-    setTimeout(() => callScreen.classList.remove("active"), 2000);
   }
 }
 
-// --- Update Call Timer ---
-function updateCallTimer() {
-  seconds++;
-  const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
-  const remainingSeconds = (seconds % 60).toString().padStart(2, "0");
-  callTimer.textContent = `${minutes}:${remainingSeconds}`;
+// --- Call Screen UI & Timer ---
+function openCallScreenUI(phoneNumber) {
+  callingContactName.textContent = phoneNumber;
+  callScreen.classList.add("active");
+  callStatus.textContent = "Dialing...";
+
+  // Status simulation (since real voice state comes via callback)
+  setTimeout(() => (callStatus.textContent = "Ringing..."), 2000);
+  setTimeout(() => (callStatus.textContent = "Connected"), 4000);
+
+  // Timer
+  seconds = 0;
+  callTimer.textContent = "00:00";
+  callInterval = setInterval(() => {
+    seconds++;
+    const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    callTimer.textContent = `${mins}:${secs}`;
+  }, 1000);
+
+  // End Call Button
+  const endBtn = document.querySelector(".end-call-btn");
+  endBtn.onclick = async () => {
+    showLoader();
+    callStatus.textContent = "Ending call...";
+    clearInterval(callInterval);
+    try {
+      await fetch(END_CALL_URL, { method: "POST" });
+      hideLoader();
+      callScreen.classList.remove("active");
+      showAlert("Call ended.");
+      logCallHistory(phoneNumber);
+    } catch (e) {
+      hideLoader();
+      showAlert("Error ending call: " + e.message);
+    }
+  };
 }
 
-// --- End Call ---
-async function endCallSimulation() {
-  showLoader();
-  clearInterval(callInterval);
-  callScreen.classList.remove("active");
-
-  const duration = callTimer.textContent;
-  const contactName = callScreen.getAttribute("data-contact-name");
-  const contactPhone = callScreen.getAttribute("data-contact-phone");
-
-  try {
-    await fetch(END_CALL_URL, { method: "POST" });
-    hideLoader();
-    showAlert(`Call with ${contactName} ended after ${duration}`);
-  } catch (err) {
-    hideLoader();
-    showAlert("Error ending call: " + err.message);
-  }
-
-  // Log to Firestore
+// --- Log Call History ---
+function logCallHistory(phoneNumber) {
   if (loggedInUser && seconds > 0) {
-    db.collection("users").doc(loggedInUser.uid).collection("callHistory").add({
-      contactName: contactName,
-      contactPhone: contactPhone,
-      duration: duration,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    const duration = callTimer.textContent;
+    db.collection("users")
+      .doc(loggedInUser.uid)
+      .collection("callHistory")
+      .add({
+        contactName: phoneNumber,
+        contactPhone: phoneNumber,
+        duration: duration,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
   }
 }
 // --- Custom Alert/Confirm Dialogs ---
@@ -672,4 +682,5 @@ function clearRecentCalls() {
             showAlert('Error clearing call history: ' + error.message);
         });
     });
+
 }

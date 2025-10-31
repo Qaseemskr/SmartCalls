@@ -19,6 +19,10 @@
         <i class="fas fa-sun"></i>
     </button>
 
+    <div class="container active-page" id="welcomePage">
+    <div class="welcome-copyright">
+        &copy; Qaseem and Ibrahim
+    </div>
     <img src="smartcall-logo.png" alt="SmartCall Logo" class="auth-logo centered-logo">
     <h1>Welcome to SmartCall!</h1>
     <p>Connect with the world - simple, fast, and secured.</p>
@@ -107,7 +111,10 @@
             </div>
         </div>
         <div class="main-call-button-container">
-            <h3 class="hausa-tagline"><i>Press the button below to Make a Call! 📞</i></h3>
+            <div class="scrolling-tagline">
+                Call your family, friends, and loved ones the easy & secure way — at affordable rates!
+            </div>
+            <h3 class="hausa-tagline">Yi kira cikin sauki da aminci!</h3>
             <div class="make-call-circle" onclick="openOverlayWithHistory('dialPadPage')">
                 <i class="fas fa-phone"></i>
                 <span class="button-label">Make a Call</span>
@@ -374,17 +381,12 @@
             </div>
         </div>
     </div>
-    
+
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="script.js"></script>
 
-    <div class="welcome-copyright">
-        &copy; Qaseem Skr and Ibrahim Ghana
-    </div>
 </body>
-
 </html>
-

@@ -571,45 +571,4 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
     width: auto;
     padding: 8px 15px;
     font-size: 1rem;
-
-}
-
-.welcome-copyright {
-  position: fixed;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 14px;
-  z-index: 9999;
-  pointer-events: none;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-}
-
-.welcome-copyright::before {
-  content: "© Qaseem and Ibrahim";
-  position: fixed;
-  top: 10px;
-  right: 15px;
-  opacity: 0;
-  animation: fadePulse 4s ease-in-out infinite;
-}
-
-.welcome-copyright::after {
-  content: "© Qaseem and Ibrahim";
-  position: fixed;
-  bottom: 10px;
-  left: 15px;
-  opacity: 0;
-  animation: fadePulse 4s ease-in-out infinite;
-  animation-delay: 2s;
-}
-
-@keyframes fadePulse {
-  0%, 100% {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

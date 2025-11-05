@@ -574,43 +574,41 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 }
 
-/* === Global Copyright Text (Dual Neon Animation) === */
+/* === Global Copyright Text (Fully Responsive, Glowing, Fading) === */
 .global-copyright {
   position: fixed;
   z-index: 9999;
   font-family: "Poppins", sans-serif;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 12px;
   pointer-events: none;
   animation: colorShift 20s infinite ease-in-out;
   color: #fff;
 }
 
-/* Two glowing texts: top-right and bottom-left */
-.global-copyright::before,
-.global-copyright::after {
-  position: fixed;
-  opacity: 0;
-  animation: fadeGlow 12s ease-in-out infinite;
-}
-
-/* Top-right: Developer credits */
+/* Top-right text (developer credits) */
 .global-copyright::before {
   content: "© Qaseem Skr and Ibrahim Ghana";
-  top: 10px;
-  right: 20px;
+  position: fixed;
+  top: 8px;
+  right: 10px;
+  opacity: 0;
+  animation: fadeGlow 12s ease-in-out infinite;
   animation-delay: 0s;
 }
 
-/* Bottom-left: App rights */
+/* Bottom-left text (rights note) */
 .global-copyright::after {
   content: "SmartCall 2025 — All Rights Reserved";
-  bottom: 10px;
-  left: 20px;
+  position: fixed;
+  bottom: 8px;
+  left: 10px;
+  opacity: 0;
+  animation: fadeGlow 12s ease-in-out infinite;
   animation-delay: 6s;
 }
 
-/* Smooth fade in/out with glowing pulse */
+/* Glowing fade animation */
 @keyframes fadeGlow {
   0%, 10% {
     opacity: 0;
@@ -620,7 +618,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
   20%, 80% {
     opacity: 1;
     transform: translateY(0);
-    filter: drop-shadow(0 0 10px currentColor);
+    filter: drop-shadow(0 0 6px currentColor);
   }
   90%, 100% {
     opacity: 0;
@@ -629,12 +627,26 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
   }
 }
 
-/* Random glowing color shift */
+/* Random color shift */
 @keyframes colorShift {
-  0%   { color: #ff7675; }   /* Soft red */
-  20%  { color: #fdcb6e; }   /* Golden yellow */
-  40%  { color: #74b9ff; }   /* Sky blue */
-  60%  { color: #a29bfe; }   /* Violet */
-  80%  { color: #55efc4; }   /* Mint green */
-  100% { color: #ff7675; }   /* Back to red */
+  0%   { color: #ff7675; }
+  20%  { color: #fdcb6e; }
+  40%  { color: #74b9ff; }
+  60%  { color: #a29bfe; }
+  80%  { color: #55efc4; }
+  100% { color: #ff7675; }
+}
+
+/* --- RESPONSIVE ADJUSTMENTS FOR SMALL SCREENS --- */
+@media (max-width: 600px) {
+  .global-copyright::before {
+    font-size: 10px;
+    right: 6px;
+    top: 6px;
+  }
+  .global-copyright::after {
+    font-size: 10px;
+    left: 6px;
+    bottom: 6px;
+  }
 }

@@ -594,7 +594,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 /* === Top Right Corner === */
 .global-copyright::before {
-  content: "© Qaseem and Ibrahim";
+  content: "© Collaboration of Qaseem Skr and Ibrahim Adamu";
   top: 6px;
   right: 10px;
   animation-delay: 0s;
@@ -602,7 +602,7 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 /* === Bottom Left Corner === */
 .global-copyright::after {
-  content: "SmartCall © 2025";
+  content: "SmartCall © 2025. All rights reserved.";
   bottom: 6px;
   left: 10px;
   animation-delay: 9s; /* half of 18s */
@@ -635,3 +635,4 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
   opacity: 0;
   transition: opacity 1.5s ease-in;
 }
+

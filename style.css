@@ -571,4 +571,70 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
     width: auto;
     padding: 8px 15px;
     font-size: 1rem;
+
+}
+
+/* === Global Copyright Text (Dual Neon Animation) === */
+.global-copyright {
+  position: fixed;
+  z-index: 9999;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  pointer-events: none;
+  animation: colorShift 20s infinite ease-in-out;
+  color: #fff;
+}
+
+/* Two glowing texts: top-right and bottom-left */
+.global-copyright::before,
+.global-copyright::after {
+  position: fixed;
+  opacity: 0;
+  animation: fadeGlow 12s ease-in-out infinite;
+}
+
+/* Top-right: Developer credits */
+.global-copyright::before {
+  content: "© Qaseem Skr and Ibrahim Ghana";
+  top: 10px;
+  right: 20px;
+  animation-delay: 0s;
+}
+
+/* Bottom-left: App rights */
+.global-copyright::after {
+  content: "SmartCall 2025 — All Rights Reserved";
+  bottom: 10px;
+  left: 20px;
+  animation-delay: 6s;
+}
+
+/* Smooth fade in/out with glowing pulse */
+@keyframes fadeGlow {
+  0%, 10% {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  20%, 80% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+  90%, 100% {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(2px);
+  }
+}
+
+/* Random glowing color shift */
+@keyframes colorShift {
+  0%   { color: #ff7675; }   /* Soft red */
+  20%  { color: #fdcb6e; }   /* Golden yellow */
+  40%  { color: #74b9ff; }   /* Sky blue */
+  60%  { color: #a29bfe; }   /* Violet */
+  80%  { color: #55efc4; }   /* Mint green */
+  100% { color: #ff7675; }   /* Back to red */
 }

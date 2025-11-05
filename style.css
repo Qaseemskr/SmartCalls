@@ -574,79 +574,64 @@ select option { background-color: var(--input-bg); color: var(--text-color); }
 
 }
 
-/* === Global Copyright Text (Fully Responsive, Glowing, Fading) === */
-.global-copyright {
+/* === GLOBAL COPYRIGHT TEXT (appears on all pages) === */
+.global-copyright::before,
+.global-copyright::after {
   position: fixed;
   z-index: 9999;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
   font-size: 12px;
+  font-weight: 500;
+  opacity: 0;
+  animation: fadeGlow 18s ease-in-out infinite, colorShift 18s linear infinite;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 6px;
+  backdrop-filter: blur(3px);
+  color: white;
   pointer-events: none;
-  animation: colorShift 20s infinite ease-in-out;
-  color: #fff;
 }
 
-/* Top-right text (developer credits) */
+/* === Top Right Corner === */
 .global-copyright::before {
-  content: "© Qaseem Skr and Ibrahim Ghana";
-  position: fixed;
-  top: 8px;
+  content: "© Qaseem and Ibrahim";
+  top: 6px;
   right: 10px;
-  opacity: 0;
-  animation: fadeGlow 12s ease-in-out infinite;
   animation-delay: 0s;
 }
 
-/* Bottom-left text (rights note) */
+/* === Bottom Left Corner === */
 .global-copyright::after {
-  content: "SmartCall 2025 — All Rights Reserved";
-  position: fixed;
-  bottom: 8px;
+  content: "SmartCall © 2025";
+  bottom: 6px;
   left: 10px;
-  opacity: 0;
-  animation: fadeGlow 12s ease-in-out infinite;
-  animation-delay: 6s;
+  animation-delay: 9s; /* half of 18s */
 }
 
-/* Glowing fade animation */
+/* === Fade and Glow Animation === */
 @keyframes fadeGlow {
-  0%, 10% {
-    opacity: 0;
-    transform: translateY(6px);
-    filter: blur(2px);
-  }
-  20%, 80% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: drop-shadow(0 0 6px currentColor);
-  }
-  90%, 100% {
-    opacity: 0;
-    transform: translateY(-6px);
-    filter: blur(2px);
-  }
+  0%, 10% { opacity: 0; transform: translateY(5px); }
+  20%, 80% { opacity: 1; transform: translateY(0); }
+  90%, 100% { opacity: 0; transform: translateY(-5px); }
 }
 
-/* Random color shift */
+/* === Smooth Color Shifting === */
 @keyframes colorShift {
   0%   { color: #ff7675; }
-  20%  { color: #fdcb6e; }
-  40%  { color: #74b9ff; }
-  60%  { color: #a29bfe; }
-  80%  { color: #55efc4; }
-  100% { color: #ff7675; }
+  25%  { color: #fdcb6e; }
+  50%  { color: #55efc4; }
+  75%  { color: #74b9ff; }
+  100% { color: #a29bfe; }
 }
 
-/* --- RESPONSIVE ADJUSTMENTS FOR SMALL SCREENS --- */
-@media (max-width: 600px) {
-  .global-copyright::before {
-    font-size: 10px;
-    right: 6px;
-    top: 6px;
-  }
-  .global-copyright::after {
-    font-size: 10px;
-    left: 6px;
-    bottom: 6px;
-  }
+/* === Responsive Corner Adjustments === */
+@media (orientation: landscape) {
+  .global-copyright::before { top: 4px; right: 12px; }
+  .global-copyright::after { bottom: 4px; left: 12px; }
+}
+
+/* === Initial Page Fade-in Effect === */
+.global-copyright {
+  opacity: 0;
+  transition: opacity 1.5s ease-in;
 }

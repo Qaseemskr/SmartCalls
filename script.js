@@ -672,4 +672,11 @@ function clearRecentCalls() {
             showAlert('Error clearing call history: ' + error.message);
         });
     });
+
 }
+
+// --- Fade in copyright text after page load ---
+window.addEventListener("load", () => {
+  const copyElem = document.querySelector('.global-copyright');
+  if (copyElem) copyElem.style.opacity = 1;
+});

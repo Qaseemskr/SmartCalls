@@ -514,7 +514,7 @@ setTimeout(() => {
 
     // Show polished connecting message
 callStatus.textContent = "Please wait while we connect your call...";
-const ringAudio = new Audio("https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg");
+const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3");
 ringAudio.loop = true;
 ringAudio.volume = 0.4;
 ringAudio.play();
@@ -730,5 +730,6 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 

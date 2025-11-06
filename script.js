@@ -306,7 +306,10 @@ function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
         historyListDiv.innerHTML = '';
         snapshot.forEach(doc => {
             const call = doc.data();
-            const callDate = call.timestamp.toDate();
+            const callDate = (call.timestamp && typeof call.timestamp.toDate === 'function')
+    ? call.timestamp.toDate()
+    : new Date();
+
             const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
             const callItem = document.createElement('div');
             callItem.classList.add('history-item');
@@ -495,76 +498,74 @@ let seconds = 0;
 const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
 const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
 
-// --- Open Call Screen and Start Call ---
+// --- Open Call Screen and Start Call (CLEANED) ---
 async function openCallScreen(name, number) {
+  // set UI
   callingContactName.textContent = name || number;
   callScreen.setAttribute("data-contact-name", name || number);
   callScreen.setAttribute("data-contact-phone", number);
   callScreen.classList.add("active");
-  callStatus.textContent = "Connecting...";
-    // Play "Please wait" message first
-connectAudio.play();
 
-// After 2.5 seconds, start ringing tone
-setTimeout(() => {
-  connectAudio.pause();
-  connectAudio.currentTime = 0;
-  ringAudio.play();
-}, 2500);
+  // show connecting message and play short spoken "please wait" audio
+  callStatus.textContent = "Please wait while we connect your call...";
+  try {
+    // play a short "please wait" voice message (will be ignored if browser blocks autoplay)
+    connectAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
+  } catch(e){}
 
-    // Show polished connecting message
-callStatus.textContent = "Please wait while we connect your call...";
-const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3");
-ringAudio.loop = true;
-ringAudio.volume = 0.4;
-ringAudio.play();
+  // after 2.5s start the looped ringing tone
+  // store the timeout so we could clear it if needed (optional)
+  const startRingTimeout = setTimeout(() => {
+    try {
+      connectAudio.pause();
+      connectAudio.currentTime = 0;
+    } catch(e){}
+    try {
+      ringAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
+    } catch(e){}
+    callStatus.textContent = "Ringing...";
+  }, 2500);
 
-// Stop ringing when connected
-setTimeout(() => {
-  callStatus.textContent = "Ringing...";
-}, 2000);
-
-
-  // normalize number (add + if missing)
-  let toNumber = number.startsWith("+") ? number : "+234" + number.replace(/^0+/, "");
+  // normalize number (add + if missing) - naive default to +234
+  let toNumber = number && number.startsWith("+") ? number : ("+234" + (number || "").replace(/^0+/, ""));
 
   showLoader();
   try {
     const res = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: toNumber
-      }),
+      body: JSON.stringify({ to: toNumber })
     });
     const data = await res.json();
     hideLoader();
 
-    ringAudio.pause();
-ringAudio.currentTime = 0;
+    // Stop any audio now (only once)
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+    clearTimeout(startRingTimeout);
 
-      if (res.ok && data.success) {
-          connectAudio.pause();
-connectAudio.currentTime = 0;
-ringAudio.pause();
-ringAudio.currentTime = 0;
-
+    if (res.ok && data && data.success) {
+      // call queued / connected — start UI timer
       callStatus.textContent = "Connected";
       seconds = 0;
-      callTimer.textContent = "00:00";
+      if (callTimer) callTimer.textContent = "00:00";
       callInterval = setInterval(updateCallTimer, 1000);
-    } else { connectAudio.pause();
-ringAudio.pause();
-connectAudio.currentTime = 0;
-ringAudio.currentTime = 0;
+    } else {
+      // call failed — show message and close UI
       callStatus.textContent = "Call Failed";
-      showAlert(data.error || "Could not start call.");
+      showAlert((data && data.error) ? data.error : "Could not start call.");
       setTimeout(() => callScreen.classList.remove("active"), 2000);
     }
   } catch (err) {
+    // network or other error
     hideLoader();
+    // ensure audios stopped
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+    clearTimeout(startRingTimeout);
+
     callStatus.textContent = "Network Error";
-    showAlert("Network error: " + err.message);
+    showAlert("Network error: " + (err.message || err));
     setTimeout(() => callScreen.classList.remove("active"), 2000);
   }
 }
@@ -730,6 +731,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

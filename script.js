@@ -126,6 +126,17 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// --- Audio Messages for Call Experience ---
+const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3"); 
+// “Please wait while we connect your call”
+connectAudio.volume = 1.0;
+
+const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3"); 
+// “Duuut... duuut...” sound
+ringAudio.loop = true;
+ringAudio.volume = 0.8;
+
+
 // --- Authentication Logic ---
 function showRegisterForm(type) {
     const phoneSection = document.getElementById('phoneAuthSection');
@@ -491,6 +502,16 @@ async function openCallScreen(name, number) {
   callScreen.setAttribute("data-contact-phone", number);
   callScreen.classList.add("active");
   callStatus.textContent = "Connecting...";
+    // Play "Please wait" message first
+connectAudio.play();
+
+// After 2.5 seconds, start ringing tone
+setTimeout(() => {
+  connectAudio.pause();
+  connectAudio.currentTime = 0;
+  ringAudio.play();
+}, 2500);
+
     // Show polished connecting message
 callStatus.textContent = "Please wait while we connect your call...";
 const ringAudio = new Audio("https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg");
@@ -523,13 +544,19 @@ setTimeout(() => {
 ringAudio.currentTime = 0;
 
       if (res.ok && data.success) {
+          connectAudio.pause();
+connectAudio.currentTime = 0;
+ringAudio.pause();
+ringAudio.currentTime = 0;
+
       callStatus.textContent = "Connected";
       seconds = 0;
       callTimer.textContent = "00:00";
       callInterval = setInterval(updateCallTimer, 1000);
-    } else { // Stop ringing sound when call fails
-  ringAudio.pause();
-  ringAudio.currentTime = 0;
+    } else { connectAudio.pause();
+ringAudio.pause();
+connectAudio.currentTime = 0;
+ringAudio.currentTime = 0;
       callStatus.textContent = "Call Failed";
       showAlert(data.error || "Could not start call.");
       setTimeout(() => callScreen.classList.remove("active"), 2000);
@@ -703,4 +730,5 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 

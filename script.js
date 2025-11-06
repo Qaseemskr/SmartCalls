@@ -491,6 +491,18 @@ async function openCallScreen(name, number) {
   callScreen.setAttribute("data-contact-phone", number);
   callScreen.classList.add("active");
   callStatus.textContent = "Connecting...";
+    // Show polished connecting message
+callStatus.textContent = "Please wait while we connect your call...";
+const ringAudio = new Audio("https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg");
+ringAudio.loop = true;
+ringAudio.volume = 0.4;
+ringAudio.play();
+
+// Stop ringing when connected
+setTimeout(() => {
+  callStatus.textContent = "Ringing...";
+}, 2000);
+
 
   // normalize number (add + if missing)
   let toNumber = number.startsWith("+") ? number : "+234" + number.replace(/^0+/, "");
@@ -507,12 +519,17 @@ async function openCallScreen(name, number) {
     const data = await res.json();
     hideLoader();
 
-    if (res.ok && data.success) {
+    ringAudio.pause();
+ringAudio.currentTime = 0;
+
+      if (res.ok && data.success) {
       callStatus.textContent = "Connected";
       seconds = 0;
       callTimer.textContent = "00:00";
       callInterval = setInterval(updateCallTimer, 1000);
-    } else {
+    } else { // Stop ringing sound when call fails
+  ringAudio.pause();
+  ringAudio.currentTime = 0;
       callStatus.textContent = "Call Failed";
       showAlert(data.error || "Could not start call.");
       setTimeout(() => callScreen.classList.remove("active"), 2000);
@@ -551,6 +568,12 @@ async function endCallSimulation() {
     hideLoader();
     showAlert("Error ending call: " + err.message);
   }
+    // Stop ringing sound if still playing
+if (typeof ringAudio !== "undefined") {
+  ringAudio.pause();
+  ringAudio.currentTime = 0;
+}
+
 
   // Log to Firestore
   if (loggedInUser && seconds > 0) {
@@ -680,3 +703,4 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+

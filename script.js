@@ -506,6 +506,20 @@ async function openCallScreen(name, number) {
   callScreen.setAttribute("data-contact-phone", number);
   callScreen.classList.add("active");
 
+    // === CHECK USER BALANCE BEFORE CALL ===
+if (!loggedInUser) {
+  showAlert("You must be logged in to make a call.");
+  callScreen.classList.remove("active");
+  return;
+}
+
+const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+if (!userDoc.exists || (userDoc.data().balance || 0) < callCostPerMinute) {
+  showAlert("You do not have sufficient balance to make this call. Please recharge and try again. Thank you.");
+  callScreen.classList.remove("active");
+  return;
+}
+
   // show connecting message and play short spoken "please wait" audio
   callStatus.textContent = "Please wait while we connect your call...";
   try {
@@ -731,6 +745,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

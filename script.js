@@ -337,38 +337,44 @@ document.addEventListener('DOMContentLoaded', () => {
             select.appendChild(option);
         });
     });
-});
-// --- Dial Pad ---
+});// --- Dial Pad ---
 let currentNumber = '';
 const dialPadDisplay = document.getElementById('dialPadDisplay');
+
 function dialInput(value) {
-    if (value === 'backspace' && currentNumber.length > 0) { currentNumber = currentNumber.slice(0, -1); }
-    else if (value !== 'backspace') { currentNumber += value; }
-    dialPadDisplay.value = currentNumber;
+  if (value === 'backspace' && currentNumber.length > 0) {
+    currentNumber = currentNumber.slice(0, -1);
+  } else if (value !== 'backspace') {
+    currentNumber += value;
+  }
+  dialPadDisplay.value = currentNumber;
 }
-function clearDialPad() { currentNumber = ''; dialPadDisplay.value = ''; }
-// --- Start call from Dial Pad (real backend call) ---
-// --- Start call from Dial Pad (REAL BACKEND CONNECTION) ---
+
+function clearDialPad() {
+  currentNumber = '';
+  dialPadDisplay.value = '';
+}
+
+// --- Start call from Dial Pad (Real backend + Audio + Credit check) ---
 async function startCallFromDialpad() {
   if (!currentNumber) {
     showAlert("Please enter a number to call.");
     return;
   }
 
-  // Normalize and add correct country code
-  let toNumber = currentNumber;
-  if (!toNumber.startsWith("+")) {
-    const userCode = getUserCountryCode();
-    toNumber = userCode + toNumber.replace(/^0+/, "");
-  }
+  // Normalize and add +country code (default +234)
+  let toNumber = currentNumber.startsWith("+")
+    ? currentNumber
+    : "+234" + currentNumber.replace(/^0+/, "");
 
-  // Set UI screen
+  // Show call screen
   callingContactName.textContent = toNumber;
   callScreen.classList.add("active");
   callStatus.textContent = "Please wait while we connect your call...";
 
-  // Play connecting audio
+  // Play connecting message
   try {
+    connectAudio.currentTime = 0;
     connectAudio.play().catch(() => {});
   } catch (e) {}
 
@@ -378,27 +384,37 @@ async function startCallFromDialpad() {
     const res = await fetch("https://smartcall-backend-7cm9.onrender.com/api/call", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: toNumber })
+      body: JSON.stringify({ to: toNumber }),
     });
 
     const data = await res.json();
     hideLoader();
 
-    // Stop connect audio
+    // Stop connecting audio
     connectAudio.pause();
     connectAudio.currentTime = 0;
 
-    if (res.ok && data.success) {
-      const status = data.result?.entries?.[0]?.status || "";
-      if (status.includes("InsufficientCredit")) {
-        callStatus.textContent = "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
-        showAlert("You do not have sufficient balance to make this call. Please recharge and try again. Thank you.");
-        setTimeout(() => callScreen.classList.remove("active"), 4000);
-        return;
-      }
+    // --- Handle backend response ---
+    const status = data?.result?.entries?.[0]?.status || "Unknown";
 
+    if (status === "InsufficientCredit") {
+      callStatus.textContent =
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
+      showAlert(
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you."
+      );
+      setTimeout(() => callScreen.classList.remove("active"), 4000);
+      return;
+    }
+
+    if (res.ok && data.success) {
       callStatus.textContent = "Ringing...";
-      ringAudio.play().catch(() => {});
+      try {
+        ringAudio.currentTime = 0;
+        ringAudio.play().catch(() => {});
+      } catch (e) {}
+
+      // Simulate connecting after ringing
       setTimeout(() => {
         ringAudio.pause();
         ringAudio.currentTime = 0;
@@ -407,14 +423,11 @@ async function startCallFromDialpad() {
         callTimer.textContent = "00:00";
         callInterval = setInterval(updateCallTimer, 1000);
       }, 2500);
-
     } else {
-      const msg = data.error || "Call failed to connect.";
-      callStatus.textContent = msg;
-      showAlert(msg);
+      callStatus.textContent = data.error || "Call failed to connect.";
+      showAlert(data.error || "Call failed to connect.");
       setTimeout(() => callScreen.classList.remove("active"), 3000);
     }
-
   } catch (error) {
     hideLoader();
     connectAudio.pause();
@@ -423,19 +436,6 @@ async function startCallFromDialpad() {
     showAlert("Network Error: " + error.message);
     setTimeout(() => callScreen.classList.remove("active"), 3000);
   }
-}
-
-  // Normalize number (ensure it starts with +)
-  let toNumber = currentNumber.startsWith("+")
-    ? currentNumber
-    : "+234" + currentNumber.replace(/^0+/, "");
-
-  // Show the call screen UI like normal
-  showLoader();
-  setTimeout(() => {
-    hideLoader();
-    openCallScreen(toNumber, toNumber);
-  }, 500);
 }
 
 // --- Enable keyboard input for dial pad ---
@@ -449,7 +449,12 @@ document.addEventListener("keydown", (e) => {
     startCallFromDialpad();
   }
 });
-function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
+
+function openContactsFromDialpad() {
+  history.back();
+  openOverlayWithHistory("contactsPage");
+}
+
 // --- Contacts Page ---
 function loadContacts() {
     showLoader();
@@ -837,6 +842,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

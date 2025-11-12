@@ -347,16 +347,37 @@ function dialInput(value) {
     dialPadDisplay.value = currentNumber;
 }
 function clearDialPad() { currentNumber = ''; dialPadDisplay.value = ''; }
-function startCallFromDialpad() {
-    if (currentNumber) {
-        showLoader();
-        setTimeout(() => {
-            hideLoader(); openCallScreen(currentNumber, currentNumber); history.back();
-        }, 500);
-    } else {
-        showAlert('Please enter a number to call.');
-    }
+// --- Start call from Dial Pad (real backend call) ---
+async function startCallFromDialpad() {
+  if (!currentNumber) {
+    showAlert("Please enter a number to call.");
+    return;
+  }
+
+  // Normalize number (ensure it starts with +)
+  let toNumber = currentNumber.startsWith("+")
+    ? currentNumber
+    : "+234" + currentNumber.replace(/^0+/, "");
+
+  // Show the call screen UI like normal
+  showLoader();
+  setTimeout(() => {
+    hideLoader();
+    openCallScreen(toNumber, toNumber);
+  }, 500);
 }
+
+// --- Enable keyboard input for dial pad ---
+document.addEventListener("keydown", (e) => {
+  const key = e.key;
+  if (/^[0-9*#+]$/.test(key)) {
+    dialInput(key);
+  } else if (key === "Backspace") {
+    dialInput("backspace");
+  } else if (key === "Enter") {
+    startCallFromDialpad();
+  }
+});
 function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
 // --- Contacts Page ---
 function loadContacts() {
@@ -745,6 +766,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

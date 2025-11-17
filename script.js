@@ -355,24 +355,24 @@ function clearDialPad() {
   dialPadDisplay.value = '';
 }
 
-// --- Start call from Dial Pad (Real backend + Audio + Credit check) ---
+// --- Start call from Dial Pad (REAL BACKEND — CLEAN VERSION) ---
 async function startCallFromDialpad() {
   if (!currentNumber) {
     showAlert("Please enter a number to call.");
     return;
   }
 
-  // Normalize and add +country code (default +234)
+  // --- Normalize number (+234 default if missing) ---
   let toNumber = currentNumber.startsWith("+")
     ? currentNumber
     : "+234" + currentNumber.replace(/^0+/, "");
 
-  // Show call screen
+  // --- Show Call Screen ---
   callingContactName.textContent = toNumber;
   callScreen.classList.add("active");
   callStatus.textContent = "Please wait while we connect your call...";
 
-  // Play connecting message
+  // --- Play short connecting message ---
   try {
     connectAudio.currentTime = 0;
     connectAudio.play().catch(() => {});
@@ -394,18 +394,44 @@ async function startCallFromDialpad() {
     connectAudio.pause();
     connectAudio.currentTime = 0;
 
-    // --- Handle backend response ---
-    const status = data?.result?.entries?.[0]?.status || "Unknown";
-
-    if (status === "InsufficientCredit") {
-      callStatus.textContent =
-        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
-      showAlert(
-        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you."
-      );
-      setTimeout(() => callScreen.classList.remove("active"), 4000);
+    // --- If backend blocked call (e.g., insufficient balance) ---
+    if (!res.ok || !data.success) {
+      ringAudio.pause();
+      ringAudio.currentTime = 0;
+      callStatus.textContent = data.error || "Call failed.";
+      showAlert(data.error || "Call failed.");
+      setTimeout(() => callScreen.classList.remove("active"), 3000);
       return;
     }
+
+    // --- If backend accepted call — play ringing tone ---
+    callStatus.textContent = "Ringing...";
+    try {
+      ringAudio.currentTime = 0;
+      ringAudio.play().catch(() => {});
+    } catch (e) {}
+
+    // SIMULATE CONNECT
+    setTimeout(() => {
+      ringAudio.pause();
+      ringAudio.currentTime = 0;
+      callStatus.textContent = "Connected";
+
+      seconds = 0;
+      callTimer.textContent = "00:00";
+      callInterval = setInterval(updateCallTimer, 1000);
+
+    }, 2500);
+
+  } catch (error) {
+    hideLoader();
+    connectAudio.pause();
+    ringAudio.pause();
+    callStatus.textContent = "Network Error. Please try again.";
+    showAlert("Network Error: " + error.message);
+    setTimeout(() => callScreen.classList.remove("active"), 3000);
+  }
+}
 
     if (res.ok && data.success) {
       callStatus.textContent = "Ringing...";
@@ -593,7 +619,7 @@ const callTimer = document.getElementById('callTimer');
 let callInterval;
 let seconds = 0;
 const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
-const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
+const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/end";
 
 // --- Open Call Screen and Start Call (CLEANED) ---
 async function openCallScreen(name, number) {
@@ -842,6 +868,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

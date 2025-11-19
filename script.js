@@ -355,24 +355,24 @@ function clearDialPad() {
   dialPadDisplay.value = '';
 }
 
-// --- Start call from Dial Pad (REAL BACKEND — CLEAN VERSION) ---
+// --- Start call from Dial Pad (Real backend + Audio + Credit check) ---
 async function startCallFromDialpad() {
   if (!currentNumber) {
     showAlert("Please enter a number to call.");
     return;
   }
 
-  // --- Normalize number (+234 default if missing) ---
+  // Normalize and add +country code (default +234)
   let toNumber = currentNumber.startsWith("+")
     ? currentNumber
     : "+234" + currentNumber.replace(/^0+/, "");
 
-  // --- Show Call Screen ---
+  // Show call screen
   callingContactName.textContent = toNumber;
   callScreen.classList.add("active");
   callStatus.textContent = "Please wait while we connect your call...";
 
-  // --- Play short connecting message ---
+  // Play connecting message
   try {
     connectAudio.currentTime = 0;
     connectAudio.play().catch(() => {});
@@ -394,35 +394,40 @@ async function startCallFromDialpad() {
     connectAudio.pause();
     connectAudio.currentTime = 0;
 
-    // --- If backend blocked call (e.g., insufficient balance) ---
-    if (!res.ok || !data.success) {
-      ringAudio.pause();
-      ringAudio.currentTime = 0;
-      callStatus.textContent = data.error || "Call failed.";
-      showAlert(data.error || "Call failed.");
-      setTimeout(() => callScreen.classList.remove("active"), 3000);
+    // --- Handle backend response ---
+    const status = data?.result?.entries?.[0]?.status || "Unknown";
+
+    if (status === "InsufficientCredit") {
+      callStatus.textContent =
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
+      showAlert(
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you."
+      );
+      setTimeout(() => callScreen.classList.remove("active"), 4000);
       return;
     }
 
-    // --- If backend accepted call — play ringing tone ---
-    callStatus.textContent = "Ringing...";
-    try {
-      ringAudio.currentTime = 0;
-      ringAudio.play().catch(() => {});
-    } catch (e) {}
+    if (res.ok && data.success) {
+      callStatus.textContent = "Ringing...";
+      try {
+        ringAudio.currentTime = 0;
+        ringAudio.play().catch(() => {});
+      } catch (e) {}
 
-    // SIMULATE CONNECT
-    setTimeout(() => {
-      ringAudio.pause();
-      ringAudio.currentTime = 0;
-      callStatus.textContent = "Connected";
-
-      seconds = 0;
-      callTimer.textContent = "00:00";
-      callInterval = setInterval(updateCallTimer, 1000);
-
-    }, 2500);
-
+      // Simulate connecting after ringing
+      setTimeout(() => {
+        ringAudio.pause();
+        ringAudio.currentTime = 0;
+        callStatus.textContent = "Connected";
+        seconds = 0;
+        callTimer.textContent = "00:00";
+        callInterval = setInterval(updateCallTimer, 1000);
+      }, 2500);
+    } else {
+      callStatus.textContent = data.error || "Call failed to connect.";
+      showAlert(data.error || "Call failed to connect.");
+      setTimeout(() => callScreen.classList.remove("active"), 3000);
+    }
   } catch (error) {
     hideLoader();
     connectAudio.pause();
@@ -433,44 +438,9 @@ async function startCallFromDialpad() {
   }
 }
 
-    if (res.ok && data.success) {
-      callStatus.textContent = "Ringing...";
-      try {
-        ringAudio.currentTime = 0;
-        ringAudio.play().catch(() => {});
-      } catch (e) {}
-
-      // Simulate connecting after ringing
-setTimeout(() => {
-  ringAudio.pause();
-  ringAudio.currentTime = 0;
-  callStatus.textContent = "Connected";
-  seconds = 0;
-  callTimer.textContent = "00:00";
-  callInterval = setInterval(updateCallTimer, 1000);
-}, 2500);
-
-} else {
-  callStatus.textContent = data.error || "Call failed to connect.";
-  showAlert(data.error || "Call failed to connect.");
-  setTimeout(() => callScreen.classList.remove("active"), 3000);
-}
-
-} catch (error) {
-  hideLoader();
-  connectAudio.pause();
-  ringAudio.pause();
-  callStatus.textContent = "Network Error. Please try again.";
-  showAlert("Network Error: " + error.message);
-  setTimeout(() => callScreen.classList.remove("active"), 3000);
-}
-}  // <-- THIS closes startCallFromDialpad() properly
-// DO NOT ADD ANY EXTRA BRACES BELOW THIS LINE
-
 // --- Enable keyboard input for dial pad ---
 document.addEventListener("keydown", (e) => {
   const key = e.key;
-
   if (/^[0-9*#+]$/.test(key)) {
     dialInput(key);
   } else if (key === "Backspace") {
@@ -479,7 +449,6 @@ document.addEventListener("keydown", (e) => {
     startCallFromDialpad();
   }
 });
-
 
 function openContactsFromDialpad() {
   history.back();
@@ -624,7 +593,7 @@ const callTimer = document.getElementById('callTimer');
 let callInterval;
 let seconds = 0;
 const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
-const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/end";
+const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
 
 // --- Open Call Screen and Start Call (CLEANED) ---
 async function openCallScreen(name, number) {
@@ -873,8 +842,6 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
-
-
 
 
 

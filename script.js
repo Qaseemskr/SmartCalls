@@ -441,32 +441,36 @@ async function startCallFromDialpad() {
       } catch (e) {}
 
       // Simulate connecting after ringing
-      setTimeout(() => {
-        ringAudio.pause();
-        ringAudio.currentTime = 0;
-        callStatus.textContent = "Connected";
-        seconds = 0;
-        callTimer.textContent = "00:00";
-        callInterval = setInterval(updateCallTimer, 1000);
-      }, 2500);
-    } else {
-      callStatus.textContent = data.error || "Call failed to connect.";
-      showAlert(data.error || "Call failed to connect.");
-      setTimeout(() => callScreen.classList.remove("active"), 3000);
-    }
-  } catch (error) {
-    hideLoader();
-    connectAudio.pause();
-    ringAudio.pause();
-    callStatus.textContent = "Network Error. Please try again.";
-    showAlert("Network Error: " + error.message);
-    setTimeout(() => callScreen.classList.remove("active"), 3000);
-  }
+setTimeout(() => {
+  ringAudio.pause();
+  ringAudio.currentTime = 0;
+  callStatus.textContent = "Connected";
+  seconds = 0;
+  callTimer.textContent = "00:00";
+  callInterval = setInterval(updateCallTimer, 1000);
+}, 2500);
+
+} else {
+  callStatus.textContent = data.error || "Call failed to connect.";
+  showAlert(data.error || "Call failed to connect.");
+  setTimeout(() => callScreen.classList.remove("active"), 3000);
 }
+
+} catch (error) {
+  hideLoader();
+  connectAudio.pause();
+  ringAudio.pause();
+  callStatus.textContent = "Network Error. Please try again.";
+  showAlert("Network Error: " + error.message);
+  setTimeout(() => callScreen.classList.remove("active"), 3000);
+}
+}  // <-- THIS closes startCallFromDialpad() properly
+// DO NOT ADD ANY EXTRA BRACES BELOW THIS LINE
 
 // --- Enable keyboard input for dial pad ---
 document.addEventListener("keydown", (e) => {
   const key = e.key;
+
   if (/^[0-9*#+]$/.test(key)) {
     dialInput(key);
   } else if (key === "Backspace") {
@@ -475,6 +479,7 @@ document.addEventListener("keydown", (e) => {
     startCallFromDialpad();
   }
 });
+
 
 function openContactsFromDialpad() {
   history.back();
@@ -868,6 +873,7 @@ window.addEventListener("load", () => {
   const copyElem = document.querySelector('.global-copyright');
   if (copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

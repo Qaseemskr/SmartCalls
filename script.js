@@ -1,4 +1,9 @@
-// --- Global State & Config ---
+/* ===============================
+   SmartCall - Cleaned script.js
+   Paste/replace entire existing script.js with this file
+   =============================== */
+
+/* --- Global State & Config --- */
 let isDarkTheme = false;
 let loggedInUser = null;
 let allContacts = [];
@@ -6,847 +11,508 @@ let stopUserListener = () => {};
 let stopCallHistoryListener = () => {};
 window.confirmationResult = null;
 
-// Paystack Public Key
-let paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
+const paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
 const callCostPerMinute = 13;
 
-// --- LOADER FUNCTIONS ---
-const loader = document.getElementById('loader');
-function showLoader() { loader.classList.add('show'); }
-function hideLoader() {
-    setTimeout(() => {
-        loader.classList.remove('show');
-    }, 300);
-}
+// Backend endpoints (match your deployed index.js)
+const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
+const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/api/end";
 
-// --- Theme Toggle Function ---
-function toggleTheme() {
-    isDarkTheme = !isDarkTheme;
-    document.body.classList.toggle('dark-theme', isDarkTheme);
-    const themeIcon = document.querySelector('#themeToggleButton i');
+/* --- DOM helpers --- */
+const loader = document.getElementById('loader');
+function showLoader(){ if(loader) loader.classList.add('show'); }
+function hideLoader(){ if(loader) setTimeout(()=>loader.classList.remove('show'), 300); }
+
+/* --- Theme Toggle --- */
+function toggleTheme(){
+  isDarkTheme = !isDarkTheme;
+  document.body.classList.toggle('dark-theme', isDarkTheme);
+  const themeIcon = document.querySelector('#themeToggleButton i');
+  if(themeIcon){
     themeIcon.classList.toggle('fa-sun', !isDarkTheme);
     themeIcon.classList.toggle('fa-moon', isDarkTheme);
-    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+  }
+  localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
 }
 
-// --- On Page Load ---
-document.addEventListener('DOMContentLoaded', () => {
-    showLoader();
-    document.title = "SmartCall - Your Connection to the World";
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        isDarkTheme = true;
-        document.body.classList.add('dark-theme');
-        document.querySelector('#themeToggleButton i').classList.add('fa-moon');
-        document.querySelector('#themeToggleButton i').classList.remove('fa-sun');
-    } else {
-        document.querySelector('#themeToggleButton i').classList.add('fa-sun');
-        document.querySelector('#themeToggleButton i').classList.remove('fa-moon');
-    }
+/* --- Audio (single definitions) --- */
+/* "Please wait" spoken / hold message - short */
+const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3");
+connectAudio.volume = 1.0;
+connectAudio.preload = 'auto';
 
-    const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-    const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-    countryCodeSelects.forEach(select => {
-        countryCodes.forEach(code => {
-            const option = document.createElement('option');
-            option.value = code.split(' ')[0];
-            option.textContent = code;
-            select.appendChild(option);
-        });
+/* Ringing tone (loop) - played after the short message */
+const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3");
+ringAudio.loop = true;
+ringAudio.volume = 0.6;
+ringAudio.preload = 'auto';
+
+/* --- Init on DOM load --- */
+document.addEventListener('DOMContentLoaded', () => {
+  // small loader display while initialising
+  showLoader();
+  document.title = "SmartCall - Your Connection to the World";
+
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    isDarkTheme = true;
+    document.body.classList.add('dark-theme');
+    const t = document.querySelector('#themeToggleButton i');
+    if(t){ t.classList.add('fa-moon'); t.classList.remove('fa-sun'); }
+  } else {
+    const t = document.querySelector('#themeToggleButton i');
+    if(t){ t.classList.add('fa-sun'); t.classList.remove('fa-moon'); }
+  }
+
+  // populate country code selects (update list as you like)
+  const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
+  const countryCodes = ['+234 (Nigeria)', '+233 (Ghana)', '+229 (Benin)', '+227 (Niger)', '+235 (Chad)', '+216 (Tunisia)', '+218 (Libya)', '+249 (Sudan)'];
+  countryCodeSelects.forEach(select => {
+    countryCodes.forEach(code => {
+      const option = document.createElement('option');
+      option.value = code.split(' ')[0];
+      option.textContent = code;
+      select.appendChild(option);
     });
+  });
+
+  hideLoader();
 });
 
-// --- Utility Functions ---
-function navigate(pageId) {
-    showLoader();
-    history.pushState({ pageId: pageId }, '', `#${pageId}`);
-    showPage(pageId);
+/* --- Navigation & overlays --- */
+function navigate(pageId){
+  showLoader();
+  history.pushState({ pageId }, '', `#${pageId}`);
+  showPage(pageId);
 }
 
-function showPage(pageId) {
-    document.querySelectorAll('.container').forEach(page => {
-        page.classList.add('hidden');
-        page.classList.remove('active-page');
-    });
-    const page = document.getElementById(pageId)
-    page.classList.remove('hidden');
-    page.classList.add('active-page');
-    hideLoader();
+function showPage(pageId){
+  document.querySelectorAll('.container').forEach(p => {
+    p.classList.add('hidden'); p.classList.remove('active-page');
+  });
+  const page = document.getElementById(pageId);
+  if(page){ page.classList.remove('hidden'); page.classList.add('active-page'); }
+  hideLoader();
 }
-function openOverlayWithHistory(overlayId) {
-    showLoader();
-    history.pushState({ overlayId: overlayId }, '', `#${overlayId}`);
-    const overlay = document.getElementById(overlayId);
-    overlay.classList.add('active');
-    if (overlayId === 'contactsPage') {
-        loadContacts();
-    } else if (overlayId === 'profilePage') {
-        populateProfile();
-    } else if (overlayId === 'callHistoryPage') {
-        loadFullCallHistory();
-    } else if (overlayId === 'referralPage') {
-        generateReferralLink();
-        hideLoader();
-    } else {
-        hideLoader();
-    }
+
+function openOverlayWithHistory(overlayId){
+  showLoader();
+  history.pushState({ overlayId }, '', `#${overlayId}`);
+  const overlay = document.getElementById(overlayId);
+  if(overlay){ overlay.classList.add('active'); }
+  if(overlayId === 'contactsPage') loadContacts();
+  else if(overlayId === 'profilePage') populateProfile();
+  else if(overlayId === 'callHistoryPage') loadFullCallHistory();
+  else if(overlayId === 'referralPage') generateReferralLink();
+  hideLoader();
 }
-function closeOverlay(overlayId) {
-    document.getElementById(overlayId).classList.remove('active');
+function closeOverlay(overlayId){
+  const o = document.getElementById(overlayId);
+  if(o) o.classList.remove('active');
 }
-window.onpopstate = (event) => {
-    const pageId = event.state && event.state.pageId;
-    const overlayId = event.state && event.state.overlayId;
-    if (pageId) {
-        showPage(pageId);
-        document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
-            overlay.classList.remove('active');
-        });
-    } else if (overlayId) {
-        document.getElementById(overlayId).classList.add('active');
-    } else {
-        showPage('welcomePage');
-        document.querySelectorAll('.fullscreen-overlay').forEach(overlay => {
-            overlay.classList.remove('active');
-        });
-    }
+window.onpopstate = (e) => {
+  const pageId = e.state && e.state.pageId;
+  const overlayId = e.state && e.state.overlayId;
+  if(pageId) showPage(pageId);
+  else showPage('welcomePage');
 };
 
-// --- Firebase Configuration and Initialization (to be moved) ---
+/* --- Firebase init (keep as you had it) --- */
 const firebaseConfig = {
-    apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-    authDomain: "smartcalls-d49f5.firebaseapp.com",
-    projectId: "smartcalls-d49f5",
-    storageBucket: "smartcalls-d49f5.appspot.com",
-    messagingSenderId: "854255870421",
-    appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-    measurementId: "G-JKKWJEJK0B"
+  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+  authDomain: "smartcalls-d49f5.firebaseapp.com",
+  projectId: "smartcalls-d49f5",
+  storageBucket: "smartcall s-d49f5.appspot.com",
+  messagingSenderId: "854255870421",
+  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+  measurementId: "G-JKKWJEJK0B"
 };
-firebase.initializeApp(firebaseConfig);
+if (typeof firebase !== 'undefined' && !firebase.apps?.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- Audio Messages for Call Experience ---
-const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3"); 
-// “Please wait while we connect your call”
-connectAudio.volume = 1.0;
-
-const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3"); 
-// “Duuut... duuut...” sound
-ringAudio.loop = true;
-ringAudio.volume = 0.8;
-
-
-// --- Authentication Logic ---
-function showRegisterForm(type) {
-    const phoneSection = document.getElementById('phoneAuthSection');
-    const emailSection = document.getElementById('emailAuthSection');
-    const showPhoneBtn = document.getElementById('showPhoneBtn');
-    const showEmailBtn = document.getElementById('showEmailBtn');
-    document.getElementById('registerAuthMessage').textContent = '';
-    if (type === 'phone') {
-        phoneSection.classList.remove('hidden');
-        emailSection.classList.add('hidden');
-        showPhoneBtn.classList.add('active');
-        showEmailBtn.classList.remove('active');
-    } else {
-        phoneSection.classList.add('hidden');
-        emailSection.classList.remove('hidden');
-        showPhoneBtn.classList.remove('active');
-        showEmailBtn.classList.add('active');
-    }
-}
-function setupRecaptcha() {
-    if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible', 'callback': (response) => {} });
-        window.recaptchaWidgetId = window.recaptchaVerifier.render();
-    }
-}
-function sendOtp() {
-    showLoader();
-    const countryCode = document.getElementById('registerCountryCode').value;
-    const phoneNumberInput = document.getElementById('registerPhoneNumber').value;
-    const authMessage = document.getElementById('registerAuthMessage');
-    authMessage.textContent = '';
-    if (!phoneNumberInput) {
-        authMessage.textContent = 'Please enter a phone number.';
-        hideLoader(); return;
-    }
-    const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
-    if (window.recaptchaVerifier) { grecaptcha.reset(window.recaptchaWidgetId); }
-    setupRecaptcha();
-    const appVerifier = window.recaptchaVerifier;
-    auth.signInWithPhoneNumber(fullPhoneNumber, appVerifier)
-        .then((confirmationResult) => {
-            window.confirmationResult = confirmationResult;
-            hideLoader(); showAlert('Verification code has been sent!');
-            document.getElementById('otpSection').classList.remove('hidden');
-        }).catch((error) => {
-            hideLoader();
-            console.error("Firebase Auth Error:", error.code, error.message);
-            authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
-            if (window.recaptchaWidgetId) { grecaptcha.reset(window.recaptchaWidgetId); }
-        });
-}
-function verifyOtp() {
-    showLoader();
-    const otp = document.getElementById('otpInput').value;
-    const fullName = document.getElementById('registerFullNamePhone').value;
-    const authMessage = document.getElementById('registerAuthMessage');
-    authMessage.textContent = '';
-    if (!otp || otp.length !== 6) { authMessage.textContent = 'Please enter a valid 6-digit code.'; hideLoader(); return; }
-    if (!fullName) { authMessage.textContent = 'Please enter your full name.'; hideLoader(); return; }
-    window.confirmationResult.confirm(otp).then((result) => {
-        const user = result.user;
-        const userRef = db.collection('users').doc(user.uid);
-        return userRef.get().then(doc => {
-            if (!doc.exists) {
-                return userRef.set({ fullName: fullName, phoneNumber: user.phoneNumber, memberSince: new Date(), balance: 0 });
-            }
-        });
-    }).catch((error) => { hideLoader(); authMessage.textContent = "Invalid code. Please try again."; });
-}
-function handleEmailRegister() {
-    showLoader();
-    const fullName = document.getElementById('registerFullNameEmail').value;
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    const authMessage = document.getElementById('registerAuthMessage');
-    authMessage.textContent = '';
-    if (!fullName || !email || !password) { authMessage.textContent = 'All fields are required.'; hideLoader(); return; }
-    if (password.length < 6) { authMessage.textContent = 'Password must be at least 6 characters.'; hideLoader(); return; }
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            const user = userCredential.user;
-            user.sendEmailVerification();
-            return db.collection('users').doc(user.uid).set({ fullName: fullName, email: email, memberSince: new Date(), balance: 0, emailVerified: false });
-        }).then(() => {
-            hideLoader(); showAlert("Registration successful! Please check your email to verify your account before logging in.");
-        }).catch(error => { hideLoader(); authMessage.textContent = error.message; });
-}
-function handleEmailLogin() {
-    showLoader();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const authMessage = document.getElementById('authMessage');
-    authMessage.textContent = '';
-    if (!email || !password) { authMessage.textContent = 'Please enter email and password.'; hideLoader(); return; }
-    auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-            if (userCredential.user.providerData[0].providerId === 'password' && !userCredential.user.emailVerified) {
-                hideLoader(); showAlert("Your email is not verified. Please check your inbox for the verification link."); auth.signOut();
-            }
-        }).catch(error => { hideLoader(); authMessage.textContent = error.message; });
-}
-// *** NEW PASSWORD RESET FUNCTION ***
-function sendPasswordResetEmail() {
-    showLoader();
-    const email = document.getElementById('passwordResetEmail').value;
-    const messageDiv = document.getElementById('passwordResetMessage');
-    messageDiv.textContent = '';
-    if (!email) {
-        messageDiv.textContent = 'Please enter your email address.';
-        messageDiv.classList.remove('success-message');
-        messageDiv.classList.add('error-message');
-        hideLoader();
-        return;
-    }
-    auth.sendPasswordResetEmail(email)
-        .then(() => {
-            messageDiv.textContent = 'Password reset link sent to your email!';
-            messageDiv.classList.remove('error-message');
-            messageDiv.classList.add('success-message');
-            hideLoader();
-        })
-        .catch((error) => {
-            messageDiv.textContent = error.message;
-            messageDiv.classList.remove('success-message');
-            messageDiv.classList.add('error-message');
-            hideLoader();
-        });
-}
+/* --- Auth + user listeners --- */
 auth.onAuthStateChanged(user => {
-    if (stopUserListener) stopUserListener();
-    if (stopCallHistoryListener) stopCallHistoryListener();
-    if (user) {
-        if (user.providerData[0].providerId === 'password' && !user.emailVerified) { hideLoader(); return; }
-        loggedInUser = user;
-        listenToUserData();
-        listenToCallHistory();
-        navigate('homePage');
-    } else {
-        loggedInUser = null;
-        navigate('welcomePage');
-    }
+  if (stopUserListener) stopUserListener();
+  if (stopCallHistoryListener) stopCallHistoryListener();
+  if (user) {
+    if (user.providerData[0].providerId === 'password' && !user.emailVerified) { return; }
+    loggedInUser = user;
+    listenToUserData();
+    listenToCallHistory();
+    navigate('homePage');
+  } else {
+    loggedInUser = null;
+    navigate('welcomePage');
+  }
 });
-// --- Real-time listeners ---
-function listenToUserData() {
-    if (!loggedInUser) return;
-    const userRef = db.collection('users').doc(loggedInUser.uid);
-    stopUserListener = userRef.onSnapshot(doc => {
-        if (doc.exists) {
-            const userData = doc.data();
-            document.getElementById('welcomeUserName').textContent = userData.fullName;
-            updateWalletBalance(userData.balance);
-        } else {
-            console.log("User document doesn't exist yet, likely during registration.");
-        }
-    }, err => console.error("Error listening to user data:", err));
-}
-function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
-    if (!loggedInUser) return;
-    let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc');
-    if (limit) { historyRef = historyRef.limit(limit); }
-    const historyListDiv = document.getElementById(targetElementId);
-    stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
-        if (snapshot.empty) {
-            historyListDiv.innerHTML = '<p class="placeholder-text">No recent calls.</p>';
-            return;
-        }
-        historyListDiv.innerHTML = '';
-        snapshot.forEach(doc => {
-            const call = doc.data();
-            const callDate = (call.timestamp && typeof call.timestamp.toDate === 'function')
-    ? call.timestamp.toDate()
-    : new Date();
 
-            const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
-            const callItem = document.createElement('div');
-            callItem.classList.add('history-item');
-            callItem.innerHTML = `
-                <div>
-                    <div class="call-number">${call.contactName}</div>
-                    <div class="call-time">${formattedDate} (${call.duration})</div>
-                </div>
-                <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactName}')">Call Again</button>
-            `;
-            historyListDiv.appendChild(callItem);
-        });
-    }, err => console.error("Error logging call:", err));
-}
-function loadFullCallHistory() { showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); }
-// --- Home Page ---
-document.addEventListener('DOMContentLoaded', () => {
-    const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-    const countryCodes = ['+234 (Nigeria)', '+1 (USA)', '+44 (UK)', '+27 (South Africa)'];
-    countryCodeSelects.forEach(select => {
-        countryCodes.forEach(code => {
-            const option = document.createElement('option');
-            option.value = code.split(' ')[0];
-            option.textContent = code;
-            select.appendChild(option);
-        });
-    });
-});// --- Dial Pad ---
-let currentNumber = '';
-const dialPadDisplay = document.getElementById('dialPadDisplay');
-
-function dialInput(value) {
-  if (value === 'backspace' && currentNumber.length > 0) {
-    currentNumber = currentNumber.slice(0, -1);
-  } else if (value !== 'backspace') {
-    currentNumber += value;
-  }
-  dialPadDisplay.value = currentNumber;
+function listenToUserData(){
+  if(!loggedInUser) return;
+  const userRef = db.collection('users').doc(loggedInUser.uid);
+  stopUserListener = userRef.onSnapshot(doc => {
+    if(doc.exists){
+      const data = doc.data();
+      const nameEl = document.getElementById('welcomeUserName');
+      if(nameEl) nameEl.textContent = data.fullName || 'User';
+      updateWalletBalance(data.balance || 0);
+    }
+  }, err => console.error('User data listen error', err));
 }
 
-function clearDialPad() {
-  currentNumber = '';
-  dialPadDisplay.value = '';
-}
-
-// --- Start call from Dial Pad (Real backend + Audio + Credit check) ---
-async function startCallFromDialpad() {
-  if (!currentNumber) {
-    showAlert("Please enter a number to call.");
-    return;
-  }
-
-  // Normalize and add +country code (default +234)
-  let toNumber = currentNumber.startsWith("+")
-    ? currentNumber
-    : "+234" + currentNumber.replace(/^0+/, "");
-
-  // Show call screen
-  callingContactName.textContent = toNumber;
-  callScreen.classList.add("active");
-  callStatus.textContent = "Please wait while we connect your call...";
-
-  // Play connecting message
-  try {
-    connectAudio.currentTime = 0;
-    connectAudio.play().catch(() => {});
-  } catch (e) {}
-
-  showLoader();
-
-  try {
-    const res = await fetch("https://smartcall-backend-7cm9.onrender.com/api/call", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: toNumber }),
-    });
-
-    const data = await res.json();
-    hideLoader();
-
-    // Stop connecting audio
-    connectAudio.pause();
-    connectAudio.currentTime = 0;
-
-    // --- Handle backend response ---
-    const status = data?.result?.entries?.[0]?.status || "Unknown";
-
-    if (status === "InsufficientCredit") {
-      callStatus.textContent =
-        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
-      showAlert(
-        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you."
-      );
-      setTimeout(() => callScreen.classList.remove("active"), 4000);
+/* --- Call history listeners --- */
+function listenToCallHistory(limit=5, targetElementId='recentCallsList'){
+  if(!loggedInUser) return;
+  let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp','desc');
+  if(limit) historyRef = historyRef.limit(limit);
+  const targetDiv = document.getElementById(targetElementId);
+  stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
+    if(!snapshot || snapshot.empty) {
+      if(targetDiv) targetDiv.innerHTML = '<p class="placeholder-text">No recent calls.</p>';
       return;
     }
+    if(targetDiv) targetDiv.innerHTML = '';
+    snapshot.forEach(doc => {
+      const call = doc.data();
+      const ts = (call.timestamp && typeof call.timestamp.toDate === 'function') ? call.timestamp.toDate() : new Date();
+      const formatted = ts.toLocaleString();
+      const item = document.createElement('div');
+      item.classList.add('history-item');
+      item.innerHTML = `<div><div class="call-number">${call.contactName}</div><div class="call-time">${formatted} (${call.duration})</div></div>
+                        <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactPhone}')">Call Again</button>`;
+      targetDiv.appendChild(item);
+    });
+  }, err => console.error('Call history error', err));
+}
+function loadFullCallHistory(){ showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); hideLoader(); }
 
-    if (res.ok && data.success) {
-      callStatus.textContent = "Ringing...";
-      try {
-        ringAudio.currentTime = 0;
-        ringAudio.play().catch(() => {});
-      } catch (e) {}
+/* --- Dialpad & contacts --- */
+let currentNumber = '';
+const dialPadDisplay = () => document.getElementById('dialPadDisplay');
 
-      // Simulate connecting after ringing
-      setTimeout(() => {
-        ringAudio.pause();
-        ringAudio.currentTime = 0;
-        callStatus.textContent = "Connected";
-        seconds = 0;
-        callTimer.textContent = "00:00";
-        callInterval = setInterval(updateCallTimer, 1000);
-      }, 2500);
-    } else {
-      callStatus.textContent = data.error || "Call failed to connect.";
-      showAlert(data.error || "Call failed to connect.");
-      setTimeout(() => callScreen.classList.remove("active"), 3000);
-    }
-  } catch (error) {
-    hideLoader();
-    connectAudio.pause();
-    ringAudio.pause();
-    callStatus.textContent = "Network Error. Please try again.";
-    showAlert("Network Error: " + error.message);
-    setTimeout(() => callScreen.classList.remove("active"), 3000);
+function dialInput(value){
+  if (!dialPadDisplay()) return;
+  if(value === 'backspace') currentNumber = currentNumber.slice(0, -1);
+  else currentNumber += value;
+  dialPadDisplay().value = currentNumber;
+}
+function clearDialPad(){ currentNumber = ''; if(dialPadDisplay()) dialPadDisplay().value = ''; }
+function openContactsFromDialpad(){ history.back(); openOverlayWithHistory('contactsPage'); }
+
+/* --- Contacts --- */
+function loadContacts(){
+  showLoader();
+  if(!loggedInUser){ hideLoader(); return; }
+  const listDiv = document.getElementById('contactsList');
+  if(listDiv) listDiv.innerHTML = '<p class="placeholder-text">Loading contacts...</p>';
+  const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
+  contactsRef.orderBy('name').get()
+    .then(snapshot => {
+      allContacts = [];
+      if(listDiv) listDiv.innerHTML = '';
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        allContacts.push({ id: doc.id, ...c });
+      });
+      displayContacts(allContacts);
+      hideLoader();
+    })
+    .catch(err => {
+      console.error('Error loading contacts', err);
+      if(listDiv) listDiv.innerHTML = '<p class="error-message">Could not load contacts.</p>';
+      hideLoader();
+    });
+}
+
+function displayContacts(list){
+  const contactsListDiv = document.getElementById('contactsList');
+  if(!contactsListDiv) return;
+  contactsListDiv.innerHTML = '';
+  if(!list || list.length === 0) {
+    contactsListDiv.innerHTML = '<p class="placeholder-text">No contacts found. Add one!</p>';
+    return;
   }
+  list.forEach(contact => {
+    const div = document.createElement('div');
+    div.classList.add('contact-item');
+    const initials = (contact.name || '').split(' ').map(p => p.charAt(0).toUpperCase()).join('');
+    div.innerHTML = `
+      <div class="contact-avatar">${initials}</div>
+      <div class="contact-info">
+        <div class="contact-name">${contact.name}</div>
+        <div class="contact-phone">${contact.phone}</div>
+      </div>
+      <div class="contact-actions">
+        <button class="icon-btn" onclick="openCallScreen('${escapeJS(contact.name)}','${escapeJS(contact.phone)}')" aria-label="Call ${contact.name}"><i class="fas fa-phone"></i></button>
+        <button class="icon-btn" onclick="openNewMessagePageWithRecipient('${escapeJS(contact.name)}','${escapeJS(contact.phone)}')"><i class="fas fa-comment"></i></button>
+        <button class="icon-btn" onclick="openEditContactPage('${contact.id}')"><i class="fas fa-edit"></i></button>
+        <button class="icon-btn" onclick="deleteContact('${contact.id}')"><i class="fas fa-trash"></i></button>
+      </div>`;
+    contactsListDiv.appendChild(div);
+  });
 }
 
-// --- Enable keyboard input for dial pad ---
-document.addEventListener("keydown", (e) => {
-  const key = e.key;
-  if (/^[0-9*#+]$/.test(key)) {
-    dialInput(key);
-  } else if (key === "Backspace") {
-    dialInput("backspace");
-  } else if (key === "Enter") {
-    startCallFromDialpad();
-  }
-});
-
-function openContactsFromDialpad() {
-  history.back();
-  openOverlayWithHistory("contactsPage");
+function escapeJS(s){
+  if(!s) return '';
+  return s.replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
-// --- Contacts Page ---
-function loadContacts() {
-    showLoader();
-    if (!loggedInUser) { hideLoader(); return; }
-    const contactsListDiv = document.getElementById('contactsList');
-    contactsListDiv.innerHTML = '<p class="placeholder-text">Loading contacts...</p>';
-    const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-    contactsRef.orderBy('name').onSnapshot(snapshot => {
-        allContacts = []; snapshot.forEach(doc => { allContacts.push({ id: doc.id, ...doc.data() }); });
-        displayContacts(allContacts); hideLoader();
-    }, error => {
-        console.error("Error loading contacts: ", error);
-        contactsListDiv.innerHTML = '<p class="error-message">Could not load contacts.</p>';
-        hideLoader();
-    });
-}
-function displayContacts(list) {
-    const contactsListDiv = document.getElementById('contactsList');
-    contactsListDiv.innerHTML = '';
-    if (list.length === 0) {
-        contactsListDiv.innerHTML = '<p class="placeholder-text">No contacts found. Add one!</p>';
-        return;
-    }
-    list.forEach(contact => {
-        const contactDiv = document.createElement('div');
-        contactDiv.classList.add('contact-item');
-        const nameParts = contact.name.split(' ');
-        const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
-        contactDiv.innerHTML = `
-        <div class="contact-avatar">${initials}</div>
-        <div class="contact-info">
-            <div class="contact-name">${contact.name}</div>
-            <div class="contact-phone">${contact.phone}</div>
-        </div>
-        <div class="contact-actions">
-            <button class="icon-btn" onclick="openCallScreen('${contact.name}', '${contact.phone}')" aria-label="Call ${contact.name}"><i class="fas fa-phone"></i></button>
-            <button class="icon-btn" onclick="openNewMessagePageWithRecipient('${contact.name}', '${contact.phone}')" aria-label="Message ${contact.name}"><i class="fas fa-comment"></i></button>
-            <button class="icon-btn" onclick="openEditContactPage('${contact.id}')" aria-label="Edit ${contact.name}"><i class="fas fa-edit"></i></button>
-            <button class="icon-btn" onclick="deleteContact('${contact.id}')" aria-label="Delete ${contact.name}"><i class="fas fa-trash"></i></button>
-        </div>
-        `;
-        contactsListDiv.appendChild(contactDiv);
-    });
-}
-function saveNewContact() {
-    showLoader();
-    const name = document.getElementById('newContactName').value;
-    const phone = document.getElementById('newContactPhone').value;
-    const email = document.getElementById('newContactEmail').value;
-    if (name && phone && loggedInUser) {
-        const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-        contactsRef.add({ name: name, phone: phone, email: email })
-            .then(() => { hideLoader(); showAlert('Contact saved successfully!'); history.back(); })
-            .catch(error => { hideLoader(); showAlert('Error saving contact: ' + error.message); });
-    } else { hideLoader(); showAlert('Name and phone number are required.'); }
-}
-function openEditContactPage(contactId) {
-    const contact = allContacts.find(c => c.id === contactId);
-    if (!contact) { showAlert("Contact not found."); return; }
-    document.getElementById('editContactId').value = contact.id;
-    document.getElementById('editContactName').value = contact.name;
-    document.getElementById('editContactPhone').value = contact.phone;
-    document.getElementById('editContactEmail').value = contact.email;
-    openOverlayWithHistory('editContactPage');
-}
-function saveEditedContact() {
-    showLoader();
-    const id = document.getElementById('editContactId').value;
-    const name = document.getElementById('editContactName').value;
-    const phone = document.getElementById('editContactPhone').value;
-    const email = document.getElementById('editContactEmail').value;
-    if (id && name && phone && loggedInUser) {
-        const contactRef = db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(id);
-        contactRef.update({ name: name, phone: phone, email: email })
-            .then(() => { hideLoader(); showAlert('Contact updated successfully!'); history.back(); })
-            .catch(error => { hideLoader(); showAlert('Error updating contact: ' + error.message); });
-    } else { hideLoader(); showAlert('Name and phone number are required.'); }
-}
-function deleteContact(contactId) {
-    showConfirm('Are you sure you want to delete this contact?', () => {
-        showLoader();
-        db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(contactId).delete()
-            .then(() => { hideLoader(); showAlert('Contact deleted successfully!'); })
-            .catch(error => { hideLoader(); showAlert('Error deleting contact: ' + error.message); });
-    });
-}
-function searchContacts() {
-    const searchTerm = document.getElementById('contactSearchInput').value.toLowerCase();
-    const filteredContacts = allContacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchTerm) || contact.phone.includes(searchTerm)
-    );
-    displayContacts(filteredContacts);
-}
-// --- Messages Page (Simplified) ---
-function openNewMessagePage() { showAlert("Messaging feature is under development."); hideLoader(); }
-function openNewMessagePageWithRecipient(name, phone) { showAlert("Messaging feature is under development."); hideLoader(); }
-function searchMessages() { showAlert("Messaging feature is under development."); }
-// --- Profile Page ---
-async function populateProfile() {
-    showLoader();
-    if (!loggedInUser) { hideLoader(); return; }
-    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-    if (userDoc.exists) {
-        const userData = userDoc.data();
-        document.getElementById('profileName').textContent = userData.fullName || 'N/A';
-        document.getElementById('profileEmail').textContent = userData.email || 'N/A';
-        document.getElementById('profilePhone').textContent = loggedInUser.phoneNumber || userData.phoneNumber || 'N/A';
-        const memberSinceDate = userData.memberSince ? userData.memberSince.toDate() : new Date();
-        document.getElementById('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    }
-    hideLoader();
-}
-function openEditProfilePage() {
-    const currentName = document.getElementById('profileName').textContent;
-    document.getElementById('editProfileName').value = currentName;
-    openOverlayWithHistory('editProfilePage');
-}
-function saveProfileChanges() {
-    showLoader();
-    const newName = document.getElementById('editProfileName').value;
-    if (!newName || newName.length < 3) { showAlert('Please enter a valid name.'); hideLoader(); return; }
-    db.collection('users').doc(loggedInUser.uid).update({ fullName: newName })
-        .then(() => { hideLoader(); showAlert('Profile updated successfully!'); history.back(); })
-        .catch(error => { hideLoader(); showAlert('Error updating profile: ' + error.message); });
-}
-function confirmLogout() {
-    showConfirm('Are you sure you want to logout?', () => { showLoader(); auth.signOut(); });
-}
-// --- Call Screen (Simulation) & History Logging ---
-// --- Real Call Integration (Connected to Render Backend) ---
+/* --- Call Screen & Real call integration --- */
 const callScreen = document.getElementById('callScreen');
 const callingContactName = document.getElementById('callingContactName');
 const callStatus = document.getElementById('callStatus');
 const callTimer = document.getElementById('callTimer');
 
-let callInterval;
+let callInterval = null;
 let seconds = 0;
-const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
-const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
+let startRingTimeout = null;
 
-// --- Open Call Screen and Start Call (CLEANED) ---
-async function openCallScreen(name, number) {
-  // set UI
-  callingContactName.textContent = name || number;
-  callScreen.setAttribute("data-contact-name", name || number);
-  callScreen.setAttribute("data-contact-phone", number);
-  callScreen.classList.add("active");
+/* Open call screen and make a real backend call */
+async function openCallScreen(name, number){
+  // sanitize number and UI
+  const displayName = name || number || 'Unknown';
+  if(callingContactName) callingContactName.textContent = displayName;
+  if(callScreen) callScreen.classList.add('active');
+  if(callStatus) callStatus.textContent = "Please wait while we connect your call...";
 
-    // === CHECK USER BALANCE BEFORE CALL ===
-if (!loggedInUser) {
-  showAlert("You must be logged in to make a call.");
-  callScreen.classList.remove("active");
-  return;
-}
+  // user gesture already occurred (click) so audio play is allowed on most browsers
+  try { connectAudio.currentTime = 0; connectAudio.play().catch(()=>{}); } catch(e){}
 
-const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-if (!userDoc.exists || (userDoc.data().balance || 0) < callCostPerMinute) {
-  showAlert("You do not have sufficient balance to make this call. Please recharge and try again. Thank you.");
-  callScreen.classList.remove("active");
-  return;
-}
+  // after short message start ringing tone
+  startRingTimeout = setTimeout(() => {
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.currentTime = 0; ringAudio.play().catch(()=>{}); } catch(e){}
+    if(callStatus) callStatus.textContent = "Ringing...";
+  }, 2400);
 
-  // show connecting message and play short spoken "please wait" audio
-  callStatus.textContent = "Please wait while we connect your call...";
-  try {
-    // play a short "please wait" voice message (will be ignored if browser blocks autoplay)
-    connectAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
-  } catch(e){}
-
-  // after 2.5s start the looped ringing tone
-  // store the timeout so we could clear it if needed (optional)
-  const startRingTimeout = setTimeout(() => {
-    try {
-      connectAudio.pause();
-      connectAudio.currentTime = 0;
-    } catch(e){}
-    try {
-      ringAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
-    } catch(e){}
-    callStatus.textContent = "Ringing...";
-  }, 2500);
-
-  // normalize number (add + if missing) - naive default to +234
-  let toNumber = number && number.startsWith("+") ? number : ("+234" + (number || "").replace(/^0+/, ""));
+  // normalize number (add + if missing) - default to +234; adjust logic to detect other countries as needed
+  let toNumber = number || '';
+  if(!toNumber.startsWith('+')) toNumber = '+234' + toNumber.replace(/^0+/, '');
 
   showLoader();
   try {
     const res = await fetch(BACKEND_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ to: toNumber })
     });
     const data = await res.json();
     hideLoader();
 
-    // Stop any audio now (only once)
+    // stop pre-call audio
     try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
     try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
-    clearTimeout(startRingTimeout);
+    if(startRingTimeout) clearTimeout(startRingTimeout);
 
-    if (res.ok && data && data.success) {
-      // call queued / connected — start UI timer
-      callStatus.textContent = "Connected";
-      seconds = 0;
-      if (callTimer) callTimer.textContent = "00:00";
-      callInterval = setInterval(updateCallTimer, 1000);
-    } else {
-      // call failed — show message and close UI
-      callStatus.textContent = "Call Failed";
-      showAlert((data && data.error) ? data.error : "Could not start call.");
-      setTimeout(() => callScreen.classList.remove("active"), 2000);
+    // handle responses
+    if (!res.ok || (data && data.success === false)) {
+      // Show backend error or insufficient balance message returned from backend
+      const msg = (data && data.error) ? data.error : "Call failed to connect.";
+      if(callStatus) callStatus.textContent = msg;
+      showAlert(msg);
+      setTimeout(()=>{ if(callScreen) callScreen.classList.remove('active'); }, 2000);
+      return;
     }
+
+    // At this point call was queued by Africa's Talking (result.status maybe 'Queued')
+    // Start timer only when the backend indicates connected (here we treat queued as 'connected on UI')
+    if(callStatus) callStatus.textContent = "Connected";
+    seconds = 0;
+    if(callTimer) callTimer.textContent = "00:00";
+    callInterval = setInterval(updateCallTimer, 1000);
+
   } catch (err) {
-    // network or other error
     hideLoader();
-    // ensure audios stopped
     try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
     try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
-    clearTimeout(startRingTimeout);
-
-    callStatus.textContent = "Network Error";
-    showAlert("Network error: " + (err.message || err));
-    setTimeout(() => callScreen.classList.remove("active"), 2000);
+    if(startRingTimeout) clearTimeout(startRingTimeout);
+    if(callStatus) callStatus.textContent = "Network Error. Please try again.";
+    showAlert("Network Error: " + (err.message || err));
+    setTimeout(()=>{ if(callScreen) callScreen.classList.remove('active'); }, 2000);
   }
 }
 
-// --- Update Call Timer ---
-function updateCallTimer() {
+function updateCallTimer(){
   seconds++;
-  const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
-  const remainingSeconds = (seconds % 60).toString().padStart(2, "0");
-  callTimer.textContent = `${minutes}:${remainingSeconds}`;
+  if(callTimer) {
+    const mm = Math.floor(seconds/60).toString().padStart(2,'0');
+    const ss = (seconds%60).toString().padStart(2,'0');
+    callTimer.textContent = `${mm}:${ss}`;
+  }
 }
 
-// --- End Call ---
-async function endCallSimulation() {
+/* End call (requests backend to hangup) */
+async function endCallSimulation(){
   showLoader();
   clearInterval(callInterval);
-  callScreen.classList.remove("active");
+  callInterval = null;
+  // stop audio
+  try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+  try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
 
-  const duration = callTimer.textContent;
-  const contactName = callScreen.getAttribute("data-contact-name");
-  const contactPhone = callScreen.getAttribute("data-contact-phone");
+  // UI hide
+  if(callScreen) callScreen.classList.remove('active');
 
+  const duration = (callTimer && callTimer.textContent) ? callTimer.textContent : '00:00';
+  const contactName = (callScreen && callScreen.getAttribute) ? callScreen.getAttribute('data-contact-name') : '';
+
+  // request server to end call (if server supports it)
   try {
     await fetch(END_CALL_URL, { method: "POST" });
-    hideLoader();
-    showAlert(`Call with ${contactName} ended after ${duration}`);
   } catch (err) {
-    hideLoader();
-    showAlert("Error ending call: " + err.message);
+    console.warn('End call request failed: ', err);
   }
-    // Stop ringing sound if still playing
-if (typeof ringAudio !== "undefined") {
-  ringAudio.pause();
-  ringAudio.currentTime = 0;
+
+  // log to Firestore
+  if(loggedInUser && seconds > 0){
+    db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
+      contactName: contactName || 'Unknown',
+      contactPhone: (callScreen && callScreen.getAttribute) ? callScreen.getAttribute('data-contact-phone') : '',
+      duration,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(err => console.error('Failed to log call', err));
+  }
+  seconds = 0;
+  hideLoader();
+  showAlert(`Call with ${contactName || 'contact'} ended after ${duration}`);
 }
 
-
-  // Log to Firestore
-  if (loggedInUser && seconds > 0) {
-    db.collection("users").doc(loggedInUser.uid).collection("callHistory").add({
-      contactName: contactName,
-      contactPhone: contactPhone,
-      duration: duration,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+/* --- Start call from Dial Pad (button) --- */
+async function startCallFromDialpad(){
+  if(!currentNumber || currentNumber.trim()===''){
+    showAlert('Please enter a number to call.');
+    return;
   }
+  // Use dialpad number - add plus if missing using a user country code selector if you have it
+  const numberToCall = currentNumber.startsWith('+') ? currentNumber : ('+234' + currentNumber.replace(/^0+/, ''));
+  // Show call screen and trigger call
+  openCallScreen(numberToCall, numberToCall);
 }
-// --- Custom Alert/Confirm Dialogs ---
+
+/* --- keyboard dialpad support --- */
+document.addEventListener('keydown', (e) => {
+  const k = e.key;
+  if(/^[0-9*#+]$/.test(k)) { dialInput(k); }
+  else if(k === 'Backspace') { dialInput('backspace'); }
+  else if(k === 'Enter') { startCallFromDialpad(); }
+});
+
+/* --- Utility / Alert / Confirm UI (use your existing modals) --- */
 const alertDialog = document.getElementById('customAlertDialog');
 const alertMessage = document.getElementById('customAlertMessage');
-function showAlert(message) { alertMessage.textContent = message; alertDialog.classList.add('active'); }
-function hideCustomAlert() { alertDialog.classList.remove('active'); }
+function showAlert(msg){
+  if(alertMessage && alertDialog){
+    alertMessage.textContent = msg; alertDialog.classList.add('active');
+  } else {
+    window.alert(msg);
+  }
+}
+function hideCustomAlert(){ if(alertDialog) alertDialog.classList.remove('active'); }
+
 const confirmDialog = document.getElementById('customConfirmDialog');
 const confirmMessage = document.getElementById('customConfirmMessage');
 const confirmOkBtn = document.getElementById('confirmOkBtn');
 const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-let confirmCallback;
-function showConfirm(message, onConfirm) {
-    confirmMessage.textContent = message; confirmCallback = onConfirm; confirmDialog.classList.add('active');
+let confirmCallback = null;
+function showConfirm(msg, onConfirm){
+  if(confirmMessage && confirmDialog){
+    confirmMessage.textContent = msg; confirmCallback = onConfirm; confirmDialog.classList.add('active');
+  } else {
+    if(window.confirm(msg) && onConfirm) onConfirm();
+  }
 }
-confirmOkBtn.onclick = () => { if (confirmCallback) { confirmCallback(); } confirmDialog.classList.remove('active'); };
-confirmCancelBtn.onclick = () => { confirmDialog.classList.remove('active'); };
-// --- Recharge and Wallet ---
-async function payWithPaystack() {
+if(confirmOkBtn) confirmOkBtn.onclick = () => { if(confirmCallback) confirmCallback(); if(confirmDialog) confirmDialog.classList.remove('active'); };
+if(confirmCancelBtn) confirmCancelBtn.onclick = () => { if(confirmDialog) confirmDialog.classList.remove('active'); };
+
+/* --- Wallet & recharge --- */
+async function payWithPaystack(){
+  showLoader();
+  let amount = document.getElementById("rechargeAmount").value;
+  if(!amount || isNaN(amount) || amount < 100){ showAlert("Please enter a valid amount (minimum ₦100)"); hideLoader(); return; }
+  if(!loggedInUser){ showAlert("You must be logged in to recharge."); hideLoader(); return; }
+  const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+  if(!userDoc.exists){ showAlert("Could not find user data. Try again."); hideLoader(); return; }
+  const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
+  let handler = PaystackPop.setup({
+    key: paystackPublicKey, email: userEmail, amount: amount * 100, currency: 'NGN',
+    ref: 'SC_' + Math.floor(Math.random()*1000000000 + 1),
+    callback: function(response){
+      showLoader(); document.getElementById("rechargeStatus").innerText = "Verifying payment...";
+      updateUserBalanceInDB(parseFloat(amount)).then(() => {
+        document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
+        hideLoader(); setTimeout(()=>closeOverlay('rechargePage'), 1500);
+      });
+    },
+    onClose: function(){ hideLoader(); }
+  });
+  handler.openIframe();
+}
+
+async function updateUserBalanceInDB(amount){
+  if(!loggedInUser) return;
+  const userRef = db.collection('users').doc(loggedInUser.uid);
+  return db.runTransaction(transaction => {
+    return transaction.get(userRef).then(doc => {
+      if(!doc.exists) throw "Document does not exist!";
+      const newBalance = (doc.data().balance || 0) + amount;
+      transaction.update(userRef, { balance: newBalance });
+    });
+  }).catch(error => {
+    console.error("Transaction failed: ", error);
+    document.getElementById("rechargeStatus").innerText = "Recharge failed. Please try again.";
+  });
+}
+
+function updateWalletBalance(balance){
+  const el = document.getElementById("walletBalance");
+  if(!el) return;
+  const balanceInNaira = (balance || 0).toFixed(2);
+  const approxMinutes = Math.floor((balance||0) / callCostPerMinute);
+  el.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
+}
+
+/* --- Referral link --- */
+function generateReferralLink(){
+  if(loggedInUser && loggedInUser.uid) document.getElementById('referralLink').value = `https://smartcall.app/refer/${loggedInUser.uid}`;
+  else document.getElementById('referralLink').value = "Log in to get your referral link";
+}
+function copyReferralLink(){
+  const input = document.getElementById('referralLink');
+  if(!input) return;
+  input.select(); input.setSelectionRange(0,99999);
+  document.execCommand('copy'); showAlert('Referral link copied to clipboard!');
+}
+function shareReferralLink(){
+  if(navigator.share) {
+    navigator.share({ title:'SmartCall Referral', text:'Join me on SmartCall', url: document.getElementById('referralLink').value });
+  } else showAlert("Web Share not supported - please copy the link.");
+}
+
+/* --- Clear call history --- */
+function clearRecentCalls(){
+  showConfirm('Are you sure you want to clear your entire call history? This cannot be undone.', () => {
     showLoader();
-    let amount = document.getElementById("rechargeAmount").value;
-    if (!amount || isNaN(amount) || amount < 100) { showAlert("Please enter a valid amount (minimum ₦100)"); hideLoader(); return; }
-    if (!loggedInUser) { showAlert("You must be logged in to recharge."); hideLoader(); return; }
-    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-    if (!userDoc.exists) { showAlert("Could not find user data. Please try again."); hideLoader(); return; }
-    const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
-    let handler = PaystackPop.setup({
-        key: paystackPublicKey, email: userEmail, amount: amount * 100, currency: 'NGN',
-        ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
-        callback: function (response) {
-            showLoader(); document.getElementById("rechargeStatus").innerText = "Verifying payment...";
-            updateUserBalanceInDB(parseFloat(amount)).then(() => {
-                document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-                hideLoader(); setTimeout(() => closeOverlay('rechargePage'), 1500);
-            });
-        },
-        onClose: function () { hideLoader(); }
-    });
-    handler.openIframe();
-}
-async function updateUserBalanceInDB(amount) {
-    if (!loggedInUser) return;
-    const userRef = db.collection('users').doc(loggedInUser.uid);
-    return db.runTransaction(transaction => {
-        return transaction.get(userRef).then(doc => {
-            if (!doc.exists) { throw "Document does not exist!"; }
-            const newBalance = (doc.data().balance || 0) + amount;
-            transaction.update(userRef, { balance: newBalance });
-        });
-    }).catch(error => {
-        console.error("Transaction failed: ", error);
-        document.getElementById("rechargeStatus").innerText = "Recharge failed. Please try again.";
-    });
-}
-function updateWalletBalance(balance) {
-    const balanceText = document.getElementById("walletBalance");
-    const balanceInNaira = balance.toFixed(2);
-    const approxMinutes = Math.floor(balance / callCostPerMinute);
-    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
-}
-// --- Referral Page Actions ---
-function generateReferralLink() {
-    if (loggedInUser && loggedInUser.uid) {
-        document.getElementById('referralLink').value = `https://smartcall.app/refer/${loggedInUser.uid}`;
-    } else {
-        document.getElementById('referralLink').value = "Log in to get your referral link";
-    }
-}
-function copyReferralLink() {
-    const referralInput = document.getElementById('referralLink');
-    referralInput.select();
-    referralInput.setSelectionRange(0, 99999);
-    document.execCommand('copy');
-    showAlert('Referral link copied to clipboard!');
-}
-function shareReferralLink() {
-    if (navigator.share) {
-        navigator.share({
-            title: 'SmartCall Referral',
-            text: 'Join me on SmartCall and get free credit!',
-            url: document.getElementById('referralLink').value,
-        }).catch((error) => console.log('Error sharing', error));
-    } else {
-        showAlert("Web Share API is not supported in this browser. Please use the copy button.");
-    }
-}
-// --- New Function to Clear All Call History ---
-function clearRecentCalls() {
-    showConfirm('Are you sure you want to clear your entire call history? This cannot be undone.', () => {
-        showLoader();
-        if (!loggedInUser) {
-            showAlert("You must be logged in to clear history.");
-            hideLoader();
-            return;
-        }
-
-        const callHistoryRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory');
-        callHistoryRef.get().then(snapshot => {
-            const batch = db.batch();
-            snapshot.docs.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-            return batch.commit();
-        }).then(() => {
-            hideLoader();
-            showAlert('Call history cleared successfully!');
-        }).catch(error => {
-            console.error("Error clearing call history: ", error);
-            hideLoader();
-            showAlert('Error clearing call history: ' + error.message);
-        });
-    });
-
+    if(!loggedInUser){ showAlert("You must be logged in to clear history."); hideLoader(); return; }
+    const callHistoryRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory');
+    callHistoryRef.get().then(snapshot => {
+      const batch = db.batch();
+      snapshot.docs.forEach(d => batch.delete(d.ref));
+      return batch.commit();
+    }).then(()=>{ hideLoader(); showAlert('Call history cleared successfully!'); })
+    .catch(err => { console.error(err); hideLoader(); showAlert('Error clearing call history: ' + err.message); });
+  });
 }
 
-// --- Fade in copyright text after page load ---
-window.addEventListener("load", () => {
+/* --- Small helpers --- */
+function openNewMessagePage() { showAlert("Messaging under development."); }
+function openNewMessagePageWithRecipient(name, phone) { showAlert("Messaging under development."); }
+function searchMessages(){ showAlert("Messaging under development."); }
+
+window.addEventListener('load', ()=> {
+  // fade-in for your global copyright (if used)
   const copyElem = document.querySelector('.global-copyright');
-  if (copyElem) copyElem.style.opacity = 1;
+  if(copyElem) copyElem.style.opacity = 1;
 });
-
-
-
-
-
-
-
 

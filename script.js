@@ -35,18 +35,249 @@ function toggleTheme(){
   localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
 }
 
-/* --- Audio (single definitions) --- */
-/* "Please wait" spoken / hold message - short */
-const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3");
-connectAudio.volume = 1.0;
-connectAudio.preload = 'auto';
+// --- AUDIO STATE AND UTILITIES (NEW) ---
+let audioContext = null; // For general audio (TTS)
+let announcementAudio = null; // To hold the TTS Audio object
 
-/* Ringing tone (loop) - played after the short message */
-const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3");
-ringAudio.loop = true;
-ringAudio.volume = 0.6;
-ringAudio.preload = 'auto';
+let audioContextRing = null; // For ringback tone
+let ringbackInterval = null;
+let ringbackOscillator1 = null;
+let ringbackOscillator2 = null;
+let ringbackGainNode = null;
 
+// Helper to convert base64 to ArrayBuffer
+function base64ToArrayBuffer(base64) {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
+// Helper for WAV file generation
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+}
+
+// Helper to convert PCM data to a WAV Blob (Signed 16-bit PCM)
+function pcmToWav(pcm16, sampleRate) {
+    const numChannels = 1;
+    const bitsPerSample = 16;
+    const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+    const blockAlign = numChannels * (bitsPerSample / 8);
+    const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+    const view = new DataView(buffer);
+
+    // RIFF identifier
+    writeString(view, 0, 'RIFF');
+    // file length
+    view.setUint32(4, 36 + pcm16.length * 2, true);
+    // RIFF type
+    writeString(view, 8, 'WAVE');
+    // format chunk identifier
+    writeString(view, 12, 'fmt ');
+    // format chunk length
+    view.setUint32(16, 16, true);
+    // sample format (1 = PCM)
+    view.setUint16(20, 1, true);
+    // number of channels
+    view.setUint16(22, numChannels, true);
+    // sample rate
+    view.setUint32(24, sampleRate, true);
+    // byte rate
+    view.setUint32(28, byteRate, true);
+    // block align
+    view.setUint16(32, blockAlign, true);
+    // bits per sample
+    view.setUint16(34, bitsPerSample, true);
+    // data chunk identifier
+    writeString(view, 36, 'data');
+    // data chunk length
+    view.setUint32(40, pcm16.length * 2, true);
+
+    // Write PCM data
+    let offset = 44;
+    for (let i = 0; i < pcm16.length; i++, offset += 2) {
+        view.setInt16(offset, pcm16[i], true);
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+}
+
+// --- FEATURE 1: CALL ANNOUNCEMENT (TTS) ---
+async function playCallAnnouncement(message) {
+    try {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const payload = {
+            contents: [{ parts: [{ text: message }] }],
+            generationConfig: {
+                responseModalities: ["AUDIO"],
+                speechConfig: {
+                    voiceConfig: {
+                        prebuiltVoiceConfig: { voiceName: "Kore" } // Using Kore voice for a firm, clear tone
+                    }
+                }
+            },
+            model: "gemini-2.5-flash-preview-tts"
+        };
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+        // Retry mechanism for API call (Exponential Backoff)
+        const maxRetries = 3;
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                    const match = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = match ? parseInt(match[1], 10) : 16000;
+
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    announcementAudio = new Audio(audioUrl);
+                    
+                    // Start playback immediately and return a Promise that resolves when it's finished
+                    return new Promise(resolve => {
+                        announcementAudio.onended = () => {
+                            URL.revokeObjectURL(audioUrl);
+                            resolve();
+                        };
+                        announcementAudio.onerror = (e) => {
+                            console.error("Announcement audio playback error:", e);
+                            URL.revokeObjectURL(audioUrl);
+                            resolve(); // Resolve to continue call flow even on playback error
+                        };
+                        announcementAudio.play().catch(e => {
+                            console.error("Failed to play audio (likely due to browser autoplay policy):", e);
+                            resolve();
+                        });
+                    });
+                } else {
+                    console.error("TTS API did not return valid audio data.", result);
+                    break; 
+                }
+            } catch (error) {
+                console.warn(`TTS API call failed on attempt ${attempt + 1}. Retrying...`, error);
+                if (attempt < maxRetries - 1) {
+                    await new Promise(res => setTimeout(res, Math.pow(2, attempt) * 1000));
+                }
+            }
+        }
+        return Promise.resolve();
+    } catch (error) {
+        console.error("Error during TTS setup or playback:", error);
+        return Promise.resolve();
+    }
+}
+
+// --- FEATURE 2: RINGBACK TONE (Web Audio API) ---
+
+function startRingbackTone() {
+    if (ringbackInterval) return;
+
+    if (!audioContextRing) {
+        audioContextRing = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    if (audioContextRing.state === 'suspended') {
+        audioContextRing.resume().catch(e => console.error("Failed to resume audio context:", e));
+    }
+
+    // Create components
+    ringbackOscillator1 = audioContextRing.createOscillator();
+    ringbackOscillator2 = audioContextRing.createOscillator();
+    ringbackGainNode = audioContextRing.createGain();
+
+    // Standard Ringback Frequencies (440Hz and 480Hz for a common tone)
+    ringbackOscillator1.frequency.setValueAtTime(440, audioContextRing.currentTime);
+    ringbackOscillator2.frequency.setValueAtTime(480, audioContextRing.currentTime);
+    ringbackOscillator1.type = 'sine';
+    ringbackOscillator2.type = 'sine';
+
+    // Connect nodes: Oscillators -> Gain -> Destination
+    ringbackOscillator1.connect(ringbackGainNode);
+    ringbackOscillator2.connect(ringbackGainNode);
+    ringbackGainNode.connect(audioContextRing.destination);
+
+    // Initial gain (mute)
+    ringbackGainNode.gain.setValueAtTime(0, audioContextRing.currentTime);
+
+    // Start oscillators (they run continuously, we just modulate the gain)
+    ringbackOscillator1.start();
+    ringbackOscillator2.start();
+
+    // Ring pattern (1 second ON, 2 seconds OFF)
+    const ringDuration = 1; // seconds (the "Duuut...")
+    const silenceDuration = 2; // seconds
+    const intervalTime = (ringDuration + silenceDuration) * 1000; // ms
+
+    function ringCycle() {
+        const now = audioContextRing.currentTime;
+        // Ring ON (Set gain to 0.5 for audibility)
+        ringbackGainNode.gain.setValueAtTime(0.5, now);
+        // Ring OFF (Set gain to 0 after ringDuration)
+        ringbackGainNode.gain.setValueAtTime(0, now + ringDuration);
+    }
+
+    // Start first cycle immediately
+    ringCycle();
+    // Set interval for subsequent cycles
+    ringbackInterval = setInterval(ringCycle, intervalTime);
+
+    console.log("Ringback tone started.");
+}
+
+function stopRingbackTone() {
+    if (ringbackInterval) {
+        clearInterval(ringbackInterval);
+        ringbackInterval = null;
+    }
+    
+    // Stop oscillators smoothly
+    if (ringbackOscillator1 && ringbackGainNode) {
+        try {
+            ringbackGainNode.gain.setValueAtTime(ringbackGainNode.gain.value, audioContextRing.currentTime);
+            ringbackGainNode.gain.linearRampToValueAtTime(0.001, audioContextRing.currentTime + 0.1);
+            
+            setTimeout(() => {
+                try {
+                    ringbackOscillator1.stop();
+                    ringbackOscillator2.stop();
+                } catch (e) { /* already stopped */ }
+            }, 150); 
+        } catch(e) { /* Ignore if context is closed */ }
+    }
+    ringbackOscillator1 = null;
+    ringbackOscillator2 = null;
+    ringbackGainNode = null;
+
+    // Also stop announcement audio if it was still playing
+    if (announcementAudio) {
+        announcementAudio.pause();
+        announcementAudio = null;
+    }
+
+    console.log("Ringback tone stopped.");
+}
+// --- END AUDIO FUNCTIONS ---
 /* --- Init on DOM load --- */
 document.addEventListener('DOMContentLoaded', () => {
   // small loader display while initialising
@@ -550,5 +781,6 @@ window.addEventListener('load', ()=> {
   const copyElem = document.querySelector('.global-copyright');
   if(copyElem) copyElem.style.opacity = 1;
 });
+
 
 

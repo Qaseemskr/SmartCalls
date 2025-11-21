@@ -80,41 +80,76 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* --- Navigation & overlays --- */
-function navigate(pageId){
-  showLoader();
-  history.pushState({ pageId }, '', `#${pageId}`);
-  showPage(pageId);
+/* ========================
+   CLEAN + FIXED NAVIGATION
+   ======================== */
+
+// Go to a normal page (Home, Dialpad, Profile, etc.)
+function navigate(pageId) {
+    showLoader();
+
+    // Register the page change in browser history
+    history.pushState({ type: "page", id: pageId }, "", `#${pageId}`);
+
+    showPage(pageId);
 }
 
-function showPage(pageId){
-  document.querySelectorAll('.container').forEach(p => {
-    p.classList.add('hidden'); p.classList.remove('active-page');
-  });
-  const page = document.getElementById(pageId);
-  if(page){ page.classList.remove('hidden'); page.classList.add('active-page'); }
-  hideLoader();
+// Show a page (hide others)
+function showPage(pageId) {
+    document.querySelectorAll('.container').forEach(page => {
+        page.classList.add("hidden");
+        page.classList.remove("active-page");
+    });
+
+    const page = document.getElementById(pageId);
+    if (page) {
+        page.classList.remove("hidden");
+        page.classList.add("active-page");
+    }
+
+    hideLoader();
 }
 
-function openOverlayWithHistory(overlayId){
-  showLoader();
-  history.pushState({ overlayId }, '', `#${overlayId}`);
-  const overlay = document.getElementById(overlayId);
-  if(overlay){ overlay.classList.add('active'); }
-  if(overlayId === 'contactsPage') loadContacts();
-  else if(overlayId === 'profilePage') populateProfile();
-  else if(overlayId === 'callHistoryPage') loadFullCallHistory();
-  else if(overlayId === 'referralPage') generateReferralLink();
-  hideLoader();
+// Open an overlay (Contacts, History, Profile)
+function openOverlayWithHistory(overlayId) {
+    showLoader();
+
+    // Push state so back button closes overlay
+    history.pushState({ type: "overlay", id: overlayId }, "", `#${overlayId}`);
+
+    const overlay = document.getElementById(overlayId);
+    if (overlay) overlay.classList.add("active");
+
+    if (overlayId === "contactsPage") loadContacts();
+    else if (overlayId === "profilePage") populateProfile();
+    else if (overlayId === "callHistoryPage") loadFullCallHistory();
+
+    hideLoader();
 }
-function closeOverlay(overlayId){
-  const o = document.getElementById(overlayId);
-  if(o) o.classList.remove('active');
+
+// Close overlay (when user presses back or closes manually)
+function closeOverlay(overlayId) {
+    const overlay = document.getElementById(overlayId);
+    if (overlay) overlay.classList.remove("active");
 }
-window.onpopstate = (e) => {
-  const pageId = e.state && e.state.pageId;
-  const overlayId = e.state && e.state.overlayId;
-  if(pageId) showPage(pageId);
-  else showPage('welcomePage');
+
+// Back button handler (MOST IMPORTANT PART)
+window.onpopstate = (event) => {
+    if (!event.state) {
+        // Default: go to welcome screen
+        showPage("welcomePage");
+        return;
+    }
+
+    if (event.state.type === "page") {
+        showPage(event.state.id);
+        return;
+    }
+
+    if (event.state.type === "overlay") {
+        closeOverlay(event.state.id);
+        return;
+    }
 };
 
 /* --- Firebase init (keep as you had it) --- */
@@ -515,4 +550,5 @@ window.addEventListener('load', ()=> {
   const copyElem = document.querySelector('.global-copyright');
   if(copyElem) copyElem.style.opacity = 1;
 });
+
 

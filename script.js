@@ -611,7 +611,7 @@ function updateCallTimer(){
 
 /* End call (requests backend to hangup) */
 async function endCallSimulation(){
-  showLoader();
+  
   clearInterval(callInterval);
   callInterval = null;
   // stop audio
@@ -641,7 +641,7 @@ async function endCallSimulation(){
     }).catch(err => console.error('Failed to log call', err));
   }
   seconds = 0;
-  hideLoader();
+  
   showAlert(`Call with ${contactName || 'contact'} ended after ${duration}`);
 }
 
@@ -781,6 +781,7 @@ window.addEventListener('load', ()=> {
   const copyElem = document.querySelector('.global-copyright');
   if(copyElem) copyElem.style.opacity = 1;
 });
+
 
 
 

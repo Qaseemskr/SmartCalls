@@ -1,7 +1,7 @@
-/* ===============================
-   SmartCall - Cleaned script.js
-   Paste/replace entire existing script.js with this file
-   =============================== */
+/* ============================
+   SMARTCALL - CLEANED script.js
+   Replace entire script.js with this file
+   ============================ */
 
 /* --- Global State & Config --- */
 let isDarkTheme = false;
@@ -11,777 +11,739 @@ let stopUserListener = () => {};
 let stopCallHistoryListener = () => {};
 window.confirmationResult = null;
 
-const paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
-const callCostPerMinute = 13;
+// Paystack Public Key
+let paystackPublicKey = "pk_live_1ed27cc7f362095117cd138dc098958dfb03101e";
+const callCostPerMinute = 13; // ₦ per minute
 
-// Backend endpoints (match your deployed index.js)
-const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
-const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/api/end";
+/* --- Helper: get DOM safely --- */
+function $(id) { return document.getElementById(id); }
 
-/* --- DOM helpers --- */
-const loader = document.getElementById('loader');
-function showLoader(){ if(loader) loader.classList.add('show'); }
-function hideLoader(){ if(loader) setTimeout(()=>loader.classList.remove('show'), 300); }
+/* --- LOADER FUNCTIONS --- */
+const loader = $('loader');
+function showLoader() { if (loader) loader.classList.add('show'); }
+function hideLoader() { if (loader) setTimeout(() => loader.classList.remove('show'), 300); }
 
-/* --- Theme Toggle --- */
-function toggleTheme(){
-  isDarkTheme = !isDarkTheme;
-  document.body.classList.toggle('dark-theme', isDarkTheme);
-  const themeIcon = document.querySelector('#themeToggleButton i');
-  if(themeIcon){
-    themeIcon.classList.toggle('fa-sun', !isDarkTheme);
-    themeIcon.classList.toggle('fa-moon', isDarkTheme);
-  }
-  localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+/* --- THEME --- */
+function toggleTheme() {
+    isDarkTheme = !isDarkTheme;
+    document.body.classList.toggle('dark-theme', isDarkTheme);
+    const themeIcon = document.querySelector('#themeToggleButton i');
+    if (themeIcon) {
+        themeIcon.classList.toggle('fa-sun', !isDarkTheme);
+        themeIcon.classList.toggle('fa-moon', isDarkTheme);
+    }
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
 }
 
-// --- AUDIO STATE AND UTILITIES (NEW) ---
-let audioContext = null; // For general audio (TTS)
-let announcementAudio = null; // To hold the TTS Audio object
-
-let audioContextRing = null; // For ringback tone
-let ringbackInterval = null;
-let ringbackOscillator1 = null;
-let ringbackOscillator2 = null;
-let ringbackGainNode = null;
-
-// Helper to convert base64 to ArrayBuffer
-function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
-// Helper for WAV file generation
-function writeString(view, offset, string) {
-    for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
+/* --- UTILS --- */
+function showAlert(message) {
+    const alertDialog = $('customAlertDialog');
+    const alertMessage = $('customAlertMessage');
+    if (alertDialog && alertMessage) {
+        alertMessage.textContent = message;
+        alertDialog.classList.add('active');
+    } else {
+        alert(message);
     }
 }
-
-// Helper to convert PCM data to a WAV Blob (Signed 16-bit PCM)
-function pcmToWav(pcm16, sampleRate) {
-    const numChannels = 1;
-    const bitsPerSample = 16;
-    const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
-    const blockAlign = numChannels * (bitsPerSample / 8);
-    const buffer = new ArrayBuffer(44 + pcm16.length * 2);
-    const view = new DataView(buffer);
-
-    // RIFF identifier
-    writeString(view, 0, 'RIFF');
-    // file length
-    view.setUint32(4, 36 + pcm16.length * 2, true);
-    // RIFF type
-    writeString(view, 8, 'WAVE');
-    // format chunk identifier
-    writeString(view, 12, 'fmt ');
-    // format chunk length
-    view.setUint32(16, 16, true);
-    // sample format (1 = PCM)
-    view.setUint16(20, 1, true);
-    // number of channels
-    view.setUint16(22, numChannels, true);
-    // sample rate
-    view.setUint32(24, sampleRate, true);
-    // byte rate
-    view.setUint32(28, byteRate, true);
-    // block align
-    view.setUint16(32, blockAlign, true);
-    // bits per sample
-    view.setUint16(34, bitsPerSample, true);
-    // data chunk identifier
-    writeString(view, 36, 'data');
-    // data chunk length
-    view.setUint32(40, pcm16.length * 2, true);
-
-    // Write PCM data
-    let offset = 44;
-    for (let i = 0; i < pcm16.length; i++, offset += 2) {
-        view.setInt16(offset, pcm16[i], true);
-    }
-
-    return new Blob([view], { type: 'audio/wav' });
+function hideCustomAlert() {
+    const alertDialog = $('customAlertDialog');
+    if (alertDialog) alertDialog.classList.remove('active');
 }
 
-// --- FEATURE 1: CALL ANNOUNCEMENT (TTS) ---
-async function playCallAnnouncement(message) {
-    try {
-        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        const payload = {
-            contents: [{ parts: [{ text: message }] }],
-            generationConfig: {
-                responseModalities: ["AUDIO"],
-                speechConfig: {
-                    voiceConfig: {
-                        prebuiltVoiceConfig: { voiceName: "Kore" } // Using Kore voice for a firm, clear tone
-                    }
-                }
-            },
-            model: "gemini-2.5-flash-preview-tts"
-        };
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-
-        // Retry mechanism for API call (Exponential Backoff)
-        const maxRetries = 3;
-        for (let attempt = 0; attempt < maxRetries; attempt++) {
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                const part = result?.candidates?.[0]?.content?.parts?.[0];
-                const audioData = part?.inlineData?.data;
-                const mimeType = part?.inlineData?.mimeType;
-
-                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
-                    const match = mimeType.match(/rate=(\d+)/);
-                    const sampleRate = match ? parseInt(match[1], 10) : 16000;
-
-                    const pcmData = base64ToArrayBuffer(audioData);
-                    const pcm16 = new Int16Array(pcmData);
-                    const wavBlob = pcmToWav(pcm16, sampleRate);
-                    
-                    const audioUrl = URL.createObjectURL(wavBlob);
-                    announcementAudio = new Audio(audioUrl);
-                    
-                    // Start playback immediately and return a Promise that resolves when it's finished
-                    return new Promise(resolve => {
-                        announcementAudio.onended = () => {
-                            URL.revokeObjectURL(audioUrl);
-                            resolve();
-                        };
-                        announcementAudio.onerror = (e) => {
-                            console.error("Announcement audio playback error:", e);
-                            URL.revokeObjectURL(audioUrl);
-                            resolve(); // Resolve to continue call flow even on playback error
-                        };
-                        announcementAudio.play().catch(e => {
-                            console.error("Failed to play audio (likely due to browser autoplay policy):", e);
-                            resolve();
-                        });
-                    });
-                } else {
-                    console.error("TTS API did not return valid audio data.", result);
-                    break; 
-                }
-            } catch (error) {
-                console.warn(`TTS API call failed on attempt ${attempt + 1}. Retrying...`, error);
-                if (attempt < maxRetries - 1) {
-                    await new Promise(res => setTimeout(res, Math.pow(2, attempt) * 1000));
-                }
-            }
-        }
-        return Promise.resolve();
-    } catch (error) {
-        console.error("Error during TTS setup or playback:", error);
-        return Promise.resolve();
-    }
-}
-
-// --- FEATURE 2: RINGBACK TONE (Web Audio API) ---
-
-function startRingbackTone() {
-    if (ringbackInterval) return;
-
-    if (!audioContextRing) {
-        audioContextRing = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    
-    if (audioContextRing.state === 'suspended') {
-        audioContextRing.resume().catch(e => console.error("Failed to resume audio context:", e));
-    }
-
-    // Create components
-    ringbackOscillator1 = audioContextRing.createOscillator();
-    ringbackOscillator2 = audioContextRing.createOscillator();
-    ringbackGainNode = audioContextRing.createGain();
-
-    // Standard Ringback Frequencies (440Hz and 480Hz for a common tone)
-    ringbackOscillator1.frequency.setValueAtTime(440, audioContextRing.currentTime);
-    ringbackOscillator2.frequency.setValueAtTime(480, audioContextRing.currentTime);
-    ringbackOscillator1.type = 'sine';
-    ringbackOscillator2.type = 'sine';
-
-    // Connect nodes: Oscillators -> Gain -> Destination
-    ringbackOscillator1.connect(ringbackGainNode);
-    ringbackOscillator2.connect(ringbackGainNode);
-    ringbackGainNode.connect(audioContextRing.destination);
-
-    // Initial gain (mute)
-    ringbackGainNode.gain.setValueAtTime(0, audioContextRing.currentTime);
-
-    // Start oscillators (they run continuously, we just modulate the gain)
-    ringbackOscillator1.start();
-    ringbackOscillator2.start();
-
-    // Ring pattern (1 second ON, 2 seconds OFF)
-    const ringDuration = 1; // seconds (the "Duuut...")
-    const silenceDuration = 2; // seconds
-    const intervalTime = (ringDuration + silenceDuration) * 1000; // ms
-
-    function ringCycle() {
-        const now = audioContextRing.currentTime;
-        // Ring ON (Set gain to 0.5 for audibility)
-        ringbackGainNode.gain.setValueAtTime(0.5, now);
-        // Ring OFF (Set gain to 0 after ringDuration)
-        ringbackGainNode.gain.setValueAtTime(0, now + ringDuration);
-    }
-
-    // Start first cycle immediately
-    ringCycle();
-    // Set interval for subsequent cycles
-    ringbackInterval = setInterval(ringCycle, intervalTime);
-
-    console.log("Ringback tone started.");
-}
-
-function stopRingbackTone() {
-    if (ringbackInterval) {
-        clearInterval(ringbackInterval);
-        ringbackInterval = null;
-    }
-    
-    // Stop oscillators smoothly
-    if (ringbackOscillator1 && ringbackGainNode) {
-        try {
-            ringbackGainNode.gain.setValueAtTime(ringbackGainNode.gain.value, audioContextRing.currentTime);
-            ringbackGainNode.gain.linearRampToValueAtTime(0.001, audioContextRing.currentTime + 0.1);
-            
-            setTimeout(() => {
-                try {
-                    ringbackOscillator1.stop();
-                    ringbackOscillator2.stop();
-                } catch (e) { /* already stopped */ }
-            }, 150); 
-        } catch(e) { /* Ignore if context is closed */ }
-    }
-    ringbackOscillator1 = null;
-    ringbackOscillator2 = null;
-    ringbackGainNode = null;
-
-    // Also stop announcement audio if it was still playing
-    if (announcementAudio) {
-        announcementAudio.pause();
-        announcementAudio = null;
-    }
-
-    console.log("Ringback tone stopped.");
-}
-// --- END AUDIO FUNCTIONS ---
-/* --- Init on DOM load --- */
+/* --- On Page Load (single listener) --- */
 document.addEventListener('DOMContentLoaded', () => {
-  // small loader display while initialising
-  showLoader();
-  document.title = "SmartCall - Your Connection to the World";
+    // Page title + loader
+    showLoader();
+    document.title = "SmartCall - Your Connection to the World";
 
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme === 'dark') {
-    isDarkTheme = true;
-    document.body.classList.add('dark-theme');
-    const t = document.querySelector('#themeToggleButton i');
-    if(t){ t.classList.add('fa-moon'); t.classList.remove('fa-sun'); }
-  } else {
-    const t = document.querySelector('#themeToggleButton i');
-    if(t){ t.classList.add('fa-sun'); t.classList.remove('fa-moon'); }
-  }
+    // Theme restore
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        isDarkTheme = true;
+        document.body.classList.add('dark-theme');
+        const ti = document.querySelector('#themeToggleButton i');
+        if (ti) { ti.classList.add('fa-moon'); ti.classList.remove('fa-sun'); }
+    } else {
+        const ti = document.querySelector('#themeToggleButton i');
+        if (ti) { ti.classList.add('fa-sun'); ti.classList.remove('fa-moon'); }
+    }
 
-  // populate country code selects (update list as you like)
-  const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
-  const countryCodes = ['+234 (Nigeria)', '+233 (Ghana)', '+229 (Benin)', '+227 (Niger)', '+235 (Chad)', '+216 (Tunisia)', '+218 (Libya)', '+249 (Sudan)'];
-  countryCodeSelects.forEach(select => {
-    countryCodes.forEach(code => {
-      const option = document.createElement('option');
-      option.value = code.split(' ')[0];
-      option.textContent = code;
-      select.appendChild(option);
+    // Populate country-code selects (avoid duplicates by clearing first)
+    const countryCodes = ['+234 (Nigeria)', '+229 (Benin)', '+225 (Côte d’Ivoire)', '+233 (Ghana)', '+250 (Rwanda)', '+254 (Kenya)', '+235 (Chad)', '+227 (Niger)', '+218 (Libya)', '+249 (Sudan)'];
+    const countryCodeSelects = document.querySelectorAll('select[id$="CountryCode"]');
+    countryCodeSelects.forEach(select => {
+        select.innerHTML = ''; // clear duplicates
+        countryCodes.forEach(code => {
+            const option = document.createElement('option');
+            option.value = code.split(' ')[0];
+            option.textContent = code;
+            select.appendChild(option);
+        });
     });
-  });
 
-  hideLoader();
+    // small safety: ensure custom UI references exist
+    if ($('dialPadDisplay')) $('dialPadDisplay').value = '';
+
+    // finish loading
+    hideLoader();
 });
 
-/* --- Navigation & overlays --- */
-/* ========================
-   CLEAN + FIXED NAVIGATION
-   ======================== */
-
-// Go to a normal page (Home, Dialpad, Profile, etc.)
+/* --- Navigation & Page Helpers --- */
 function navigate(pageId) {
     showLoader();
-
-    // Register the page change in browser history
-    history.pushState({ type: "page", id: pageId }, "", `#${pageId}`);
-
+    history.pushState({ pageId }, '', `#${pageId}`);
     showPage(pageId);
 }
-
-// Show a page (hide others)
 function showPage(pageId) {
     document.querySelectorAll('.container').forEach(page => {
-        page.classList.add("hidden");
-        page.classList.remove("active-page");
+        page.classList.add('hidden');
+        page.classList.remove('active-page');
     });
-
     const page = document.getElementById(pageId);
     if (page) {
-        page.classList.remove("hidden");
-        page.classList.add("active-page");
+        page.classList.remove('hidden');
+        page.classList.add('active-page');
     }
-
     hideLoader();
 }
-
-// Open an overlay (Contacts, History, Profile)
 function openOverlayWithHistory(overlayId) {
     showLoader();
-
-    // Push state so back button closes overlay
-    history.pushState({ type: "overlay", id: overlayId }, "", `#${overlayId}`);
-
+    history.pushState({ overlayId }, '', `#${overlayId}`);
     const overlay = document.getElementById(overlayId);
-    if (overlay) overlay.classList.add("active");
-
-    if (overlayId === "contactsPage") loadContacts();
-    else if (overlayId === "profilePage") populateProfile();
-    else if (overlayId === "callHistoryPage") loadFullCallHistory();
-
-    hideLoader();
+    if (overlay) overlay.classList.add('active');
+    // load content if required
+    if (overlayId === 'contactsPage') loadContacts();
+    else if (overlayId === 'profilePage') populateProfile();
+    else if (overlayId === 'callHistoryPage') loadFullCallHistory();
+    else if (overlayId === 'referralPage') { generateReferralLink(); hideLoader(); }
+    else hideLoader();
 }
-
-// Close overlay (when user presses back or closes manually)
 function closeOverlay(overlayId) {
     const overlay = document.getElementById(overlayId);
-    if (overlay) overlay.classList.remove("active");
+    if (overlay) overlay.classList.remove('active');
 }
-
-// Back button handler (MOST IMPORTANT PART)
+// browser/back handling
 window.onpopstate = (event) => {
-    if (!event.state) {
-        // Default: go to welcome screen
-        showPage("welcomePage");
-        return;
-    }
-
-    if (event.state.type === "page") {
-        showPage(event.state.id);
-        return;
-    }
-
-    if (event.state.type === "overlay") {
-        closeOverlay(event.state.id);
-        return;
+    const pageId = event.state && event.state.pageId;
+    const overlayId = event.state && event.state.overlayId;
+    if (pageId) {
+        showPage(pageId);
+        document.querySelectorAll('.fullscreen-overlay').forEach(o => o.classList.remove('active'));
+    } else if (overlayId) {
+        const ov = document.getElementById(overlayId);
+        if (ov) ov.classList.add('active');
+    } else {
+        showPage('welcomePage');
+        document.querySelectorAll('.fullscreen-overlay').forEach(o => o.classList.remove('active'));
     }
 };
 
-/* --- Firebase init (keep as you had it) --- */
+/* --- FIREBASE INIT (unchanged) --- */
 const firebaseConfig = {
-  apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
-  authDomain: "smartcalls-d49f5.firebaseapp.com",
-  projectId: "smartcalls-d49f5",
-  storageBucket: "smartcall s-d49f5.appspot.com",
-  messagingSenderId: "854255870421",
-  appId: "1:854255870421:web:177c38dc6de653a86edd5c",
-  measurementId: "G-JKKWJEJK0B"
+    apiKey: "AIzaSyDF5ROHRjFjwnm5fzdXhOc8Xzq0LOUyw1M",
+    authDomain: "smartcalls-d49f5.firebaseapp.com",
+    projectId: "smartcalls-d49f5",
+    storageBucket: "smartcalls-d49f5.appspot.com",
+    messagingSenderId: "854255870421",
+    appId: "1:854255870421:web:177c38dc6de653a86edd5c",
+    measurementId: "G-JKKWJEJK0B"
 };
-if (typeof firebase !== 'undefined' && !firebase.apps?.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* --- Auth + user listeners --- */
-auth.onAuthStateChanged(user => {
-  if (stopUserListener) stopUserListener();
-  if (stopCallHistoryListener) stopCallHistoryListener();
-  if (user) {
-    if (user.providerData[0].providerId === 'password' && !user.emailVerified) { return; }
-    loggedInUser = user;
-    listenToUserData();
-    listenToCallHistory();
-    navigate('homePage');
-  } else {
-    loggedInUser = null;
-    navigate('welcomePage');
-  }
-});
-
-function listenToUserData(){
-  if(!loggedInUser) return;
-  const userRef = db.collection('users').doc(loggedInUser.uid);
-  stopUserListener = userRef.onSnapshot(doc => {
-    if(doc.exists){
-      const data = doc.data();
-      const nameEl = document.getElementById('welcomeUserName');
-      if(nameEl) nameEl.textContent = data.fullName || 'User';
-      updateWalletBalance(data.balance || 0);
+/* --- Recaptcha handling: always recreate when needed --- */
+function setupRecaptcha() {
+    // Destroy existing verifier if present
+    if (window.recaptchaVerifier) {
+        try {
+            window.recaptchaVerifier.clear();
+        } catch (e) { /* ignore */ }
+        window.recaptchaVerifier = null;
+        window.recaptchaWidgetId = null;
     }
-  }, err => console.error('User data listen error', err));
+    // create new one
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible'
+    });
+    window.recaptchaVerifier.render().then(widgetId => {
+        window.recaptchaWidgetId = widgetId;
+    }).catch(e => {
+        console.warn("recaptcha render failed", e);
+    });
 }
 
-/* --- Call history listeners --- */
-function listenToCallHistory(limit=5, targetElementId='recentCallsList'){
-  if(!loggedInUser) return;
-  let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp','desc');
-  if(limit) historyRef = historyRef.limit(limit);
-  const targetDiv = document.getElementById(targetElementId);
-  stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
-    if(!snapshot || snapshot.empty) {
-      if(targetDiv) targetDiv.innerHTML = '<p class="placeholder-text">No recent calls.</p>';
-      return;
+/* --- Auth functions (sendOtp/verify) --- */
+function showRegisterForm(type) {
+    const phoneSection = $('phoneAuthSection');
+    const emailSection = $('emailAuthSection');
+    const showPhoneBtn = $('showPhoneBtn');
+    const showEmailBtn = $('showEmailBtn');
+    const msg = $('registerAuthMessage');
+    if (msg) msg.textContent = '';
+    if (type === 'phone') {
+        if (phoneSection) phoneSection.classList.remove('hidden');
+        if (emailSection) emailSection.classList.add('hidden');
+        if (showPhoneBtn) showPhoneBtn.classList.add('active');
+        if (showEmailBtn) showEmailBtn.classList.remove('active');
+    } else {
+        if (phoneSection) phoneSection.classList.add('hidden');
+        if (emailSection) emailSection.classList.remove('hidden');
+        if (showPhoneBtn) showPhoneBtn.classList.remove('active');
+        if (showEmailBtn) showEmailBtn.classList.add('active');
     }
-    if(targetDiv) targetDiv.innerHTML = '';
-    snapshot.forEach(doc => {
-      const call = doc.data();
-      const ts = (call.timestamp && typeof call.timestamp.toDate === 'function') ? call.timestamp.toDate() : new Date();
-      const formatted = ts.toLocaleString();
-      const item = document.createElement('div');
-      item.classList.add('history-item');
-      item.innerHTML = `<div><div class="call-number">${call.contactName}</div><div class="call-time">${formatted} (${call.duration})</div></div>
-                        <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactPhone}')">Call Again</button>`;
-      targetDiv.appendChild(item);
-    });
-  }, err => console.error('Call history error', err));
 }
-function loadFullCallHistory(){ showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); hideLoader(); }
-
-/* --- Dialpad & contacts --- */
-let currentNumber = '';
-const dialPadDisplay = () => document.getElementById('dialPadDisplay');
-
-function dialInput(value){
-  if (!dialPadDisplay()) return;
-  if(value === 'backspace') currentNumber = currentNumber.slice(0, -1);
-  else currentNumber += value;
-  dialPadDisplay().value = currentNumber;
-}
-function clearDialPad(){ currentNumber = ''; if(dialPadDisplay()) dialPadDisplay().value = ''; }
-function openContactsFromDialpad(){ history.back(); openOverlayWithHistory('contactsPage'); }
-
-/* --- Contacts --- */
-function loadContacts(){
-  showLoader();
-  if(!loggedInUser){ hideLoader(); return; }
-  const listDiv = document.getElementById('contactsList');
-  if(listDiv) listDiv.innerHTML = '<p class="placeholder-text">Loading contacts...</p>';
-  const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts');
-  contactsRef.orderBy('name').get()
-    .then(snapshot => {
-      allContacts = [];
-      if(listDiv) listDiv.innerHTML = '';
-      snapshot.forEach(doc => {
-        const c = doc.data();
-        allContacts.push({ id: doc.id, ...c });
-      });
-      displayContacts(allContacts);
-      hideLoader();
-    })
-    .catch(err => {
-      console.error('Error loading contacts', err);
-      if(listDiv) listDiv.innerHTML = '<p class="error-message">Could not load contacts.</p>';
-      hideLoader();
-    });
-}
-
-function displayContacts(list){
-  const contactsListDiv = document.getElementById('contactsList');
-  if(!contactsListDiv) return;
-  contactsListDiv.innerHTML = '';
-  if(!list || list.length === 0) {
-    contactsListDiv.innerHTML = '<p class="placeholder-text">No contacts found. Add one!</p>';
-    return;
-  }
-  list.forEach(contact => {
-    const div = document.createElement('div');
-    div.classList.add('contact-item');
-    const initials = (contact.name || '').split(' ').map(p => p.charAt(0).toUpperCase()).join('');
-    div.innerHTML = `
-      <div class="contact-avatar">${initials}</div>
-      <div class="contact-info">
-        <div class="contact-name">${contact.name}</div>
-        <div class="contact-phone">${contact.phone}</div>
-      </div>
-      <div class="contact-actions">
-        <button class="icon-btn" onclick="openCallScreen('${escapeJS(contact.name)}','${escapeJS(contact.phone)}')" aria-label="Call ${contact.name}"><i class="fas fa-phone"></i></button>
-        <button class="icon-btn" onclick="openNewMessagePageWithRecipient('${escapeJS(contact.name)}','${escapeJS(contact.phone)}')"><i class="fas fa-comment"></i></button>
-        <button class="icon-btn" onclick="openEditContactPage('${contact.id}')"><i class="fas fa-edit"></i></button>
-        <button class="icon-btn" onclick="deleteContact('${contact.id}')"><i class="fas fa-trash"></i></button>
-      </div>`;
-    contactsListDiv.appendChild(div);
-  });
-}
-
-function escapeJS(s){
-  if(!s) return '';
-  return s.replace(/'/g, "\\'").replace(/"/g, '\\"');
-}
-
-/* --- Call Screen & Real call integration --- */
-const callScreen = document.getElementById('callScreen');
-const callingContactName = document.getElementById('callingContactName');
-const callStatus = document.getElementById('callStatus');
-const callTimer = document.getElementById('callTimer');
-
-let callInterval = null;
-let seconds = 0;
-let startRingTimeout = null;
-
-/* Open call screen and make a real backend call */
-async function openCallScreen(name, number){
-  // sanitize number and UI
-  const displayName = name || number || 'Unknown';
-  if(callingContactName) callingContactName.textContent = displayName;
-  if(callScreen) callScreen.classList.add('active');
-  if(callStatus) callStatus.textContent = "Please wait while we connect your call...";
-
-  // user gesture already occurred (click) so audio play is allowed on most browsers
-  try { connectAudio.currentTime = 0; connectAudio.play().catch(()=>{}); } catch(e){}
-
-  // after short message start ringing tone
-  startRingTimeout = setTimeout(() => {
-    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
-    try { ringAudio.currentTime = 0; ringAudio.play().catch(()=>{}); } catch(e){}
-    if(callStatus) callStatus.textContent = "Ringing...";
-  }, 2400);
-
-  // normalize number (add + if missing) - default to +234; adjust logic to detect other countries as needed
-  let toNumber = number || '';
-  if(!toNumber.startsWith('+')) toNumber = '+234' + toNumber.replace(/^0+/, '');
-
-  showLoader();
-  try {
-    const res = await fetch(BACKEND_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ to: toNumber })
-    });
-    const data = await res.json();
-    hideLoader();
-
-    // stop pre-call audio
-    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
-    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
-    if(startRingTimeout) clearTimeout(startRingTimeout);
-
-    // handle responses
-    if (!res.ok || (data && data.success === false)) {
-      // Show backend error or insufficient balance message returned from backend
-      const msg = (data && data.error) ? data.error : "Call failed to connect.";
-      if(callStatus) callStatus.textContent = msg;
-      showAlert(msg);
-      setTimeout(()=>{ if(callScreen) callScreen.classList.remove('active'); }, 2000);
-      return;
-    }
-
-    // At this point call was queued by Africa's Talking (result.status maybe 'Queued')
-    // Start timer only when the backend indicates connected (here we treat queued as 'connected on UI')
-    if(callStatus) callStatus.textContent = "Connected";
-    seconds = 0;
-    if(callTimer) callTimer.textContent = "00:00";
-    callInterval = setInterval(updateCallTimer, 1000);
-
-  } catch (err) {
-    hideLoader();
-    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
-    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
-    if(startRingTimeout) clearTimeout(startRingTimeout);
-    if(callStatus) callStatus.textContent = "Network Error. Please try again.";
-    showAlert("Network Error: " + (err.message || err));
-    setTimeout(()=>{ if(callScreen) callScreen.classList.remove('active'); }, 2000);
-  }
-}
-
-function updateCallTimer(){
-  seconds++;
-  if(callTimer) {
-    const mm = Math.floor(seconds/60).toString().padStart(2,'0');
-    const ss = (seconds%60).toString().padStart(2,'0');
-    callTimer.textContent = `${mm}:${ss}`;
-  }
-}
-
-/* End call (requests backend to hangup) */
-async function endCallSimulation(){
-  
-  clearInterval(callInterval);
-  callInterval = null;
-  // stop audio
-  try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
-  try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
-
-  // UI hide
-  if(callScreen) callScreen.classList.remove('active');
-
-  const duration = (callTimer && callTimer.textContent) ? callTimer.textContent : '00:00';
-  const contactName = (callScreen && callScreen.getAttribute) ? callScreen.getAttribute('data-contact-name') : '';
-
-  // request server to end call (if server supports it)
-  try {
-    await fetch(END_CALL_URL, { method: "POST" });
-  } catch (err) {
-    console.warn('End call request failed: ', err);
-  }
-
-  // log to Firestore
-  if(loggedInUser && seconds > 0){
-    db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
-      contactName: contactName || 'Unknown',
-      contactPhone: (callScreen && callScreen.getAttribute) ? callScreen.getAttribute('data-contact-phone') : '',
-      duration,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(err => console.error('Failed to log call', err));
-  }
-  seconds = 0;
-  
-  showAlert(`Call with ${contactName || 'contact'} ended after ${duration}`);
-}
-
-/* --- Start call from Dial Pad (button) --- */
-async function startCallFromDialpad(){
-  if(!currentNumber || currentNumber.trim()===''){
-    showAlert('Please enter a number to call.');
-    return;
-  }
-  // Use dialpad number - add plus if missing using a user country code selector if you have it
-  const numberToCall = currentNumber.startsWith('+') ? currentNumber : ('+234' + currentNumber.replace(/^0+/, ''));
-  // Show call screen and trigger call
-  openCallScreen(numberToCall, numberToCall);
-}
-
-/* --- keyboard dialpad support --- */
-document.addEventListener('keydown', (e) => {
-  const k = e.key;
-  if(/^[0-9*#+]$/.test(k)) { dialInput(k); }
-  else if(k === 'Backspace') { dialInput('backspace'); }
-  else if(k === 'Enter') { startCallFromDialpad(); }
-});
-
-/* --- Utility / Alert / Confirm UI (use your existing modals) --- */
-const alertDialog = document.getElementById('customAlertDialog');
-const alertMessage = document.getElementById('customAlertMessage');
-function showAlert(msg){
-  if(alertMessage && alertDialog){
-    alertMessage.textContent = msg; alertDialog.classList.add('active');
-  } else {
-    window.alert(msg);
-  }
-}
-function hideCustomAlert(){ if(alertDialog) alertDialog.classList.remove('active'); }
-
-const confirmDialog = document.getElementById('customConfirmDialog');
-const confirmMessage = document.getElementById('customConfirmMessage');
-const confirmOkBtn = document.getElementById('confirmOkBtn');
-const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-let confirmCallback = null;
-function showConfirm(msg, onConfirm){
-  if(confirmMessage && confirmDialog){
-    confirmMessage.textContent = msg; confirmCallback = onConfirm; confirmDialog.classList.add('active');
-  } else {
-    if(window.confirm(msg) && onConfirm) onConfirm();
-  }
-}
-if(confirmOkBtn) confirmOkBtn.onclick = () => { if(confirmCallback) confirmCallback(); if(confirmDialog) confirmDialog.classList.remove('active'); };
-if(confirmCancelBtn) confirmCancelBtn.onclick = () => { if(confirmDialog) confirmDialog.classList.remove('active'); };
-
-/* --- Wallet & recharge --- */
-async function payWithPaystack(){
-  showLoader();
-  let amount = document.getElementById("rechargeAmount").value;
-  if(!amount || isNaN(amount) || amount < 100){ showAlert("Please enter a valid amount (minimum ₦100)"); hideLoader(); return; }
-  if(!loggedInUser){ showAlert("You must be logged in to recharge."); hideLoader(); return; }
-  const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
-  if(!userDoc.exists){ showAlert("Could not find user data. Try again."); hideLoader(); return; }
-  const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
-  let handler = PaystackPop.setup({
-    key: paystackPublicKey, email: userEmail, amount: amount * 100, currency: 'NGN',
-    ref: 'SC_' + Math.floor(Math.random()*1000000000 + 1),
-    callback: function(response){
-      showLoader(); document.getElementById("rechargeStatus").innerText = "Verifying payment...";
-      updateUserBalanceInDB(parseFloat(amount)).then(() => {
-        document.getElementById("rechargeStatus").innerText = "Recharge successful! Ref: " + response.reference;
-        hideLoader(); setTimeout(()=>closeOverlay('rechargePage'), 1500);
-      });
-    },
-    onClose: function(){ hideLoader(); }
-  });
-  handler.openIframe();
-}
-
-async function updateUserBalanceInDB(amount){
-  if(!loggedInUser) return;
-  const userRef = db.collection('users').doc(loggedInUser.uid);
-  return db.runTransaction(transaction => {
-    return transaction.get(userRef).then(doc => {
-      if(!doc.exists) throw "Document does not exist!";
-      const newBalance = (doc.data().balance || 0) + amount;
-      transaction.update(userRef, { balance: newBalance });
-    });
-  }).catch(error => {
-    console.error("Transaction failed: ", error);
-    document.getElementById("rechargeStatus").innerText = "Recharge failed. Please try again.";
-  });
-}
-
-function updateWalletBalance(balance){
-  const el = document.getElementById("walletBalance");
-  if(!el) return;
-  const balanceInNaira = (balance || 0).toFixed(2);
-  const approxMinutes = Math.floor((balance||0) / callCostPerMinute);
-  el.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
-}
-
-/* --- Referral link --- */
-function generateReferralLink(){
-  if(loggedInUser && loggedInUser.uid) document.getElementById('referralLink').value = `https://smartcall.app/refer/${loggedInUser.uid}`;
-  else document.getElementById('referralLink').value = "Log in to get your referral link";
-}
-function copyReferralLink(){
-  const input = document.getElementById('referralLink');
-  if(!input) return;
-  input.select(); input.setSelectionRange(0,99999);
-  document.execCommand('copy'); showAlert('Referral link copied to clipboard!');
-}
-function shareReferralLink(){
-  if(navigator.share) {
-    navigator.share({ title:'SmartCall Referral', text:'Join me on SmartCall', url: document.getElementById('referralLink').value });
-  } else showAlert("Web Share not supported - please copy the link.");
-}
-
-/* --- Clear call history --- */
-function clearRecentCalls(){
-  showConfirm('Are you sure you want to clear your entire call history? This cannot be undone.', () => {
+function sendOtp() {
     showLoader();
-    if(!loggedInUser){ showAlert("You must be logged in to clear history."); hideLoader(); return; }
-    const callHistoryRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory');
-    callHistoryRef.get().then(snapshot => {
-      const batch = db.batch();
-      snapshot.docs.forEach(d => batch.delete(d.ref));
-      return batch.commit();
-    }).then(()=>{ hideLoader(); showAlert('Call history cleared successfully!'); })
-    .catch(err => { console.error(err); hideLoader(); showAlert('Error clearing call history: ' + err.message); });
-  });
+    const countryCode = $('registerCountryCode') ? $('registerCountryCode').value : '+234';
+    const phoneNumberInput = $('registerPhoneNumber') ? $('registerPhoneNumber').value.trim() : '';
+    const authMessage = $('registerAuthMessage');
+    if (authMessage) authMessage.textContent = '';
+    if (!phoneNumberInput) {
+        if (authMessage) authMessage.textContent = 'Please enter a phone number.';
+        hideLoader(); return;
+    }
+
+    // (re)create recaptcha each attempt
+    try {
+        if (window.recaptchaWidgetId) grecaptcha.reset(window.recaptchaWidgetId);
+    } catch (e) { /* ignore if grecaptcha missing */ }
+    setupRecaptcha();
+    const appVerifier = window.recaptchaVerifier;
+    const fullPhoneNumber = `${countryCode}${phoneNumberInput.startsWith('0') ? phoneNumberInput.substring(1) : phoneNumberInput}`;
+
+    auth.signInWithPhoneNumber(fullPhoneNumber, appVerifier)
+        .then(confirmationResult => {
+            window.confirmationResult = confirmationResult;
+            hideLoader();
+            showAlert('Verification code has been sent!');
+            const otpSection = $('otpSection');
+            if (otpSection) otpSection.classList.remove('hidden');
+        })
+        .catch(error => {
+            hideLoader();
+            console.error("Firebase Auth Error:", error.code, error.message);
+            if (authMessage) authMessage.textContent = "Error: Could not send code. Please check the number or try again later.";
+            try { if (window.recaptchaWidgetId) grecaptcha.reset(window.recaptchaWidgetId); } catch(e){}
+        });
+}
+function verifyOtp() {
+    showLoader();
+    const otp = $('otpInput') ? $('otpInput').value.trim() : '';
+    const fullName = $('registerFullNamePhone') ? $('registerFullNamePhone').value.trim() : '';
+    const authMessage = $('registerAuthMessage');
+    if (authMessage) authMessage.textContent = '';
+    if (!otp || otp.length !== 6) { if (authMessage) authMessage.textContent = 'Please enter a valid 6-digit code.'; hideLoader(); return; }
+    if (!fullName) { if (authMessage) authMessage.textContent = 'Please enter your full name.'; hideLoader(); return; }
+
+    window.confirmationResult.confirm(otp).then(result => {
+        const user = result.user;
+        const userRef = db.collection('users').doc(user.uid);
+        return userRef.get().then(doc => {
+            if (!doc.exists) {
+                return userRef.set({ fullName, phoneNumber: user.phoneNumber, memberSince: new Date(), balance: 0 });
+            }
+        });
+    }).then(() => {
+        hideLoader();
+        showAlert("Registration complete!");
+    }).catch(error => {
+        hideLoader();
+        if (authMessage) authMessage.textContent = "Invalid code. Please try again.";
+    });
 }
 
-/* --- Small helpers --- */
-function openNewMessagePage() { showAlert("Messaging under development."); }
-function openNewMessagePageWithRecipient(name, phone) { showAlert("Messaging under development."); }
-function searchMessages(){ showAlert("Messaging under development."); }
-
-window.addEventListener('load', ()=> {
-  // fade-in for your global copyright (if used)
-  const copyElem = document.querySelector('.global-copyright');
-  if(copyElem) copyElem.style.opacity = 1;
+/* --- Auth state listener --- */
+auth.onAuthStateChanged(user => {
+    if (stopUserListener) stopUserListener();
+    if (stopCallHistoryListener) stopCallHistoryListener();
+    if (user) {
+        if (user.providerData[0].providerId === 'password' && !user.emailVerified) { hideLoader(); return; }
+        loggedInUser = user;
+        listenToUserData();
+        listenToCallHistory();
+        navigate('homePage');
+    } else {
+        loggedInUser = null;
+        navigate('welcomePage');
+    }
 });
 
+/* --- Real-time listeners with robust timestamp handling --- */
+function listenToUserData() {
+    if (!loggedInUser) return;
+    const userRef = db.collection('users').doc(loggedInUser.uid);
+    stopUserListener = userRef.onSnapshot(doc => {
+        if (doc.exists) {
+            const userData = doc.data();
+            const wn = $('welcomeUserName'); if (wn) wn.textContent = userData.fullName || '';
+            updateWalletBalance((userData.balance !== undefined) ? Number(userData.balance) : 0);
+        }
+    }, err => console.error("Error listening to user data:", err));
+}
 
+function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
+    if (!loggedInUser) return;
+    let historyRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory').orderBy('timestamp', 'desc');
+    if (limit) historyRef = historyRef.limit(limit);
+    const historyListDiv = document.getElementById(targetElementId);
+    stopCallHistoryListener = historyRef.onSnapshot(snapshot => {
+        if (!historyListDiv) return;
+        if (snapshot.empty) { historyListDiv.innerHTML = '<p class="placeholder-text">No recent calls.</p>'; return; }
+        historyListDiv.innerHTML = '';
+        snapshot.forEach(doc => {
+            const call = doc.data();
+            let callDate = new Date();
+            if (call.timestamp && typeof call.timestamp.toDate === 'function') callDate = call.timestamp.toDate();
+            else if (call.timestamp && call.timestamp.seconds) callDate = new Date(call.timestamp.seconds * 1000);
+            const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+            const callItem = document.createElement('div');
+            callItem.classList.add('history-item');
+            callItem.innerHTML = `
+                <div>
+                    <div class="call-number">${call.contactName}</div>
+                    <div class="call-time">${formattedDate} (${call.duration || '00:00'})</div>
+                </div>
+                <button class="call-again-btn" onclick="openCallScreen('${call.contactName}', '${call.contactPhone || call.contactName}')">Call Again</button>
+            `;
+            historyListDiv.appendChild(callItem);
+        });
+    }, err => console.error("Error logging call:", err));
+}
+function loadFullCallHistory() { showLoader(); listenToCallHistory(null, 'fullCallHistoryList'); }
 
+/* --- Country code helper: gets selected code from dial or register select --- */
+function getUserCountryCode() {
+    const dialSelect = document.querySelector('select[id$="CountryCode"]');
+    if (dialSelect && dialSelect.value) return dialSelect.value;
+    const regSelect = $('registerCountryCode');
+    if (regSelect && regSelect.value) return regSelect.value;
+    return '+234';
+}
 
+/* --- DIAL PAD --- */
+let currentNumber = '';
+const dialPadDisplay = $('dialPadDisplay');
+function dialInput(value) {
+    if (value === 'backspace' && currentNumber.length > 0) currentNumber = currentNumber.slice(0, -1);
+    else if (value !== 'backspace') currentNumber += value;
+    if (dialPadDisplay) dialPadDisplay.value = currentNumber;
+}
+function clearDialPad() { currentNumber = ''; if (dialPadDisplay) dialPadDisplay.value = ''; }
+
+/* --- AUDIO: connect & ring --- */
+const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3");
+connectAudio.volume = 1.0;
+connectAudio.preload = 'auto';
+
+const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3");
+ringAudio.loop = true;
+ringAudio.volume = 0.6;
+ringAudio.preload = 'auto';
+
+/* --- CALL UI refs --- */
+const callScreen = $('callScreen');
+const callingContactName = $('callingContactName');
+const callStatus = $('callStatus');
+const callTimer = $('callTimer');
+
+let callInterval;
+let seconds = 0;
+const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
+const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/api/end";
+
+/* --- OPEN CALL SCREEN & START CALL (used by contacts) --- */
+async function openCallScreen(name, number) {
+    // UI setup
+    if (callingContactName) callingContactName.textContent = name || number || 'Unknown';
+    if (callScreen) {
+        callScreen.setAttribute("data-contact-name", name || number || '');
+        callScreen.setAttribute("data-contact-phone", number || '');
+        callScreen.classList.add('active');
+    }
+    if (callStatus) callStatus.textContent = "Please wait while we connect your call...";
+
+    // normalize by using selected country code if number doesn't start with +
+    let toNumber = number || '';
+    if (!toNumber.startsWith('+')) {
+        const cc = getUserCountryCode();
+        toNumber = cc + toNumber.replace(/^0+/, '');
+    }
+
+    // play connecting audio (may be blocked by autoplay policy, catch)
+    try { connectAudio.currentTime = 0; connectAudio.play().catch(()=>{}); } catch(e){}
+
+    // after a short pause, start ringback tone (only if call queued)
+    const ringTimeout = setTimeout(() => {
+        try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+        try { ringAudio.play().catch(()=>{}); } catch(e){}
+        if (callStatus) callStatus.textContent = "Ringing...";
+    }, 2500);
+
+    showLoader();
+    try {
+        const res = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ to: toNumber })
+        });
+        const data = await res.json();
+        hideLoader();
+
+        // stop audios/timeouts
+        clearTimeout(ringTimeout);
+        try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+        try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+
+        // check backend success / error
+        if (res.ok && data && data.success) {
+            // check AT returned status entry if it indicates insufficient credit or failure
+            const status = (data.result && data.result.entries && data.result.entries[0] && data.result.entries[0].status) || '';
+            const statusLower = String(status).toLowerCase();
+            if (statusLower.includes('insufficient') || statusLower.includes('failed') || statusLower.includes('rejected') || statusLower.includes('error')) {
+                const msg = "We are currently performing maintenance on our main wallet to improve call quality. Please try again shortly or recharge your personal wallet. Thank you for your patience.";
+                if (callStatus) callStatus.textContent = msg;
+                showAlert(msg);
+                setTimeout(()=>{ if (callScreen) callScreen.classList.remove('active'); }, 3500);
+                return;
+            }
+
+            // queued/connected
+            if (callStatus) callStatus.textContent = "Connected";
+            seconds = 0;
+            if (callTimer) callTimer.textContent = "00:00";
+            callInterval = setInterval(updateCallTimer, 1000);
+        } else {
+            const msg = (data && data.error) ? data.error : "Call failed to connect.";
+            if (callStatus) callStatus.textContent = msg;
+            showAlert(msg);
+            setTimeout(()=>{ if (callScreen) callScreen.classList.remove('active'); }, 3000);
+        }
+    } catch (err) {
+        hideLoader();
+        clearTimeout(ringTimeout);
+        try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+        try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+        if (callStatus) callStatus.textContent = "Network Error. Please try again.";
+        showAlert("Network error: " + (err.message || err));
+        setTimeout(()=>{ if (callScreen) callScreen.classList.remove('active'); }, 3000);
+    }
+}
+
+/* --- Start Call from Dialpad (real backend) --- */
+async function startCallFromDialpad() {
+    if (!currentNumber) { showAlert("Please enter a number to call."); return; }
+
+    // normalize using selected country code
+    let toNumber = currentNumber.startsWith('+') ? currentNumber : (getUserCountryCode() + currentNumber.replace(/^0+/, ''));
+
+    // set UI then call backend flow using openCallScreen (reusing logic)
+    openCallScreen(toNumber, toNumber);
+}
+
+/* --- Update Call Timer --- */
+function updateCallTimer() {
+    seconds++;
+    const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
+    const remainingSeconds = (seconds % 60).toString().padStart(2, "0");
+    if (callTimer) callTimer.textContent = `${minutes}:${remainingSeconds}`;
+}
+
+/* --- End Call & deduct balance --- */
+async function endCallSimulation() {
+    showLoader();
+    // stop timer
+    clearInterval(callInterval);
+    callInterval = null;
+
+    const duration = callTimer ? callTimer.textContent : '00:00';
+    const contactName = callScreen ? callScreen.getAttribute('data-contact-name') : '';
+    const contactPhone = callScreen ? callScreen.getAttribute('data-contact-phone') : '';
+
+    // Stop audio if playing
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+
+    // call backend to hang up (best-effort)
+    try {
+        await fetch(END_CALL_URL, { method: 'POST' });
+    } catch (err) {
+        console.warn("End call backend error:", err);
+    }
+
+    // Hide UI
+    if (callScreen) callScreen.classList.remove('active');
+    hideLoader();
+    showAlert(`Call with ${contactName || contactPhone} ended after ${duration}`);
+
+    // Deduct balance: convert timer to seconds -> minutes (rounded up)
+    if (loggedInUser && seconds > 0) {
+        const minutesUsed = Math.ceil(seconds / 60);
+        const amountDeduct = minutesUsed * callCostPerMinute;
+        // perform transaction update
+        const userRef = db.collection('users').doc(loggedInUser.uid);
+        try {
+            await db.runTransaction(async (tx) => {
+                const doc = await tx.get(userRef);
+                if (!doc.exists) throw new Error("User document missing");
+                const currentBal = (doc.data().balance || 0);
+                const newBal = Math.max(0, currentBal - amountDeduct);
+                tx.update(userRef, { balance: newBal });
+            });
+        } catch (err) {
+            console.error("Balance deduction failed:", err);
+        }
+
+        // Log call history with timestamp and duration
+        try {
+            await db.collection('users').doc(loggedInUser.uid).collection('callHistory').add({
+                contactName: contactName || contactPhone,
+                contactPhone: contactPhone || contactName,
+                duration,
+                cost: amountDeduct,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+        } catch (err) {
+            console.error("Failed to log call history:", err);
+        }
+    }
+
+    // reset seconds
+    seconds = 0;
+    if (callTimer) callTimer.textContent = '00:00';
+}
+
+/* --- Contacts CRUD (keep as before but robust) --- */
+function loadContacts() {
+    showLoader();
+    if (!loggedInUser) { hideLoader(); return; }
+    const contactsListDiv = $('contactsList');
+    if (!contactsListDiv) { hideLoader(); return; }
+    contactsListDiv.innerHTML = '<p class="placeholder-text">Loading contacts...</p>';
+    const contactsRef = db.collection('users').doc(loggedInUser.uid).collection('contacts').orderBy('name');
+    contactsRef.onSnapshot(snapshot => {
+        allContacts = [];
+        snapshot.forEach(doc => allContacts.push({ id: doc.id, ...doc.data() }));
+        displayContacts(allContacts);
+        hideLoader();
+    }, error => {
+        console.error("Error loading contacts:", error);
+        contactsListDiv.innerHTML = '<p class="error-message">Could not load contacts.</p>';
+        hideLoader();
+    });
+}
+function displayContacts(list) {
+    const contactsListDiv = $('contactsList');
+    if (!contactsListDiv) return;
+    contactsListDiv.innerHTML = '';
+    if (!list || list.length === 0) {
+        contactsListDiv.innerHTML = '<p class="placeholder-text">No contacts found. Add one!</p>';
+        return;
+    }
+    list.forEach(contact => {
+        const contactDiv = document.createElement('div');
+        contactDiv.classList.add('contact-item');
+        const nameParts = (contact.name || '').split(' ');
+        const initials = nameParts.map(p => p.charAt(0).toUpperCase()).join('');
+        contactDiv.innerHTML = `
+            <div class="contact-avatar">${initials}</div>
+            <div class="contact-info">
+                <div class="contact-name">${contact.name}</div>
+                <div class="contact-phone">${contact.phone}</div>
+            </div>
+            <div class="contact-actions">
+                <button class="icon-btn" onclick="openCallScreen('${escapeHtml(contact.name)}', '${escapeHtml(contact.phone)}')" aria-label="Call ${escapeHtml(contact.name)}"><i class="fas fa-phone"></i></button>
+                <button class="icon-btn" onclick="openNewMessagePageWithRecipient('${escapeHtml(contact.name)}', '${escapeHtml(contact.phone)}')" aria-label="Message ${escapeHtml(contact.name)}"><i class="fas fa-comment"></i></button>
+                <button class="icon-btn" onclick="openEditContactPage('${contact.id}')" aria-label="Edit ${escapeHtml(contact.name)}"><i class="fas fa-edit"></i></button>
+                <button class="icon-btn" onclick="deleteContact('${contact.id}')" aria-label="Delete ${escapeHtml(contact.name)}"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+        contactsListDiv.appendChild(contactDiv);
+    });
+}
+function escapeHtml(s) { return String(s || '').replace(/'/g, "\\'").replace(/"/g, '\\"'); }
+
+/* --- Contact save/edit/delete simplified (unchanged logic) --- */
+function saveNewContact() {
+    showLoader();
+    const name = $('newContactName') ? $('newContactName').value.trim() : '';
+    const phone = $('newContactPhone') ? $('newContactPhone').value.trim() : '';
+    const email = $('newContactEmail') ? $('newContactEmail').value.trim() : '';
+    if (name && phone && loggedInUser) {
+        db.collection('users').doc(loggedInUser.uid).collection('contacts').add({ name, phone, email })
+            .then(()=>{ hideLoader(); showAlert('Contact saved successfully!'); history.back(); })
+            .catch(err=>{ hideLoader(); showAlert('Error saving contact: '+err.message); });
+    } else { hideLoader(); showAlert('Name and phone number are required.'); }
+}
+function openEditContactPage(contactId) {
+    const contact = allContacts.find(c => c.id === contactId);
+    if (!contact) { showAlert("Contact not found."); return; }
+    if ($('editContactId')) $('editContactId').value = contact.id;
+    if ($('editContactName')) $('editContactName').value = contact.name;
+    if ($('editContactPhone')) $('editContactPhone').value = contact.phone;
+    if ($('editContactEmail')) $('editContactEmail').value = contact.email;
+    openOverlayWithHistory('editContactPage');
+}
+function saveEditedContact() {
+    showLoader();
+    const id = $('editContactId') ? $('editContactId').value : '';
+    const name = $('editContactName') ? $('editContactName').value.trim() : '';
+    const phone = $('editContactPhone') ? $('editContactPhone').value.trim() : '';
+    const email = $('editContactEmail') ? $('editContactEmail').value.trim() : '';
+    if (id && name && phone && loggedInUser) {
+        db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(id).update({ name, phone, email })
+            .then(()=>{ hideLoader(); showAlert('Contact updated successfully!'); history.back(); })
+            .catch(err=>{ hideLoader(); showAlert('Error updating contact: '+err.message); });
+    } else { hideLoader(); showAlert('Name and phone number are required.'); }
+}
+function deleteContact(contactId) {
+    showConfirm('Are you sure you want to delete this contact?', ()=> {
+        showLoader();
+        db.collection('users').doc(loggedInUser.uid).collection('contacts').doc(contactId).delete()
+            .then(()=>{ hideLoader(); showAlert('Contact deleted successfully!'); })
+            .catch(err=>{ hideLoader(); showAlert('Error deleting contact: '+err.message); });
+    });
+}
+function searchContacts() {
+    const searchTerm = $('contactSearchInput') ? $('contactSearchInput').value.toLowerCase() : '';
+    const filteredContacts = allContacts.filter(c => (c.name||'').toLowerCase().includes(searchTerm) || (c.phone||'').includes(searchTerm));
+    displayContacts(filteredContacts);
+}
+
+/* --- Profile + other UI helpers (unchanged semantics) --- */
+async function populateProfile() {
+    showLoader();
+    if (!loggedInUser) { hideLoader(); return; }
+    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+    if (userDoc.exists) {
+        const userData = userDoc.data();
+        if ($('profileName')) $('profileName').textContent = userData.fullName || 'N/A';
+        if ($('profileEmail')) $('profileEmail').textContent = userData.email || 'N/A';
+        if ($('profilePhone')) $('profilePhone').textContent = loggedInUser.phoneNumber || userData.phoneNumber || 'N/A';
+        const memberSinceDate = userData.memberSince ? userData.memberSince.toDate() : new Date();
+        if ($('profileMemberSince')) $('profileMemberSince').textContent = memberSinceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+    hideLoader();
+}
+function openEditProfilePage() {
+    const currentName = $('profileName') ? $('profileName').textContent : '';
+    if ($('editProfileName')) $('editProfileName').value = currentName;
+    openOverlayWithHistory('editProfilePage');
+}
+function saveProfileChanges() {
+    showLoader();
+    const newName = $('editProfileName') ? $('editProfileName').value.trim() : '';
+    if (!newName || newName.length < 3) { showAlert('Please enter a valid name.'); hideLoader(); return; }
+    db.collection('users').doc(loggedInUser.uid).update({ fullName: newName })
+        .then(()=>{ hideLoader(); showAlert('Profile updated successfully!'); history.back(); })
+        .catch(err=>{ hideLoader(); showAlert('Error updating profile: '+err.message); });
+}
+function confirmLogout() { showConfirm('Are you sure you want to logout?', ()=>{ showLoader(); auth.signOut(); }); }
+
+/* --- Recharge / Wallet --- */
+async function payWithPaystack() {
+    showLoader();
+    let amount = $('rechargeAmount') ? $('rechargeAmount').value : '';
+    amount = Number(amount);
+    if (!amount || isNaN(amount) || amount < 100) { showAlert("Please enter a valid amount (minimum ₦100)"); hideLoader(); return; }
+    if (!loggedInUser) { showAlert("You must be logged in to recharge."); hideLoader(); return; }
+    const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+    if (!userDoc.exists) { showAlert("Could not find user data. Please try again."); hideLoader(); return; }
+    const userEmail = userDoc.data().email || `${loggedInUser.phoneNumber}@smartcall.app`;
+    let handler = PaystackPop.setup({
+        key: paystackPublicKey, email: userEmail, amount: amount * 100, currency: 'NGN',
+        ref: 'SC_' + Math.floor((Math.random() * 1000000000) + 1),
+        callback: function (response) {
+            showLoader(); if ($('rechargeStatus')) $('rechargeStatus').innerText = "Verifying payment...";
+            updateUserBalanceInDB(parseFloat(amount)).then(() => {
+                if ($('rechargeStatus')) $('rechargeStatus').innerText = "Recharge successful! Ref: " + response.reference;
+                hideLoader(); setTimeout(()=>closeOverlay('rechargePage'), 1500);
+            });
+        },
+        onClose: function () { hideLoader(); }
+    });
+    handler.openIframe();
+}
+async function updateUserBalanceInDB(amount) {
+    if (!loggedInUser) return;
+    const userRef = db.collection('users').doc(loggedInUser.uid);
+    try {
+        await db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(userRef);
+            if (!doc.exists) throw "Document does not exist!";
+            const newBalance = (doc.data().balance || 0) + amount;
+            transaction.update(userRef, { balance: newBalance });
+        });
+    } catch (error) {
+        console.error("Transaction failed: ", error);
+        if ($('rechargeStatus')) $('rechargeStatus').innerText = "Recharge failed. Please try again.";
+    }
+}
+function updateWalletBalance(balance) {
+    const balanceText = $('walletBalance');
+    if (!balanceText) return;
+    const balanceInNaira = (Number(balance) || 0).toFixed(2);
+    const approxMinutes = Math.floor((Number(balance) || 0) / callCostPerMinute);
+    balanceText.innerHTML = `Your Wallet Balance: <strong>₦${balanceInNaira}</strong><br><span><i>(Approx. ${approxMinutes} Minutes)</i></span>`;
+}
+
+/* --- Referral, sharing, history clear (unchanged semantics) --- */
+function generateReferralLink() {
+    if (loggedInUser && loggedInUser.uid) $('referralLink').value = `https://smartcall.app/refer/${loggedInUser.uid}`;
+    else $('referralLink').value = "Log in to get your referral link";
+}
+function copyReferralLink() {
+    const referralInput = $('referralLink');
+    if (!referralInput) return;
+    referralInput.select();
+    referralInput.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+    showAlert('Referral link copied to clipboard!');
+}
+function shareReferralLink() {
+    if (navigator.share) {
+        navigator.share({ title: 'SmartCall Referral', text: 'Join me on SmartCall and get free credit!', url: $('referralLink').value })
+            .catch(err => console.log('Error sharing', err));
+    } else {
+        showAlert("Web Share API is not supported in this browser. Please use the copy button.");
+    }
+}
+function clearRecentCalls() {
+    showConfirm('Are you sure you want to clear your entire call history? This cannot be undone.', () => {
+        showLoader();
+        if (!loggedInUser) { showAlert("You must be logged in to clear history."); hideLoader(); return; }
+        const callHistoryRef = db.collection('users').doc(loggedInUser.uid).collection('callHistory');
+        callHistoryRef.get().then(snapshot => {
+            const batch = db.batch();
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            return batch.commit();
+        }).then(()=>{ hideLoader(); showAlert('Call history cleared successfully!'); })
+        .catch(error=>{ hideLoader(); showAlert('Error clearing call history: '+error.message); });
+    });
+}
+
+/* --- Custom confirm dialog handlers --- */
+const confirmDialog = $('customConfirmDialog');
+const confirmMessage = $('customConfirmMessage');
+const confirmOkBtn = $('confirmOkBtn');
+const confirmCancelBtn = $('confirmCancelBtn');
+let confirmCallback = null;
+function showConfirm(message, onConfirm) {
+    if (confirmMessage) confirmMessage.textContent = message;
+    confirmCallback = onConfirm;
+    if (confirmDialog) confirmDialog.classList.add('active');
+}
+if (confirmOkBtn) confirmOkBtn.onclick = () => { if (confirmCallback) confirmCallback(); if (confirmDialog) confirmDialog.classList.remove('active'); };
+if (confirmCancelBtn) confirmCancelBtn.onclick = () => { if (confirmDialog) confirmDialog.classList.remove('active'); };
+
+/* --- Keyboard support for dialpad --- */
+document.addEventListener('keydown', (e) => {
+    const key = e.key;
+    if (/^[0-9*#+]$/.test(key)) dialInput(key);
+    else if (key === "Backspace") dialInput('backspace');
+    else if (key === "Enter") startCallFromDialpad();
+});
+
+/* --- Safe fallback to ensure no trailing unclosed braces --- */
+/* End of script.js */

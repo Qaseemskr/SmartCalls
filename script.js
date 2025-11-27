@@ -126,6 +126,17 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// --- Audio Messages for Call Experience ---
+const connectAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_5f05e4c3da.mp3?filename=please-hold-the-line-115132.mp3"); 
+// “Please wait while we connect your call”
+connectAudio.volume = 1.0;
+
+const ringAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_12f6943d15.mp3?filename=phone-ring-classic-24963.mp3"); 
+// “Duuut... duuut...” sound
+ringAudio.loop = true;
+ringAudio.volume = 0.8;
+
+
 // --- Authentication Logic ---
 function showRegisterForm(type) {
     const phoneSection = document.getElementById('phoneAuthSection');
@@ -295,7 +306,10 @@ function listenToCallHistory(limit=5, targetElementId='recentCallsList') {
         historyListDiv.innerHTML = '';
         snapshot.forEach(doc => {
             const call = doc.data();
-            const callDate = call.timestamp.toDate();
+            const callDate = (call.timestamp && typeof call.timestamp.toDate === 'function')
+    ? call.timestamp.toDate()
+    : new Date();
+
             const formattedDate = callDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) + ' ' + callDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
             const callItem = document.createElement('div');
             callItem.classList.add('history-item');
@@ -323,27 +337,124 @@ document.addEventListener('DOMContentLoaded', () => {
             select.appendChild(option);
         });
     });
-});
-// --- Dial Pad ---
+});// --- Dial Pad ---
 let currentNumber = '';
 const dialPadDisplay = document.getElementById('dialPadDisplay');
+
 function dialInput(value) {
-    if (value === 'backspace' && currentNumber.length > 0) { currentNumber = currentNumber.slice(0, -1); }
-    else if (value !== 'backspace') { currentNumber += value; }
-    dialPadDisplay.value = currentNumber;
+  if (value === 'backspace' && currentNumber.length > 0) {
+    currentNumber = currentNumber.slice(0, -1);
+  } else if (value !== 'backspace') {
+    currentNumber += value;
+  }
+  dialPadDisplay.value = currentNumber;
 }
-function clearDialPad() { currentNumber = ''; dialPadDisplay.value = ''; }
-function startCallFromDialpad() {
-    if (currentNumber) {
-        showLoader();
-        setTimeout(() => {
-            hideLoader(); openCallScreen(currentNumber, currentNumber); history.back();
-        }, 500);
-    } else {
-        showAlert('Please enter a number to call.');
+
+function clearDialPad() {
+  currentNumber = '';
+  dialPadDisplay.value = '';
+}
+
+// --- Start call from Dial Pad (Real backend + Audio + Credit check) ---
+async function startCallFromDialpad() {
+  if (!currentNumber) {
+    showAlert("Please enter a number to call.");
+    return;
+  }
+
+  // Normalize and add +country code (default +234)
+  let toNumber = currentNumber.startsWith("+")
+    ? currentNumber
+    : "+234" + currentNumber.replace(/^0+/, "");
+
+  // Show call screen
+  callingContactName.textContent = toNumber;
+  callScreen.classList.add("active");
+  callStatus.textContent = "Please wait while we connect your call...";
+
+  // Play connecting message
+  try {
+    connectAudio.currentTime = 0;
+    connectAudio.play().catch(() => {});
+  } catch (e) {}
+
+  showLoader();
+
+  try {
+    const res = await fetch("https://smartcall-backend-7cm9.onrender.com/api/call", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to: toNumber }),
+    });
+
+    const data = await res.json();
+    hideLoader();
+
+    // Stop connecting audio
+    connectAudio.pause();
+    connectAudio.currentTime = 0;
+
+    // --- Handle backend response ---
+    const status = data?.result?.entries?.[0]?.status || "Unknown";
+
+    if (status === "InsufficientCredit") {
+      callStatus.textContent =
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you.";
+      showAlert(
+        "You do not have sufficient balance to make this call. Please recharge and try again. Thank you."
+      );
+      setTimeout(() => callScreen.classList.remove("active"), 4000);
+      return;
     }
+
+    if (res.ok && data.success) {
+      callStatus.textContent = "Ringing...";
+      try {
+        ringAudio.currentTime = 0;
+        ringAudio.play().catch(() => {});
+      } catch (e) {}
+
+      // Simulate connecting after ringing
+      setTimeout(() => {
+        ringAudio.pause();
+        ringAudio.currentTime = 0;
+        callStatus.textContent = "Connected";
+        seconds = 0;
+        callTimer.textContent = "00:00";
+        callInterval = setInterval(updateCallTimer, 1000);
+      }, 2500);
+    } else {
+      callStatus.textContent = data.error || "Call failed to connect.";
+      showAlert(data.error || "Call failed to connect.");
+      setTimeout(() => callScreen.classList.remove("active"), 3000);
+    }
+  } catch (error) {
+    hideLoader();
+    connectAudio.pause();
+    ringAudio.pause();
+    callStatus.textContent = "Network Error. Please try again.";
+    showAlert("Network Error: " + error.message);
+    setTimeout(() => callScreen.classList.remove("active"), 3000);
+  }
 }
-function openContactsFromDialpad() { history.back(); openOverlayWithHistory('contactsPage'); }
+
+// --- Enable keyboard input for dial pad ---
+document.addEventListener("keydown", (e) => {
+  const key = e.key;
+  if (/^[0-9*#+]$/.test(key)) {
+    dialInput(key);
+  } else if (key === "Backspace") {
+    dialInput("backspace");
+  } else if (key === "Enter") {
+    startCallFromDialpad();
+  }
+});
+
+function openContactsFromDialpad() {
+  history.back();
+  openOverlayWithHistory("contactsPage");
+}
+
 // --- Contacts Page ---
 function loadContacts() {
     showLoader();
@@ -484,43 +595,88 @@ let seconds = 0;
 const BACKEND_URL = "https://smartcall-backend-7cm9.onrender.com/api/call";
 const END_CALL_URL = "https://smartcall-backend-7cm9.onrender.com/endCall";
 
-// --- Open Call Screen and Start Call ---
+// --- Open Call Screen and Start Call (CLEANED) ---
 async function openCallScreen(name, number) {
+  // set UI
   callingContactName.textContent = name || number;
   callScreen.setAttribute("data-contact-name", name || number);
   callScreen.setAttribute("data-contact-phone", number);
   callScreen.classList.add("active");
-  callStatus.textContent = "Connecting...";
 
-  // normalize number (add + if missing)
-  let toNumber = number.startsWith("+") ? number : "+234" + number.replace(/^0+/, "");
+    // === CHECK USER BALANCE BEFORE CALL ===
+if (!loggedInUser) {
+  showAlert("You must be logged in to make a call.");
+  callScreen.classList.remove("active");
+  return;
+}
+
+const userDoc = await db.collection('users').doc(loggedInUser.uid).get();
+if (!userDoc.exists || (userDoc.data().balance || 0) < callCostPerMinute) {
+  showAlert("You do not have sufficient balance to make this call. Please recharge and try again. Thank you.");
+  callScreen.classList.remove("active");
+  return;
+}
+
+  // show connecting message and play short spoken "please wait" audio
+  callStatus.textContent = "Please wait while we connect your call...";
+  try {
+    // play a short "please wait" voice message (will be ignored if browser blocks autoplay)
+    connectAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
+  } catch(e){}
+
+  // after 2.5s start the looped ringing tone
+  // store the timeout so we could clear it if needed (optional)
+  const startRingTimeout = setTimeout(() => {
+    try {
+      connectAudio.pause();
+      connectAudio.currentTime = 0;
+    } catch(e){}
+    try {
+      ringAudio.play().catch(()=>{ /* ignore autoplay rejects */ });
+    } catch(e){}
+    callStatus.textContent = "Ringing...";
+  }, 2500);
+
+  // normalize number (add + if missing) - naive default to +234
+  let toNumber = number && number.startsWith("+") ? number : ("+234" + (number || "").replace(/^0+/, ""));
 
   showLoader();
   try {
     const res = await fetch(BACKEND_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: toNumber
-      }),
+      body: JSON.stringify({ to: toNumber })
     });
     const data = await res.json();
     hideLoader();
 
-    if (res.ok && data.success) {
+    // Stop any audio now (only once)
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+    clearTimeout(startRingTimeout);
+
+    if (res.ok && data && data.success) {
+      // call queued / connected — start UI timer
       callStatus.textContent = "Connected";
       seconds = 0;
-      callTimer.textContent = "00:00";
+      if (callTimer) callTimer.textContent = "00:00";
       callInterval = setInterval(updateCallTimer, 1000);
     } else {
+      // call failed — show message and close UI
       callStatus.textContent = "Call Failed";
-      showAlert(data.error || "Could not start call.");
+      showAlert((data && data.error) ? data.error : "Could not start call.");
       setTimeout(() => callScreen.classList.remove("active"), 2000);
     }
   } catch (err) {
+    // network or other error
     hideLoader();
+    // ensure audios stopped
+    try { connectAudio.pause(); connectAudio.currentTime = 0; } catch(e){}
+    try { ringAudio.pause(); ringAudio.currentTime = 0; } catch(e){}
+    clearTimeout(startRingTimeout);
+
     callStatus.textContent = "Network Error";
-    showAlert("Network error: " + err.message);
+    showAlert("Network error: " + (err.message || err));
     setTimeout(() => callScreen.classList.remove("active"), 2000);
   }
 }
@@ -551,6 +707,12 @@ async function endCallSimulation() {
     hideLoader();
     showAlert("Error ending call: " + err.message);
   }
+    // Stop ringing sound if still playing
+if (typeof ringAudio !== "undefined") {
+  ringAudio.pause();
+  ringAudio.currentTime = 0;
+}
+
 
   // Log to Firestore
   if (loggedInUser && seconds > 0) {
@@ -672,4 +834,19 @@ function clearRecentCalls() {
             showAlert('Error clearing call history: ' + error.message);
         });
     });
+
 }
+
+// --- Fade in copyright text after page load ---
+window.addEventListener("load", () => {
+  const copyElem = document.querySelector('.global-copyright');
+  if (copyElem) copyElem.style.opacity = 1;
+});
+
+
+
+
+
+
+
+
